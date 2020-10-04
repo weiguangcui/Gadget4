@@ -3,12 +3,7 @@
 GADGET-4
 ========
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ___    __    ____    ___  ____  ____       __
- / __)  /__\  (  _ \  / __)( ___)(_  _)___  /. |
-( (_-. /(__)\  )(_) )( (_-. )__)   )( (___)(_  _)
- \___/(__)(__)(____/  \___/(____) (__)       (_)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+![image top](top.jpg)
 
 GADGET-4 is a massively parallel code for N-body/hydrodynamical
 cosmological simulations. It is a flexible code that can be applied to
