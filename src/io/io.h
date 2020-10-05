@@ -176,7 +176,7 @@ class IO_Def : public io_streamcount, public setcomm
   long long *ntype_in_files;
   char info[100];
 
-#if defined(MERGERTREE) || defined(LGALAXIES)
+#if defined(MERGERTREE)
   typedef fof<simparticles>::treehalo_t treehalo_type;
 #endif
 

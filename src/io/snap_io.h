@@ -17,12 +17,7 @@
 #include "../data/intposconvert.h"
 #include "../data/simparticles.h"
 #include "../io/io.h"
-#include "../lgalaxies/lgalaxies.h"
 #include "../mergertree/mergertree.h"
-
-#ifdef LGALAXIES
-class lgalaxies;
-#endif
 
 class snap_io : public IO_Def
 {
@@ -37,15 +32,6 @@ class snap_io : public IO_Def
   {
     init_basic(Sp_ptr);
     init_extra(Sp_ptr, MergerTree_ptr);
-  }
-#endif
-
-#if defined(LGALAXIES)
-  void init_extra_lgalaxies(void);
-  snap_io(simparticles *Sp_ptr, MPI_Comm comm, int format, bool lgalaxies) : IO_Def(comm, format)
-  {
-    init_basic(Sp_ptr);
-    init_extra_lgalaxies();
   }
 #endif
 
@@ -139,9 +125,6 @@ class snap_io : public IO_Def
   simparticles *Sp;
 #ifdef MERGERTREE
   mergertree *MergerTree;
-#endif
-#ifdef LGALAXIES
-  lgalaxies *LGalaxies;
 #endif
 
   mysnaptype snap_type;

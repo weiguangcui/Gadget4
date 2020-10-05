@@ -241,87 +241,6 @@ void snap_io::init_extra(simparticles *Sp_ptr, mergertree *MergerTree_ptr)
 }
 #endif
 
-#if defined(LGALAXIES)
-void snap_io::init_extra_lgalaxies(void)
-{
-#ifdef REARRANGE_OPTION
-  init_field("MTRI", "TreeID", MEM_INT64, FILE_INT64, READ_IF_PRESENT, 1, A_P, &Sp->P[0].TreeID, NULL, ALL_TYPES, 0, 0, 0, 0, 0, 0, 0);
-#endif
-
-  init_field("MTRL", "ParticleCount", MEM_INT, FILE_INT, READ_IF_PRESENT, 1, A_CT, &Sp->PartTreeTable[0].ParticleCount, NULL,
-             TREETABLE, 0, 0, 0, 0, 0, 0, 0);
-  init_field("MTRS", "ParticleFirst", MEM_INT64, FILE_INT64, READ_IF_PRESENT, 1, A_CT, &Sp->PartTreeTable[0].ParticleFirst, NULL,
-             TREETABLE, 0, 0, 0, 0, 0, 0, 0);
-  init_field("MTRI", "TreeID", MEM_INT64, FILE_INT64, READ_IF_PRESENT, 1, A_CT, &Sp->PartTreeTable[0].TreeID, NULL, TREETABLE, 0, 0, 0,
-             0, 0, 0, 0);
-}
-
-void snap_io::free_basic_treeinfo(void) { Mem.myfree(ntype_in_files); }
-
-int snap_io::acquire_basic_treeinfo(int num, mysnaptype loc_snap_type)
-{
-  snap_type = loc_snap_type;
-
-  if(snap_type != MOST_BOUND_PARTICLE_SNAPHOT_REORDERED)
-    Terminate("bummmer");
-
-  char fname[3 * MAXLEN_PATH], fname_multiple[3 * MAXLEN_PATH];
-
-  sprintf(fname_multiple, "%s/snapdir_%03d/%s-prevmostboundonly-treeorder_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
-  sprintf(fname, "%s%s-prevmostboundonly-treeorder_%03d", All.OutputDir, All.SnapshotFileBase, num);
-
-  int num_files = find_files(fname, fname_multiple);
-
-  if(num_files > 1)
-    strcpy(fname, fname_multiple);
-
-  alloc_and_read_ntype_in_files(fname, num_files);
-
-  return num_files;
-}
-
-long long snap_io::load_orphans(int num, long long treenr, int num_files)
-{
-  char fname[3 * MAXLEN_PATH];
-
-  if(num_files > 1)
-    sprintf(fname, "%s/snapdir_%03d/%s-prevmostboundonly-treeorder_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
-  else
-    sprintf(fname, "%s%s-prevmostboundonly-treeorder_%03d", All.OutputDir, All.SnapshotFileBase, num);
-
-  read_segment(fname, NTYPES, treenr, 1, num_files);
-
-  long long count = Sp->PartTreeTable[0].ParticleCount;
-  long long first = Sp->PartTreeTable[0].ParticleFirst;
-
-  Sp->P       = (particle_data *)Mem.mymalloc_movable(&Sp->P, "Sp->P", count * sizeof(particle_data));
-  Sp->NumPart = 0;
-
-#ifndef OUTPUT_COORDINATES_AS_INTEGERS
-  Ptmp = (ptmp_data *)Mem.mymalloc_movable(&Ptmp, "Ptmp", count * sizeof(ptmp_data));
-#endif
-
-  read_segment(fname, 1, first, count, num_files);
-
-#ifndef OUTPUT_COORDINATES_AS_INTEGERS
-  snap_init_domain_mapping();
-
-  for(int i = 0; i < count; i++)
-    Sp->pos_to_intpos(Ptmp[i].Pos, Sp->P[i].IntPos); /* converts floating point representation to integers */
-
-  Mem.myfree(Ptmp);
-#endif
-
-  if(count > 0 && Sp->NumPart != count)
-    Terminate("Sp->NumPart=%d != count=%d", (int)Sp->NumPart, (int)count);
-
-  return count;
-}
-
-void snap_io::free_orphans(void) { Mem.myfree(Sp->P); }
-
-#endif
-
 void snap_io::read_snapshot(int num, mysnaptype loc_snap_type)
 {
   snap_type = loc_snap_type;
@@ -618,10 +537,6 @@ void *snap_io::get_base_address_of_structure(enum arrays array, int index)
 #if defined(REARRANGE_OPTION) && defined(MERGERTREE)
       case A_TT:
         return (void *)(MergerTree->TreeTable + index);
-#endif
-#if defined(LGALAXIES)
-      case A_CT:
-        return (void *)(Sp->PartTreeTable + index);
 #endif
       default:
         Terminate("we don't expect to get here");

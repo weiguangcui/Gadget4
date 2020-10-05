@@ -84,10 +84,6 @@ class simparticles : public intposconvert, public setcomm
   lightcone *LightCone;
 #endif
 
-#ifdef LGALAXIES
-  parttrees_table PartTreeTable[1];  // need only one entry
-#endif
-
 #ifdef FOF
   MyIDStorage *MinID;
   int *Len;  // this is here enough in 32bit because only the group segments on the local processor are treated

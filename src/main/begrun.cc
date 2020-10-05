@@ -174,8 +174,7 @@ void sim::begrun1(const char *parameterFile)
   else
     All.OutputListLength = 0;
 
-  if(All.RestartFlag != RST_LGALAXIES)
-    All.write_used_parameters(All.OutputDir, "parameters-usedvalues");
+  All.write_used_parameters(All.OutputDir, "parameters-usedvalues");
 
   All.some_parameter_checks();
 

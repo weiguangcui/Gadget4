@@ -35,7 +35,6 @@
 #include "../io/parameters.h"
 #include "../io/restart.h"
 #include "../io/test_io_bandwidth.h"
-#include "../lgalaxies/lgalaxies.h"
 #include "../lightcone/lightcone.h"
 #include "../logs/logs.h"
 #include "../mergertree/mergertree.h"
@@ -102,14 +101,6 @@ class sim : public pinning, public test_io_bandwidth
 #endif
 #endif
 #endif  // end of LIGHTCONE
-
-#ifdef LGALAXIES
-#if defined(LIGHTCONE_PARTICLES)
-  lgalaxies LGalaxies{Communicator, &LightCone};
-#else
-  lgalaxies LGalaxies{Communicator};
-#endif
-#endif
 
 #ifdef FORCETEST
   gravtest GravTest{&Sp, &GravTree, &Domain};

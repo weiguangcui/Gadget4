@@ -1584,13 +1584,3 @@ i.e. for the one-sided tree, one may then be closer to a node's center
 than 1.5 times the node size, and for FMM, adjacent nodes may
 interact.
 
-
-Postprocessing options                                  {#postproc}
-======================
-
-**LGALAXIES**
-
-This enables a semi-analytic code that can run directly on the trees
-output by the code.
-
--------

@@ -188,9 +188,6 @@ int main(int argc, char **argv)
           printf("      %2d          Arrange halos in merger trees [using group catalogues up to SnapNum]\n", RST_MAKETREES);
           printf("      %2d          Carry out I/O bandwidth test to determine best setting for number of concurrent reads/writes\n",
                  RST_IOBANDWIDTH);
-          printf("      %2d          Make an image of a lightcone particle output [image parameterfile]\n", RST_LCIMAGE);
-          printf("      %2d          Produce semi-analytic galaxies by running LGalaxies [lgal-parameterfile <conenr>]\n",
-                 RST_LGALAXIES);
           printf("      %2d          Rearrange particle-lightcone data in merger tree order <conenr>  <firstnum>  <lastnum>\n",
                  RST_LCREARRANGE);
           printf("      %2d          Rearrange most-bound snapshot data in merger tree order <firstnum>  <lastnum>\n",
@@ -274,26 +271,6 @@ int main(int argc, char **argv)
         {
           Sim.measure_io_bandwidth();
           Sim.endrun();
-        }
-
-      if(All.RestartFlag == RST_LCIMAGE)
-        {
-#if defined(LIGHTCONE) && defined(LIGHTCONE_PARTICLES)
-          Sim.LightCone.makeimage(argc, argv);
-          Sim.endrun();
-#else
-          Terminate("Compile with option LIGHTCONE_PARTICLES for this option");
-#endif
-        }
-
-      if(All.RestartFlag == RST_LGALAXIES)
-        {
-#ifdef LGALAXIES
-          Sim.LGalaxies.compute_semi_analytic_galaxies(argc, argv);
-          Sim.endrun();
-#else
-          Terminate("Compile with option LGALAXIES for this option");
-#endif
         }
 
       if(All.RestartFlag == RST_LCREARRANGE)

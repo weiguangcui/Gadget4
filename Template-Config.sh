@@ -200,7 +200,3 @@ HOST_MEMORY_REPORTING           # reports after start-up the available system me
 
 #TREE_NO_SAFETY_BOX             # when set, this disables the geometric 'near node' protection
 
-#---------------------------------------- Postprocessing options
-
-#LGALAXIES                      # Semi-analytic L-Galaxies code
-

@@ -136,7 +136,7 @@ class fof : public setcomm
   };
   subhalo_properties *Subhalo;
 
-#if defined(MERGERTREE) || defined(LGALAXIES)
+#if defined(MERGERTREE)
   /* Subhalos as they appear in the merger tree */
   struct treehalo_t
   {
