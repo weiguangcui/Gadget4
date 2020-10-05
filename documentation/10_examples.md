@@ -64,7 +64,9 @@ matter halo. To carry out this example, you need access to the
 `Aq-C-5-dm` initial conditions files, which stem from the
 [Aquarius Project](http://adsabs.harvard.edu/abs/2008MNRAS.391.1685S)
 and were also used as part of the
-[Aquila Project(https://ui.adsabs.harvard.edu/abs/2012MNRAS.423.1726S). These IC files are available as part of the [IC-package](https://wwwmpa.mpa-garching.mpg.de/gadget4/example_ics.tar)
+[Aquila Project](https://ui.adsabs.harvard.edu/abs/2012MNRAS.423.1726S). 
+These IC files are available as part of the 
+[IC-package](https://wwwmpa.mpa-garching.mpg.de/gadget4/example_ics.tar)
 on the GADGET-4 web-site.
 
 The example uses particle type 1 for the high-resolution dark matter
