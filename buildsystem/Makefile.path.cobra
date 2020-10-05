@@ -1,0 +1,11 @@
+GSL_INCL   =  -I$(GSL_HOME)/include
+GSL_LIBS   =  -L$(GSL_HOME)/lib  -Xlinker -R -Xlinker $(GSL_HOME)/lib
+FFTW_INCL  =  -I$(FFTW_HOME)/include
+FFTW_LIBS  =  -L$(FFTW_HOME)/lib  -Xlinker -R -Xlinker $(FFTW_HOME)/lib
+HDF5_INCL  =  -I$(HDF5_HOME)/include
+HDF5_LIBS  =  -L$(HDF5_HOME)/lib -Xlinker -R -Xlinker $(HDF5_HOME)/lib
+HWLOC_INCL =  
+HWLOC_LIBS =  
+MAPS_INCL  =  -I/u/vrs/Libs/include
+MAPS_LIBS  =  -L/u/vrs/Libs/lib  -Xlinker -R -Xlinker /u/vrs/Libs/lib
+

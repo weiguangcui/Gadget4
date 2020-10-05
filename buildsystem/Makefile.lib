@@ -1,0 +1,78 @@
+LIB_DIR=extlibs
+
+FFTW_VERSION=3.3.4
+GSL_VERSION=1.16
+HDF5_VERSION=1.8.15-patch1
+HWLOC_VERSION=1.8.6
+
+libs: gsl fftw-single fftw-double hdf5 hwloc
+
+SHELL=/bin/bash
+
+$(LIB_DIR):
+	mkdir $(LIB_DIR)
+
+
+
+
+fftw-single: $(LIB_DIR)/include/sfftw.h
+
+fftw-double: $(LIB_DIR)/include/dfftw.h
+
+$(LIB_DIR)/fftw-$(FFTW_VERSION).tar.gz: | $(LIB_DIR)
+	cd $(LIB_DIR); wget http://www.fftw.org/fftw-$(FFTW_VERSION).tar.gz
+	
+$(LIB_DIR)/fftw-$(FFTW_VERSION)/: $(LIB_DIR)/fftw-$(FFTW_VERSION).tar.gz
+	cd $(LIB_DIR); tar -xf fftw-$(FFTW_VERSION).tar.gz
+		
+$(LIB_DIR)/include/sfftw.h: | $(LIB_DIR)/fftw-$(FFTW_VERSION)/
+	cd $(LIB_DIR)/fftw-$(FFTW_VERSION); export LD_LIBRARY_PATH=$(LIB_DIR)/lib; ./configure --prefix=$(CURDIR)/$(LIB_DIR)/ --enable-float; make; make install
+	
+$(LIB_DIR)/include/dfftw.h: | $(LIB_DIR)/fftw-$(FFTW_VERSION)/	
+	cd $(LIB_DIR)/fftw-$(FFTW_VERSION); export LD_LIBRARY_PATH=$(LIB_DIR)/lib; ./configure --prefix=$(CURDIR)/$(LIB_DIR)/ ; make; make install
+
+
+
+
+gsl: $(LIB_DIR)/include/gsl/
+
+$(LIB_DIR)/gsl-$(GSL_VERSION).tar.gz: | $(LIB_DIR)
+	cd $(LIB_DIR); wget  http://ftpmirror.gnu.org/gsl/gsl-$(GSL_VERSION).tar.gz
+		
+$(LIB_DIR)/gsl-$(GSL_VERSION)/: $(LIB_DIR)/gsl-$(GSL_VERSION).tar.gz
+	cd $(LIB_DIR); tar -xf gsl-$(GSL_VERSION).tar.gz
+	
+$(LIB_DIR)/include/gsl/: | $(LIB_DIR)/gsl-$(GSL_VERSION)/
+	cd $(LIB_DIR)/gsl-$(GSL_VERSION);export LD_LIBRARY_PATH=$(LIB_DIR)/lib; ./configure --prefix=$(CURDIR)/$(LIB_DIR)/; make; make install
+	
+	
+  
+  
+hwloc: $(LIB_DIR)/include/hwloc.h
+
+$(LIB_DIR)/hwloc-$(HWLOC_VERSION).tar.gz: | $(LIB_DIR)
+	cd $(LIB_DIR); wget  http://www.open-mpi.de/software/hwloc/v1.8/downloads/hwloc-$(HWLOC_VERSION).tar.gz
+
+$(LIB_DIR)/hwloc-$(HWLOC_VERSION)/:	$(LIB_DIR)/hwloc-$(HWLOC_VERSION).tar.gz
+	cd $(LIB_DIR); tar -xf hwloc-$(HWLOC_VERSION).tar.gz
+	
+$(LIB_DIR)/include/hwloc.h: | $(LIB_DIR)/hwloc-$(HWLOC_VERSION)/
+	cd $(LIB_DIR)/hwloc-$(HWLOC_VERSION); ./configure --prefix=$(CURDIR)/$(LIB_DIR)/; make; make install
+	
+	
+  
+  
+hdf5: $(LIB_DIR)/include/hdf5.h
+
+$(LIB_DIR)/hdf5-$(HDF5_VERSION).tar.gz: | $(LIB_DIR)
+	cd $(LIB_DIR); wget ftp://ftp.hdfgroup.org/HDF5/current/src/hdf5-$(HDF5_VERSION).tar.gz
+	
+$(LIB_DIR)/hdf5-$(HDF5_VERSION): $(LIB_DIR)/hdf5-$(HDF5_VERSION).tar.gz
+	cd $(LIB_DIR); tar -xf hdf5-$(HDF5_VERSION).tar.gz
+	
+$(LIB_DIR)/include/hdf5.h: | $(LIB_DIR)/hdf5-$(HDF5_VERSION)
+	/bin/bash -c 'cd $(LIB_DIR)/hdf5-$(HDF5_VERSION); export LD_LIBRARY_PATH=$(LIB_DIR)/lib; ./configure --prefix=$(CURDIR)/$(LIB_DIR)/ --enable-parallel; make; make install'
+
+
+
+.PHONY = gsl fftw-single fftw-double hdf5 hwloc

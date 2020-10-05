@@ -1,0 +1,12 @@
+GSL_INCL   =  -I/hits/tap/sw/libs/gsl-1.15/include
+GSL_LIBS   =  -L/hits/tap/sw/libs/gsl-1.15/lib  -Xlinker -R -Xlinker /hits/tap/sw/libs/gsl-1.15/lib
+FFTW_INCL  =  -I/hits/tap/sw/libs/fftw-3.3.4/include
+FFTW_LIBS  =  -L/hits/tap/sw/libs/fftw-3.3.4/lib  -Xlinker -R -Xlinker /hits/tap/sw/libs/fftw-3.3.4/lib
+HDF5_INCL  =  -I/hits/tap/sw/libs/hdf5-1.8.10/include
+HDF5_LIBS  =  -L/hits/tap/sw/libs/hdf5-1.8.10/lib -Xlinker -R -Xlinker /hits/tap/sw/libs/hdf5-1.8.10/lib
+HWLOC_INCL =  -I/hits/tap/sw/libs/hwloc-1.5.1/include
+HWLOC_LIBS =  -L/hits/tap/sw/libs/hwloc-1.5.1/lib -Xlinker -R -Xlinker /hits/tap/sw/libs/hwloc-1.5.1/lib
+VTUNE_INCL =  -I/cm/shared/apps/intel/vtune_u13/vtune_amplifier_xe_2015/include
+VTUNE_LIBS =  -L/cm/shared/apps/intel/vtune_u13/vtune_amplifier_xe_2015/lib64 -littnotify
+MAPS_INCL  =  -I/hits/tap/sw/libs/healpix/include
+MAPS_LIBS  =  -L/hits/tap/sw/libs/healpix/lib

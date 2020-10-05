@@ -1,0 +1,20 @@
+CPP      =  mpicxx -std=c++11 -Wwrite-strings -Wredundant-decls -Woverloaded-virtual -Wcast-qual -Wcast-align -Wpointer-arith -Wmissing-declarations # sets the C++-compiler
+OPTIMIZE =    -g -Wall -W -O3 -march=native
+
+# -fopenmp
+# -DDISABLE_MEMORY_MANAGER
+# -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--print-gc-sections -Wl,--demangle
+
+ifeq (EXPLICIT_VECTORIZATION,$(findstring EXPLICIT_VECTORIZATION,$(CONFIGVARS)))
+CFLAGS_VECTOR += -mavx   # enables generation of AVX instructions (used through vectorclass)
+CPV      =  $(CPP)
+else
+CFLAGS_VECTOR =
+CPV      =  $(CPP)
+endif
+
+ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
+OPTIMIZE +=  -fopenmp
+else
+OPTIMIZE +=  -Wno-unknown-pragmas
+endif

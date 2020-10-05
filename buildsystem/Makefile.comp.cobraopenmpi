@@ -1,0 +1,15 @@
+CPP      =  /u/vrs/Libs/openmpi-4.0.4/bin/mpicxx  -std=c++11 # sets the C++-Compiler
+OPTIMIZE =  -ggdb -O3  -Wall -Wno-format-security
+ifeq (EXPLICIT_VECTORIZATION,$(findstring EXPLICIT_VECTORIZATION,$(CONFIGVARS)))
+CFLAGS_VECTOR += -mavx2  # enables generation of AVX instructions (used through vectorclass)
+CPV      =  $(CPP)
+else
+CFLAGS_VECTOR =
+CPV      =  $(CPP)
+endif
+
+ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
+OPTIMIZE +=  -qopenmp
+else
+OPTIMIZE +=  -Wno-unknown-pragmas
+endif

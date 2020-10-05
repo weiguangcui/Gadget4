@@ -1,0 +1,8 @@
+GSL_INCL   = -I/u/system/SLES11/soft/gsl/1.16/include
+GSL_LIBS   = -L/u/system/SLES11/soft/gsl/1.16/lib -Xlinker -R -Xlinker /u/system/SLES11/soft/gsl/1.16/lib
+FFTW_INCL  = -I/u/system/SLES11/soft/fftw/3.3.4/intel-14.0/mpi.ibm-1.4/include
+FFTW_LIBS  = -L/u/system/SLES11/soft/fftw/3.3.4/intel-14.0/mpi.ibm-1.4/lib -Xlinker -R -Xlinker /u/system/SLES11/soft/fftw/3.3.4/intel-14.0/mpi.ibm-1.4/lib
+HDF5_INCL  = -I/u/system/SLES11/soft/hdf5/1.8.14/intel14.0/serial/include
+HDF5_LIBS  =  -L/u/system/SLES11/soft/hdf5/1.8.14/intel14.0/serial/lib -Xlinker -R -Xlinker /u/system/SLES11/soft/hdf5/1.8.14/intel14.0/serial/lib
+HWLOC_INCL = -I/u/anbau/hwloc-1.11.2/include
+HWLOC_LIBS = -L/u/anbau/hwloc-1.11.2/lib -Xlinker -R -Xlinker /u/anbau/hwloc-1.11.2/lib

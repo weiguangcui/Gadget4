@@ -1,0 +1,31 @@
+
+
+       PERIODIC
+       SELFGRAVITY
+
+       TREEPM_NOTIMESPLIT  
+
+       PMGRID=384
+       ASMTH=3.0
+       RCUT=8.0
+
+       MULTIPOLE_ORDER=3
+
+       RANDOMIZE_DOMAINCENTER
+
+       DOUBLEPRECISION=1
+       DOUBLEPRECISION_FFTW
+
+       POSITIONS_IN_64BIT              
+       IDS_32BIT
+
+       FOF 
+       SUBFIND
+
+       
+       NTYPES=2 
+       NSOFTCLASSES=1
+
+       GADGET2_HEADER
+
+       PRESSURE_ENTROPY_SPH

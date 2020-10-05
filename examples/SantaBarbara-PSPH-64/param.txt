@@ -1,0 +1,75 @@
+
+        InitCondFile                                      /u/vrs/Simulations/ICs/ExampleICs/sb_64.dat
+        OutputDir                                         ./output
+        SnapshotFileBase                                  snap
+
+	ActivePartFracForPMinsteadOfEwald                 0
+
+
+        TimeLimitCPU                                      90000
+
+        ICFormat                                          1
+        SnapFormat                                        3
+
+
+        ComovingIntegrationOn                             1
+
+        NumFilesPerSnapshot                               1
+
+        TimeBegin                                         0.047619
+        TimeMax                                           1
+
+        Omega0                                            1.0
+        OmegaLambda                                       0.0
+        OmegaBaryon                                       0.1
+        HubbleParam                                       0.5
+        Hubble                                            0.1
+
+        BoxSize                                           32000
+
+        OutputListFilename                                ./outputs.txt
+        OutputListOn                                      1
+        TimeBetSnapshot                                   1.1
+        TimeOfFirstSnapshot                               0.1
+
+        CpuTimeBetRestartFile                             7200
+        TimeBetStatistics                                 0.25
+
+        MaxSizeTimestep                                   0.005
+        MinSizeTimestep                                   0
+        ErrTolIntAccuracy                                 0.0125
+
+        TypeOfOpeningCriterion                            1
+        ErrTolTheta                                       0.7
+        ErrTolForceAcc                                    0.005
+
+        ErrTolThetaMax                                    0.9
+
+        TopNodeFactor                                     3.5
+
+        ActivePartFracForNewDomainDecomp                  0
+
+        MaxFilesWithConcurrentIO                          32
+
+        MaxMemSize                                        4000
+        DesNumNgb                                         64
+        MaxNumNgbDeviation                                1
+        ArtBulkViscConst                                  1
+        InitGasTemp                                       1000.0
+        MinEgySpec                                        0
+        CourantFac                                        0.15
+
+	DesLinkNgb                                        20
+
+        SofteningComovingClass0                           12.5
+        SofteningMaxPhysClass0                            12.5
+     
+      
+        SofteningClassOfPartType0                         0
+        SofteningClassOfPartType1                         0 
+
+
+        UnitLength_in_cm                                  3.08568e+21
+        UnitMass_in_g                                     1.989e+43
+        UnitVelocity_in_cm_per_s                          100000
+        GravityConstantInternal                           0

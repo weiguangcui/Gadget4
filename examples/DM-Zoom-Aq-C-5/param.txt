@@ -1,0 +1,100 @@
+%----  Relevant files 
+InitCondFile        /u/vrs/Simulations/ICs/ExampleICs/Aq-C-5-aquila-dm-fixed
+OutputDir           ./output
+SnapshotFileBase    snapshot
+OutputListFilename  ./ExpansionList_16
+
+
+%---- File formats
+ICFormat           1
+SnapFormat         3 
+
+%---- CPU-time limits
+TimeLimitCPU              86400   % in seconds
+CpuTimeBetRestartFile     7200    % in seconds
+
+%----- Memory alloction
+MaxMemSize        4300
+
+%---- Caracteristics of run
+TimeBegin           0.0078125  % Begin of the simulation
+TimeMax	            1.0        % End of the simulation
+
+%---- Basic code options that set the type of simulation
+ComovingIntegrationOn    1 
+
+%---- Cosmological parameters
+Omega0	              0.25
+OmegaLambda           0.75
+OmegaBaryon           0.04
+HubbleParam           0.73
+BoxSize               100.0
+Hubble                100.0
+
+
+%---- Output frequency and output paramaters
+OutputListOn              1 
+TimeBetSnapshot           0.0
+TimeOfFirstSnapshot       0.0
+TimeBetStatistics         0.01
+NumFilesPerSnapshot       8
+MaxFilesWithConcurrentIO  8 
+
+%---- Accuracy of time integration
+ErrTolIntAccuracy        0.012 
+CourantFac               0.3
+MaxSizeTimestep          0.005
+MinSizeTimestep          0.0 
+
+%---- Tree algorithm, force accuracy, domain update frequency
+TypeOfOpeningCriterion                1
+ErrTolTheta                           0.7
+ErrTolThetaMax                        1.0
+ErrTolForceAcc                        0.0025
+TopNodeFactor                         5
+
+ActivePartFracForNewDomainDecomp     0.01
+%%ActivePartFracForPMinsteadOfEwald  0.05
+ 
+%---- Initial density estimate
+DesNumNgb              64
+MaxNumNgbDeviation     1 
+
+%---- System of units
+UnitLength_in_cm         3.085678e24        ;  1.0 kpc
+UnitMass_in_g            1.989e43           ;  1.0e10 solar masses
+UnitVelocity_in_cm_per_s 1e5                ;  1 km/sec
+GravityConstantInternal  0
+
+%---- Gravitational softening length
+SofteningComovingClass0     0.001
+SofteningComovingClass1     0.007
+SofteningComovingClass2     0.025
+SofteningComovingClass3     0.081
+
+
+SofteningMaxPhysClass0     0.0005
+SofteningMaxPhysClass1     0.007
+SofteningMaxPhysClass2     0.025
+SofteningMaxPhysClass3     0.081
+
+
+SofteningClassOfPartType0  0
+SofteningClassOfPartType1  0
+SofteningClassOfPartType2  1
+SofteningClassOfPartType3  2
+SofteningClassOfPartType4  3
+SofteningClassOfPartType5  3
+
+
+
+%----- Subfind
+
+DesLinkNgb             20
+
+%----- SPH
+ArtBulkViscConst       1.0
+MinEgySpec             0
+InitGasTemp            0
+
+

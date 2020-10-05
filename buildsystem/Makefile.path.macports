@@ -1,0 +1,10 @@
+GSL_INCL   = -I/opt/local/include 
+GSL_LIBS   = -L/opt/local/
+FFTW_INCL  = -I/opt/local/include
+FFTW_LIBS  = -L/opt/local/lib
+HDF5_INCL  = -I/opt/local/include
+HDF5_LIBS  = -L/opt/local/lib  
+HWLOC_INCL = -I/opt/local/include
+HWLOC_LIBS = -L/opt/local/lib 
+MAPS_INCL  = -I/opt/local/include/healpix_cxx 
+MAPS_LIBS  = -L/opt/local/lib 

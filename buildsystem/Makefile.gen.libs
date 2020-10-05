@@ -1,0 +1,8 @@
+GSL_INCL   = -I$(LIB_DIR)/gsl/build/include
+GSL_LIBS   = -L$(LIB_DIR)/gsl/build/lib
+FFTW_INCL  = -I$(LIB_DIR)/fftw3/build/include
+FFTW_LIBS  = -L$(LIB_DIR)/fftw3/build/lib
+HDF5_INCL  = -I$(LIB_DIR)/hdf5/build/include
+HDF5_LIBS  = -L$(LIB_DIR)/hdf5/build/lib  
+HWLOC_INCL = -I$(LIB_DIR)/hwloc/build/include
+HWLOC_LIBS = -L$(LIB_DIR)/hwloc/build/lib

@@ -1,0 +1,8 @@
+GSL_INCL   =  -I/usr/common/pdsoft/appl/gsl/include
+GSL_LIBS   =  -L/usr/common/pdsoft/appl/gsl/lib
+FFTW_INCL  =
+FFTW_LIBS  =
+HDF5_INCL  =  -I$(HDF5_HOME)/include
+HDF5_LIBS  =  -L$(HDF5_HOME)/lib 
+HWLOC_INCL =
+HWLOC_LIBS = 

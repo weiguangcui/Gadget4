@@ -1,0 +1,17 @@
+# Select Target Computer 
+#
+# Please copy this file to Makefile.systype and uncomment your
+# system. Don't commit changes to this file unless you add support for
+# a new system.
+
+#SYSTYPE="Generic-gcc"
+#SYSTYPE="Generic-intel"
+#SYSTYPE="Generic-gcc-single"
+#SYSTYPE="Generic-intel-single"
+#SYSTYPE="Darwin"
+#SYSTYPE="Magny"
+#SYSTYPE="gcc-paranoia"	
+#SYSTYPE="libs"
+#SYSTYPE="hydra"
+#SYSTYPE="bwforcluster"
+

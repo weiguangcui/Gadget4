@@ -1,0 +1,11 @@
+GSL_INCL   =  -I$(GSL_BASE)/include
+GSL_LIBS   =  -L$(GSL_BASE)/lib  -Xlinker -R -Xlinker $(GSL_BASE)/lib
+FFTW_INCL  =  -I$(FFTW_BASE)/include
+FFTW_LIBS  =  -L$(FFTW_BASE)/lib  -Xlinker -R -Xlinker $(FFTW_BASE)/lib
+HDF5_INCL  =  -I$(HDF5_BASE)/include
+HDF5_LIBS  =  -L$(HDF5_BASE)/lib -Xlinker -R -Xlinker $(HDF5_BASE)/lib
+HWLOC_INCL =  
+HWLOC_LIBS =  
+MAPS_INCL  =  -I/dss/dsshome1/04/lu79qih9/Libs/SuperMUC-NG-GCC/include
+MAPS_LIBS  =  -L/dss/dsshome1/04/lu79qih9/Libs/SuperMUC-NG-GCC/lib  -Xlinker -R -Xlinker /dss/dsshome1/04/lu79qih9/Libs/SuperMUC-NG-GCC/lib
+

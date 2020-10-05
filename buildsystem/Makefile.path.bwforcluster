@@ -1,0 +1,10 @@
+GSL_INCL   =  -I/home/hd/hd_hd/hd_mm002/libraries/include
+GSL_LIBS   =  -L/home/hd/hd_hd/hd_mm002/libraries/lib  -Xlinker -R -Xlinker /home/hd/hd_hd/hd_mm002/libraries/lib
+FFTW_INCL  =  -I/home/hd/hd_hd/hd_mm002/libraries/include
+FFTW_LIBS  =  -L/home/hd/hd_hd/hd_mm002/libraries/lib  -Xlinker -R -Xlinker /home/hd/hd_hd/hd_mm002/libraries/lib
+HDF5_INCL  =  -I/home/hd/hd_hd/hd_mm002/libraries/include
+HDF5_LIBS  =  -L/home/hd/hd_hd/hd_mm002/libraries/lib  -Xlinker -R -Xlinker /home/hd/hd_hd/hd_mm002/libraries/lib
+HWLOC_INCL =  -I/home/hd/hd_hd/hd_mm002/libraries/include
+HWLOC_LIBS =  -L/home/hd/hd_hd/hd_mm002/libraries/lib  -Xlinker -R -Xlinker /home/hd/hd_hd/hd_mm002/libraries/lib
+MAPS_INCL  =  -I/home/hd/hd_hd/hd_bd123/Libs/include
+MAPS_LIBS  =  -L/home/hd/hd_hd/hd_bd123/Libs/lib
