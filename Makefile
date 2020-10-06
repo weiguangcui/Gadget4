@@ -131,12 +131,12 @@ endif
 
 ifeq ($(SYSTYPE), "Generic-gcc-single")
 include buildsystem/Makefile.comp.gcc
-include buildsystem/Makefile.gen.singlelibs
+include buildsystem/Makefile.gen.libs
 endif
 
 ifeq ($(SYSTYPE), "Generic-intel-single")
 include buildsystem/Makefile.comp.gcc-paranoia
-include buildsystem/Makefile.gen.singlelibs
+include buildsystem/Makefile.gen.libs
 endif
 
 ifeq ($(SYSTYPE),"Darwin")
