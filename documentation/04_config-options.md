@@ -159,7 +159,7 @@ the other dimensions should be set to zero.
 In case periodic boundary conditions are used (i.e. `PERIODIC` is on),
 one can stretch the x-dimension of the box relative to `BoxSize` by
 the factor `1 / 2^LONG_X_BITS`. A setting equal to 2 like in this
-example, would hence mean thet the boxsize in the x-direction will be
+example, would hence mean that the boxsize in the x-direction will be
 `BoxSize/4`.
 
 -------
@@ -393,7 +393,7 @@ in the way the force matching region is treated.
 
 **NTAB** = 128
 
-This can used define the size of the short-range lookup table. The
+This can be used to define the size of the short-range lookup table. The
 default should normally be sufficient to have negligible influence on
 the obtained force accuracy.
 
@@ -682,7 +682,7 @@ SPH viscosity options                                     {#visc}
 
 **TIMEDEP_ART_VISC**
 
-Enables time dependent viscosity.
+Enables-time dependent viscosity.
 
 -------
 
@@ -714,7 +714,7 @@ Note that metal-line cooling is not included in this module.
 **STARFORMATION**
 
 If this is enabled, the code can create new star particles out of SPH
-particles. The default star formation model that is implement
+particles. The default star formation model that is implemented
 corresponds to a basic varient of the sub-resolution multi-phase model
 described in Springel & Hernquist (2003,
 <http://adsabs.harvard.edu/abs/2003MNRAS.339..289S>). By default, the
@@ -1114,7 +1114,7 @@ particles are arranged in the order of the groups and subhalos.
 
 **SUBFIND_HBT**
 
-This enabled an implementation of the hierarchical bound tracing
+This enables an implementation of the hierarchical bound tracing
 algorithm, where subhalo candidates are identified with the help of a
 substructure catalogue from a precious time instead of doing this with
 density excursion sets. This option requires both `SUBFIND` and
@@ -1382,7 +1382,7 @@ however.
 
 Another issue with some MPI-libraries is that they may use quite a bit
 of internal storage for carrying out MPI_Allgatherv. If this turns out
-to be problem, one can set this option. The code will then replace all
+to be a problem, one can set this option. The code will then replace all
 uses of MPI_Allgatherv() with a simpler communication pattern that
 uses hypercubes with MPI_Sendrecv as a work-around.
 

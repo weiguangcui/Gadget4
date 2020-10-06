@@ -25,7 +25,7 @@ file `make-examples.sh`, with one line with a suitable call of `make`
 for each of the examples. Copying the corresponding line and pasting
 it as a command into the main directory of the code will then build
 the executable for the example. Executing the full shell script will
-compile all the examples at once (provided there are no complilation
+compile all the examples at once (provided there are no compilation
 problems, of course).
 
 Below, we describe each of the examples and also give a few
@@ -103,7 +103,7 @@ undergoes star formation.
 
 Radiative cooling due to helium and hydrogen is included. Star
 formation and feedback is modelled with a simple subgrid
-treatment. The simulation in corresponds closely to the model of a
+treatment. The simulation corresponds closely to the model of a
 galaxy collisions considered in the code paper.
 
 
@@ -179,8 +179,8 @@ high-resolution zone there are 140005 particles, surrounded by a
 boundary region with two layers of different softening, the inner one
 containing 39616 particles, and the outer one 96877 particles.
 
-Not that while this simulation is a cosmological simulation in
-comoving coordinates, it is unusual in that it doesn't use perdiodic
+Note that while this simulation is a cosmological simulation in
+comoving coordinates, it is unusual in that it doesn't use periodic
 boundary conditions but rather follows a sphere of matter around the
 origin with average density equal to the mean density. This technique
 is not very commonly used any more.

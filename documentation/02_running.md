@@ -51,7 +51,7 @@ GADGET-4 needs the following non-standard libraries for compilation:
    libraries nowadays in any cases enable pinning by default.
 
 6. **vectorclass** : This is a C++ library that the code utilizes when
-   explicit vectorization via the AVX instruction set is enabled in a
+   explicit vectorization via the AVX instruction set is enabled in
    the SPH compute kernels. This is then implemented with the
    vectorclass library by Agner Fog. For simplicity, the source code
    of this library (which takes the form of C++ header files) is
@@ -392,7 +392,7 @@ otherwise the simulation will restart from scratch, i.e. by reading in
 the initial conditions again! Also note that upon restarting from
 restart-files, the number of MPI ranks used for a simulation cannot be
 changed; if this is attempted an error message is issued. Note that
-restart files can not necessarily be transferred from on computer
+restart files can not necessarily be transferred from one computer
 system to another one, or reused when the compiler is changed, because
 the layout and padding of structures stored in the binary restart
 files may then be different. Hence, if you want to continue a
