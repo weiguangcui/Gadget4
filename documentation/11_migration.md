@@ -51,9 +51,9 @@ General code-style principles
   hidden file ".clang-format" in the code's main directory. Running
   there something like
 
-  ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
   clang-format-mp-6.0 -style=file -i src/*/*
-  ~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
   should then make sure that all your source file(s) have a consistent
   indention and code formatting.
@@ -68,7 +68,7 @@ General code-style principles
   start with an upper case character. Global variable names are nouns,
   with words separated by mixed lower/upper case characters, and
   contain no underscores. Use abbreviations that are clear,
-  e.g. NumForceCalculations. If you have to use a global variable in
+  e.g. `NumForceCalculations`. If you have to use a global variable in
   your own code class or module, try to restrict its scope to the
   classes or files of your module through appropriate declarations.
 
@@ -78,8 +78,16 @@ General code-style principles
   declaring them inside a block where they are needed. Generally
   define them as close as possible to where they are needed for the
   first time. Declaration and initialization should be combined in one
-  command where possible, e.g. int n = get_particle_count(); instead
-  of int n; n = get_particle_count();
+  command where possible, e.g.
+~~~~~~~~~~~~~
+int n = get_particle_count();
+~~~~~~~~~~~~~
+  instead of
+~~~~~~~~~~~~~
+int n;
+  ...
+n = get_particle_count();
+~~~~~~~~~~~~~
 
 - Avoid repetition of code, i.e. do not use cut & paste to implement
   the same or similar functionality multiple times. This is always am
@@ -110,10 +118,9 @@ General code-style principles
        int MyGlobalCount;   /*!< counts the number of timesteps */
 ~~~~~~~~~~~~~
 
-  Functions should be preceded by a brief explanation of what the
+- Functions should be preceded by a brief explanation of what the
   function does, including instruction, if any, about how the function
   may be used, e.g.:
-
 ~~~~~~~~~~~~~
       /*!
        * Insert the point P[i] into the partice list. Start
@@ -124,17 +131,16 @@ General code-style principles
          ...
        }
 ~~~~~~~~~~~~~
-
-  You do not need to state here *how* the function achieves what it
+	   
+- You do not need to state here *how* the function achieves what it
   does; this can be stated if appropriate in comments in the function
   body. There, avoid superfluous comments that just reflect what's
-  obvious from the code anyway, like
-
+  obvious from the code anyway, like 
 ~~~~~~~~~~~~~
        do_domain_decomposition();   /* call domain decomposition */
 ~~~~~~~~~~~~~
-
-  Instead, focus on comments that help one to quickly understand/check
+	   
+- Instead, focus on comments that help one to quickly understand/check
   what the code tries to do at an algorithmic level. If complicated
   formulae are implemented, try to include in a comment a reference to
   the equation that is implemented.
@@ -314,7 +320,7 @@ essentially unchanged.
 
 
 Notes on memory consumption of GADGET-4
----------------------------------------
+=======================================
 
 
 GADGET-4 uses an internal memory manager where a large block of memory
@@ -344,7 +350,7 @@ needed to store one SPH particle.
 
 
 Notes on various limits in GADGET-4
------------------------------------
+===================================
 
 - Maximum number of particles per MPI-rank is restricted to 2^31 ~ 2
   Billion
