@@ -54,7 +54,7 @@ an error message will be produced.
 
 **SnapshotFileBase**  snapshot 
 
-From this string, the name of the snapshot files is derived by adding
+From this string, the name of the snapshot file is derived by adding
 an underscore, and the number of the snapshot in a 3-digits format. If
 `NumFilesPerSnapshot > 1` , each snapshot is distributed into several
 files, with a group of processors writing their data to one of the
@@ -75,7 +75,7 @@ this simple binary format (which has been available from GADGET-2
 onwards). A value of 3 selects the use of HDF5 instead, which is the
 strongly recommended format. This is because this data format allows a
 simple browsing of its contents, access to individual data items is
-easily possible though the name of the data set, conversions between
+easily possible through the name of the data set, conversions between
 endianness and single/double precision are automatically done if
 needed, and pesky I/O errors (like reading too many items from a given
 data set) are detected reliably. HDF5 output has been introduced for
@@ -214,7 +214,7 @@ have a slightly different syntax or may not be available at all
 The GADGET-4 code provides quite verbose output in its log-files, with
 each timestep producing some entries. If you carry out a simulation
 with a very large number of very short timesteps and you have a slow
-or busy filesystems, this I/O can slow down the code if the filesystem
+or busy filesystem, this I/O can slow down the code if the filesystem
 buffers are flushed to disk after every output. With this parameter,
 the flush operations are only carried out with a reduced frequency, in
 the above example every 120 seconds. This should avoid any significant
@@ -347,7 +347,7 @@ parameter has to be set to zero.
 **OmegaBaryon**  0.04
 
 Baryon density in units of the critical density at `z=0`. This is not
-explicitly used in the time integration of GADGET-4, but the paramater
+explicitly used in the time integration of GADGET-4, but the parameter
 is relevant when initial conditions are created, or when dark
 matter-only initial conditions are outfitted with gas particles upon
 code start-up with the `GENERATE_GAS_IN_ICS` option.
@@ -396,7 +396,7 @@ length unit to 1.0 kpc/h.
 **UnitMass_in_g**       1.989e43
 
 This sets the internal mass unit in g/h, where H_0 = 100 h
-km/s/Mpc. The above choice is convenient for cosmology, it as sets the
+km/s/Mpc. The above choice is convenient for cosmology, as it sets the
 mass unit to 10^10 M_sun/h.
 
 -------
@@ -597,8 +597,8 @@ synchronization time, where `N` is the total particle number. Note
 that the gravitational tree is always reconstructed in every step,
 whereas the neighbor search tree is only reconstructed in case a
 domain decomposition is done for the current step. Otherwise it
-expands its nodes as needed to accomodate all the SPH particles that
-where grouped into each node.
+expands its nodes as needed to accommodate all the SPH particles that
+were grouped into each node.
 
 -------
 
@@ -730,7 +730,7 @@ certain temperature if `InitGasTemp > 0` and if at the same time the
 temperature of the gas particles in the initial conditions file was
 found to be zero, otherwise the initial gas temperature is left at the
 value stored in the IC file. If the temperature is set through this
-paramater, and if it is below 10^4 K, a mean molecular weight
+parameter, and if it is below 10^4 K, a mean molecular weight
 corresponding to neutral gas of primordial abundance is assumed,
 otherwise complete ionisation is assumed.
 
@@ -1082,7 +1082,7 @@ formation model described in Springel & Hernquist (2003,
 **MaxSfrTimescale**    1.5
 
 Gas consumption time scale in internal time units at the threshold density for
-star formation. This the parameter t_0^star in the above paper.
+star formation. This sets the parameter t_0^star in the above paper.
 
 -------
 

@@ -84,7 +84,7 @@ the blocks may change from snapshot to snapshot. Also, a given
 particle may not always be stored in the snapshot file with the same
 sub-number among the files belonging to one set of snapshot files.
 This is because particles may move around from one processor to
-another during the coarse of a parallel simulation. In order to trace
+another during the course of a parallel simulation. In order to trace
 a particle between different outputs, one therefore has to resort to
 the particle IDs, which are intended to be used to label particles
 uniquely. (In fact, the uniqueness of the IDs in the initial
@@ -116,7 +116,7 @@ particle number was stored as a 32-bit integer, such that simulations
 exceeding particle numbers of a couple of billion needed as special
 (and ugly) extension of the header, where the high-order bits in the
 particle numbers where stored in a separate entry. In addition,
-cosmological paramaters like `Omega0` and various flags informing
+cosmological parameters like `Omega0` and various flags informing
 about enabled/disabled code features were redundantly stored there as
 well. Finally, the total header length was filled to a total length of
 exactly 256 bytes, with a view to reserve the extra space for future

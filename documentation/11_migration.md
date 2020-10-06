@@ -5,7 +5,7 @@ Guide to code changes
 [TOC]
 
 In the following, we give a set of assorted hints and recommendations
-about modifying and/or extending the code. We also commment about some
+about modifying and/or extending the code. We also comment about some
 differences with respect to GADGET-2/3 in terms of code usage and its
 architecture.
 
@@ -90,7 +90,7 @@ n = get_particle_count();
 ~~~~~~~~~~~~~
 
 - Avoid repetition of code, i.e. do not use cut & paste to implement
-  the same or similar functionality multiple times. This is always am
+  the same or similar functionality multiple times. This is always an
   indication that a new function is in order here. Break up long
   functions into smaller more manageable pieces.
 

@@ -39,8 +39,7 @@ During a run, the code outputs frequent log-message what is currently
 done by GADGET-4. Usually, the corresponding lines begin with a
 capitalized key-word that identifies the corresponding code part. For
 example, lines beginning with "DOMAIN:" refer to information issued by
-the domain decomposition, lines starting with "PM-PERIODIC:" will be
-for identified with a the periodic FFT-based computation of the
+the domain decomposition, lines starting with "PM-PERIODIC:" will be identified with the periodic FFT-based computation of the
 long-range gravitational force. It can be useful to filter the file
 with grep for one of these phrases to get a clearer picture of what is
 happening in a particular code part.
@@ -289,7 +288,7 @@ The values reported under grav-balance and hydro-balance inform about
 the relative success of the domain decomposition to reach the desired
 balance among multiple different quantities. The first number gives
 the imbalance factor if only the current step would have to be
-executed. This is however only the full story if a another domain
+executed. This is however only the full story if another domain
 decomposition will be carried out in the next step immediately. If
 this is not the case, several steps need to be averaged appropriately,
 and the relative slow-down of the residual imbalance in the present
@@ -686,7 +685,7 @@ sfr.txt                                    {#sfrlog}
 =======
 
 This is only present in simulations with cooling and star
-formation. It can then be used to obtain simple global overview of the
+formation. It can then be used to obtain a simple global overview of the
 total star formation rate in the simulation.
 
 

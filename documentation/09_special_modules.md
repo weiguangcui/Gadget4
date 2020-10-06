@@ -53,7 +53,7 @@ in a given FOF group is singled out as main subhalo in the group. To
 organize the tree(s), a number of pointers for each subhalo need to be
 defined.
 
-Each halo must knows its __descendant__ in the subsequent group
+Each halo must know its __descendant__ in the subsequent group
 catalogue at later time, and the most important step in the merger
 tree construction is determining this link. This can be accomplished
 in two ways with GADGET-4.  Either one enables `MERGERTREE` while a
@@ -128,7 +128,7 @@ power spectra are measured in each case, one for the unmodified
 periodic box, yielding a conventional measurement that extends up to
 close to the Nyquist frequency of the employed Fourier mesh (which is
 set by `PMGRID` ).  The other two are extensions to smaller scales by
-imposing periodicity on some inter devision of the box, with the box
+imposing periodicity on some inter division of the box, with the box
 folded on top of itself. The default value for this folding factor is
 `POWERSPEC_FOLDFAC=16` but this value can be modified if desired by
 overriding it with a configuration option.
