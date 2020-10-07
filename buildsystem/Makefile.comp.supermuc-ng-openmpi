@@ -10,8 +10,3 @@ CFLAGS_VECTOR =
 CPV      =  $(CPP)
 endif
 
-ifeq (NUM_THREADS,$(findstring NUM_THREADS,$(CONFIGVARS)))
-OPTIMIZE +=  -fopenmp
-else
-OPTIMIZE +=  -Wno-unknown-pragmas
-endif

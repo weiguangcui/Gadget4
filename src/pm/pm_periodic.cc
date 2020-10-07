@@ -61,9 +61,6 @@
  * The non-periodic dimension is selected via the GRAVITY_TALLBOX flag. Also in this case, arbitrarily stretched boxes can
  * be used, and one can use PM_ZOOM_OPTIMIZED and/or FFT_COLUMN_BASED if desired.
  *
- * Much of the code is multi-threaded, so there should be some speed-up if OpenMP is used with NUM_THREADS > 1, but the
- * benefit may be limited because the data transfer steps (which weigh in quite heavily) are not accelerated by this.
- *
  * If eight times the particle load per processor exceeds 2^31 ~ 2 billion, one should activate NUMPART_PER_TASK_LARGE.
  * The code will check this condition and terminate if this is violated, so there should hopefully be no severe risk
  * to accidentally forget this.
