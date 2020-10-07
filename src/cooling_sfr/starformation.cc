@@ -192,7 +192,7 @@ void coolsfr::sfr_create_star_particles(simparticles *Sp)
       else
         rate = 0;
 
-      /* compute the cumulative mass of stars (->>> CHECK ME!!!) */
+      /* compute the cumulative mass of stars */
       cum_mass_stars += total_sum_mass_stars;
 
       /* convert to solar masses per yr */

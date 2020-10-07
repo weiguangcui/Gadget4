@@ -78,7 +78,9 @@ void sim::compute_grav_accelerations(int timebin)
       else
         {
           GravTree.DoPM    = 0;
+#if defined(PERIODIC)
           GravTree.DoEwald = 1;
+#endif
         }
 
 #else /* here no PM acceleration is used */
@@ -272,25 +274,34 @@ void sim::gravity_set_oldacc(int timebin)
     }
 }
 
-/* CHECK: shoukd this function still contain the communication of the forces in in Tree.ResultsActiveImported? */
 void sim::gravity_comoving_factors(int timebin)
 {
   particle_data *P = Sp.P;
 
 #ifndef PERIODIC
-#ifndef PMGRID
   if(All.ComovingIntegrationOn)
     {
+      /* here we carry out an integration in comoving coordinates but in a non-periodic space (i.e. the 'big sphere setup') */
       double fac = 0.5 * All.Hubble * All.Hubble * All.Omega0 / All.G;
 
       for(int i = 0; i < Sp.TimeBinsGravity.NActiveParticles; i++)
         {
           int target = Sp.TimeBinsGravity.ActiveParticleList[i];
+
+          double pos[3];
+          Sp.intpos_to_pos(P[target].IntPos, pos); /* converts the integer distance to floating point */
+
           for(int j = 0; j < 3; j++)
-            P[target].GravAccel[j] += fac * P[target].IntPos[j];
+            P[target].GravAccel[j] += fac * pos[j];
+
+#ifdef EVALPOTENTIAL
+          double r2 = 0;
+          for(int k = 0; k < 3; k++)
+            r2 += pos[k] * pos[k];
+          P[target].Potential -= fac * r2;
+#endif
         }
     }
-#endif
 #endif
 
   /*  muliply by G */
@@ -341,46 +352,30 @@ void sim::gravity_comoving_factors(int timebin)
 #endif
 #endif
 
-      if(All.ComovingIntegrationOn)
+      if(All.ComovingIntegrationOn == 0 && All.OmegaLambda != 0)
         {
-#ifndef PERIODIC
-#ifdef EVALPOTENTIAL
-          double fac = -0.5 * All.Omega0 * All.Hubble * All.Hubble;
+#ifdef PERIODIC
+          Terminate(
+              "You specified a periodic simulation in physical coordinates but with a non-zero cosmological constant - this can't be "
+              "run");
+#endif
+          /* Finally, the following factor allows a computation of a cosmological simulation
+               with vacuum energy in physical coordinates */
 
           double pos[3];
           Sp.intpos_to_pos(P[target].IntPos, pos); /* converts the integer distance to floating point */
 
+          double fac = All.OmegaLambda * All.Hubble * All.Hubble;
+
+          for(int j = 0; j < 3; j++)
+            Sp.P[target].GravAccel[j] += fac * pos[j];
+
+#ifdef EVALPOTENTIAL
           double r2 = 0;
           for(int k = 0; k < 3; k++)
             r2 += pos[k] * pos[k];
-          P[target].Potential += fac * r2;
+          P[target].Potential -= 0.5 * fac * r2;
 #endif
-#endif
-        }
-      else
-        {
-          if(All.OmegaLambda != 0)
-            {
-#ifndef PERIODIC
-              /* Finally, the following factor allows a computation of a cosmological simulation
-                   with vacuum energy in physical coordinates */
-
-              double pos[3];
-              Sp.intpos_to_pos(P[target].IntPos, pos); /* converts the integer distance to floating point */
-
-              double fac = All.OmegaLambda * All.Hubble * All.Hubble;
-
-              for(int j = 0; j < 3; j++)
-                Sp.P[target].GravAccel[j] += fac * pos[j];
-
-#ifdef EVALPOTENTIAL
-              double r2 = 0;
-              for(int k = 0; k < 3; k++)
-                r2 += pos[k] * pos[k];
-              P[target].Potential -= 0.5 * fac * r2;
-#endif
-#endif
-            }
         }
     }
 }

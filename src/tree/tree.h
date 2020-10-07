@@ -64,7 +64,6 @@ struct basenode
   unsigned char level; /**< hold the tree level, used to store the side length of node in space efficient way */
   unsigned char sibling_shmrank;
   unsigned char nextnode_shmrank;
-  unsigned char father_shmrank;  // CHECK: can be deleted
 
   std::atomic_flag access;
 

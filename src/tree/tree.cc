@@ -231,7 +231,6 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_construct(voi
       nfreep->level            = 0;
       nfreep->sibling_shmrank  = TreeSharedMem_ThisTask;
       nfreep->nextnode_shmrank = TreeSharedMem_ThisTask;
-      nfreep->father_shmrank   = TreeSharedMem_ThisTask;
 
       for(int j = 0; j < 3; j++)
         nfreep->center[j] = ((MyIntPosType)1) << (BITS_FOR_POSITIONS - 1);
@@ -579,7 +578,6 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_insert_group_
           nfreep->center[1] = ((subintpos[i][1] & centermask) | mask);
           nfreep->center[2] = ((subintpos[i][2] & centermask) | mask);
 
-          nfreep->father_shmrank   = TreeSharedMem_ThisTask;
           nfreep->nextnode_shmrank = TreeSharedMem_ThisTask;
           nfreep->sibling_shmrank  = TreeSharedMem_ThisTask;
 
@@ -746,7 +744,6 @@ int tree<node, partset, point_data, foreign_point_data>::create_empty_nodes(
 
               TopNodes[no].sibling_shmrank  = TreeSharedMem_ThisTask;
               TopNodes[no].nextnode_shmrank = TreeSharedMem_ThisTask;
-              TopNodes[no].father_shmrank   = TreeSharedMem_ThisTask;
             }
 
       /* loop over daughter nodes */
