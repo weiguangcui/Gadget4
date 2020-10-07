@@ -54,7 +54,6 @@ void sph_particle_data::set_velocity_gradients(void)
     }
   else
     {
-      // TODO check
       DivVel  = (dvel[0][0] + dvel[1][1]) / Density;
       CurlVel = fabs((dvel[1][0] - dvel[0][1]) / Density);
     }
@@ -142,7 +141,7 @@ void sph_particle_data::set_viscosity_coefficient(double dt)
   double shockIndicator = -dDivVel_dt > 0 ? -dDivVel_dt : 0;
   double hsml           = Hsml * All.cf_atime;
   double Hsml2          = hsml * hsml;
-  double alpha_tar      = (Hsml2 * shockIndicator) / (Hsml2 * shockIndicator + Csnd * Csnd) * All.ArtBulkViscConst;  // TODO check max
+  double alpha_tar      = (Hsml2 * shockIndicator) / (Hsml2 * shockIndicator + Csnd * Csnd) * All.ArtBulkViscConst;
 
   double DivVel2       = DivVel * DivVel;
   double CurlVel2      = CurlVel * CurlVel;

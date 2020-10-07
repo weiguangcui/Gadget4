@@ -567,20 +567,6 @@ void sim::hydro_force(int step_indicator)
            * routine)
            */
         }
-
-#ifdef TIMEDEP_ART_VISC
-        /*     double csnd_over_h = Sp.SphP[i].Csnd / Sp.SphP[i].Hsml;
-             double f           = fabs(Sp.SphP[i].DivVel) / (fabs(Sp.SphP[i].DivVel) + Sp.SphP[i].CurlVel + 0.0001 * csnd_over_h /
-           NgbTree.fac_mu);
-
-             Sp.SphP[i].Dtalpha =
-                 -(Sp.SphP[i].alpha - All.AlphaMin) * All.DecayTime * 0.5 * Sp.SphP[i].MaxSignalVel / (Sp.SphP[i].Hsml *
-           NgbTree.fac_mu) + f * All.ViscSource * std::max<double>(0.0, -Sp.SphP[i].DivVel); if(All.ComovingIntegrationOn)
-               {
-                 Sp.SphP[i].Dtalpha /= (All.cf_hubble_a * All.Time * All.Time);
-               }*/
-        // TODO check
-#endif
     }
 
   if(step_indicator == SECOND_HALF_STEP)
