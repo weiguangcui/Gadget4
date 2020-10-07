@@ -297,31 +297,7 @@ void fof<partset>::subfind_potential_compute(domain<partset> *SubDomain, int num
   /* create an object for handling the communication */
   potdata_comm<gravtree<partset>, domain<partset>, partset> commpattern{SubDomain, &FoFGravTree, Tp};
 
-  //  double t0 = Logs.second();
-
   commpattern.execute(num, darg, MODE_DEFAULT);
-
-  /*
-  double t1 = Logs.second();
-
-  double costtotal = 0, costsum, npart = num, npartsum;
-  for(int i = 0; i < NUM_THREADS; i++)
-    costtotal += commpattern.Thread[i].Interactions;
-
-  MPI_Reduce(&costtotal, &costsum, 1, MPI_DOUBLE, MPI_SUM, 0, SubDomain->Communicator);
-  MPI_Reduce(&npart, &npartsum, 1, MPI_DOUBLE, MPI_SUM, 0, SubDomain->Communicator);
-  if(SubDomain->ThisTask == 0)
-    {
-      int task;
-      MPI_Comm_rank(Communicator, &task);
-
-      double dt = Logs.timediff(t0, t1);
-
-      if(task == 0)
-        printf("SUBFIND_POTENTIAL_COMPUTE: ThisTask=%d  npartsum=%g  took=%g   ia/part=%g  part/sec=%g\n",
-               task, npartsum, dt, costsum/npartsum, npartsum/dt);
-    }
-    */
 }
 
 /* now make sure that the following classes are really instantiated, otherwise we may get a linking problem */
