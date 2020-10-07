@@ -15,7 +15,7 @@
 #include "../mpi_utils/shared_mem_handler.h"
 #include "../ngbtree/ngbtree.h"
 
-#define MAX_NGBS 100000
+#define MAX_NGBS 500000
 
 class sph : public ngbtree
 {
