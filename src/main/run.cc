@@ -36,11 +36,6 @@
 #include "../sort/parallel_sort.h"
 #include "../system/system.h"
 
-/* TODO:
- * - modify restart code to still support continuation of run beyond a new MaxTime from restart files.
- * - consolidate global variables into ones that need to be kept across a restart, and ones that don't.
- */
-
 /*!
  * Main driver routine for advancing the simulation forward in time.
  * The loop terminates when the cpu-time limit is reached, when a `stop' file

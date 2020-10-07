@@ -145,7 +145,6 @@ void myMPI_Alltoallv_new(void *sendbuf, int *sendcnt, int *sdispls, MPI_Datatype
       int *disp_at_sender  = (int *)Mem.mymalloc("disp_at_sender", nranks * sizeof(int));
       disp_at_sender[rank] = sdispls[rank];
       MPI_Win win;
-      // TODO:supply info object with "no_lock"
       MPI_Win_create(sdispls, nranks * sizeof(MPI_INT), sizeof(MPI_INT), MPI_INFO_NULL, comm, &win);
       MPI_Win_fence(0, win);
       for(int i = 1; i < nranks; ++i)

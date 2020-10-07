@@ -220,7 +220,7 @@ double ngenic::ngenic_tk_eh(double k) /* from Martin White */
   omegam = All.Omega0;
   ombh2  = All.OmegaBaryon * All.HubbleParam * All.HubbleParam;
 
-  if(All.OmegaBaryon == 0)  // TODO AB: remove this???
+  if(All.OmegaBaryon == 0)
     ombh2 = 0.04 * All.HubbleParam * All.HubbleParam;
 
   k *= (3.085678e24 / All.UnitLength_in_cm); /* convert to h/Mpc */
