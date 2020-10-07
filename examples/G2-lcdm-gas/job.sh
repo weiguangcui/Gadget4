@@ -1,6 +1,6 @@
 #!/bin/bash 
-#SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=vspringel@mpa-garching.mpg.de
+##SBATCH --mail-type=BEGIN,END,FAIL
+##SBATCH --mail-user=harry.potter@hogwarts.edu
 #SBATCH --time=1:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=16
