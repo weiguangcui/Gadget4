@@ -83,13 +83,8 @@ void domain<partset>::domain_do_local_refine(int n, int *list)
 
   allreduce_sum<double>(worklist, 8 * n, Communicator);
   allreduce_sum<long long>(countlist, 8 * n, Communicator);
-  /*
-  MPI_Allreduce(MPI_IN_PLACE, worklist, 8 * n, MPI_DOUBLE, MPI_SUM, Communicator);
-  MPI_Allreduce(MPI_IN_PLACE, countlist, 8 * n, MPI_LONG_LONG, MPI_SUM, Communicator);
-*/
 
   /* store the results in the corresponding top nodes */
-
   for(int k = 0; k < n; k++)
     {
       int i = list[k];

@@ -49,9 +49,6 @@ double mycxxsort(T *begin, T *end, Tcomp comp)
 
   Mem.myfree(buf);
 
-  // FIXME: verification, temporary
-  //  if (!std::is_sorted(begin,end,comp)) Terminate ("sort error!");
-
   return Logs.timediff(t0, Logs.second());
 }
 

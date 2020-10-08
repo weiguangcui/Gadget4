@@ -271,14 +271,4 @@ class IO_Def : public io_streamcount, public setcomm
 #define FLAG_ZELDOVICH_ICS 1
 #define FLAG_SECOND_ORDER_ICS 2
 
-/* functions visible in the whole code */
-
-/*
-
-  void test_io_bandwidth(void);
-  void dump_particles(void);
-
-
-*/
-
 #endif

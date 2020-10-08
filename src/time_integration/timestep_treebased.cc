@@ -115,24 +115,6 @@ inline int sph::sph_treetimestep_evaluate_particle_node_opening_criterion(pinfo 
   if(right[2] < 0 || left[2] > 0)
     return NODE_DISCARD;
 
-  /*
-  double ctr[3];
-  Tp->intpos_to_pos(nop->center.da, ctr);
-
-  MyIntPosType halflen = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - nop->level);
-
-  vector<MyReal> dxyz;
-  Tp->nearest_image_intpos_to_pos(nop->center.da, pdat.searchcenter, dxyz.da);
-
-  double r2 = dxyz.r2();
-
-  printf("level=%d  center=(%g|%g|%g)  dist=%g lenhalf=%g   dt*vsig=%g \n ", nop->level, ctr[0], ctr[1], ctr[2], sqrt(r2),
-
-         halflen * Tp->FacIntToCoord,
-
-         SphP->CurrentMaxTiStep * vsig);
-*/
-
   return NODE_OPEN;
 }
 

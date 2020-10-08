@@ -50,13 +50,7 @@ int myMPI_Sendrecv(void *sendb, size_t sendcount, MPI_Datatype sendtype, int des
       if(sendcount > count_limit)
         {
           send_now = count_limit;
-          /*
-             if(iter == 0)
-             {
-             printf("Imposing size limit on MPI_Sendrecv() on task=%d (send of size=%lld)\n", ThisTask, (long long) sendcount *
-             size_sendtype); myflush(stdout);
-             }
-           */
+
           iter++;
         }
       else

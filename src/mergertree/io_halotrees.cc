@@ -121,18 +121,6 @@ halotrees_io::halotrees_io(mergertree *MergerTree_ptr, MPI_Comm comm, int format
   init_field("TRIX", "TreeIndex", MEM_INT, FILE_INT, SKIP_ON_READ, 1, A_H, &MergerTree->Halos[0].TreeIndex, NULL, TREEHALOS, 0, 0, 0,
              0, 0, 0, 0, true);
 
-  /* we don't need to store the links in terms of the global subhalo numbers for full timeslices */
-  /*
-  init_field("UGRN", "UniqueGroupNr", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_H, &MergerTree->Halos[0].UniqueGroupNr, NULL,
-             TREEHALOS, 0, 0, 0, 0, 0, 0, 0);
-  init_field("DESC", "DescSubhaloNr", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_H, &MergerTree->Halos[0].DescSubhaloNr, NULL,
-             TREEHALOS, 0, 0, 0, 0, 0, 0, 0);
-  init_field("NEXT", "NextProgSubhaloNr", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_H, &MergerTree->Halos[0].NextProgSubhaloNr, NULL,
-             TREEHALOS, 0, 0, 0, 0, 0, 0, 0);
-  init_field("FRST", "FirstProgSubhaloNr", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_H, &MergerTree->Halos[0].FirstProgSubhaloNr, NULL,
-             TREEHALOS, 0, 0, 0, 0, 0, 0, 0);
-*/
-
   /**** output times */
 
   init_field("REDS", "Redshift", MEM_DOUBLE, FILE_DOUBLE, SKIP_ON_READ, 1, A_CT, &MergerTree->CatTimes[0].Redshift, NULL, TREETIMES, 0,

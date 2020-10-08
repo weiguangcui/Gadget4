@@ -217,11 +217,6 @@ class generic_comm
 
     sprintf(callorigin, "%s|%d|", file, line);
 
-    /*
-     mpi_printf("GENERIC: file %s, line %d: MinSpace = %g MB  NTopleaves = %d  ExportSpace = %g MB\n", file, line,
-     MinSpace / (1024.0 * 1024.0), D->NTopleaves, ExportSpace / (1024.0 * 1024.0));
-     */
-
     if(ExportSpace < MinSpace)
       {
         Mem.dump_memory_table();
@@ -248,8 +243,7 @@ class generic_comm
 
     Thread.PartList = (data_partlist *)Mem.mymalloc_movable_g(&Thread.PartList, "PartList", ExportSpace);
     /* note: the NodeList array will be attached to the end of this buffer, growing backwards */
-    /* Thread[i].NodeList = (data_nodelist *) (((char *) Thread[i].PartList) + InitialSpace);
-     */
+
     Thread.Ngblist     = (int *)Mem.mymalloc_movable_g(&Thread.Ngblist, "Ngblist", Tp->NumPart * sizeof(int));
     Thread.Shmranklist = (int *)Mem.mymalloc_movable_g(&Thread.Shmranklist, "Shmranklist", Tp->NumPart * sizeof(int));
     Thread.Exportflag  = Exportflag;

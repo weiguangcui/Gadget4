@@ -295,17 +295,6 @@ void fof<partset>::subfind_hbt_single_group(domain<partset> *SubDomain, domain<p
        */
       mycxxsort(all_candidates, all_candidates + totcand, subfind_hbt_compare_subcand_summedprevlen);
 
-      if(maxlen_candidate.SubhaloNr != all_candidates[totcand - 1].SubhaloNr)
-        {
-          /*
-          printf(
-              "SUBFIND_HBT:  Made a different decision on largest on task=%d:  select one with len=%lld over len=%lld because "
-              "sumprevlen=%lld is bigger than %lld\n",
-              ThisTask, (long long)all_candidates[totcand - 1].len, (long long)maxlen_candidate.len,
-              (long long)all_candidates[totcand - 1].summedprevlen, (long long)maxlen_candidate.summedprevlen);
-              */
-        }
-
       totcand--;
       for(int k = 0; k < NumPartGroup; k++)
         if(Tp->PS[IndexList[k]].SubhaloNr == all_candidates[totcand].SubhaloNr)

@@ -44,13 +44,4 @@
     fclose(fd__);                                                                                                                \
   }
 
-/*! \brief A wrapper for the printf() function
- *
- *  This macro has the same functionalities of the standard printf()
- *  function. However, data is written to the standard output only for
- *  the task with rank 0
- *
- *  \param fmt string that contains format arguments
- */
-
 #endif

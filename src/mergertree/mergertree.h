@@ -565,10 +565,5 @@ class mergertree : public setcomm
   void halotrees_select_interior_min_newtreeid(int mode, tlink *treehalos, long long totnsubs);
 };
 
-/* In the following structure, we accumulate the main result of this routine, namely for each previous
- * subhalo (identified through PrevSubhaloNr), the number of the descendant subhalo (DescSubhaloNr) in
- * the present, newly calculated subhalo catalogue. MaxScore is a helper variable that gives the score
- * of the presently associated descendant. If there is no descendant, DescSubhaloNr has the value -1 (check). */
-
 #endif
 #endif
