@@ -253,7 +253,6 @@ void pm_periodic::pmforce_zoom_optimized_prepare_density(int mode, int *typelist
   large_numpart_type num_on_grid = ((large_numpart_type)NSource) << 3;
 
   /* bring the part-field into the order of the accessed cells. This allows the removal of duplicates */
-  // mycxxsort(part_sortindex, part_sortindex +  num_on_grid, pm_periodic_compare_sortindex, part);
 
   mycxxsort(part_sortindex, part_sortindex + num_on_grid, pm_periodic_sortindex_comparator(part));
 

@@ -78,20 +78,40 @@ void sph::init_entropy(void)
   Foreign_Points = (foreign_sphpoint_data *)Mem.mymalloc_movable(&Foreign_Points, "Foreign_Points",
                                                                  MaxForeignPoints * sizeof(foreign_sphpoint_data));
 
-  tree_initialize_leaf_node_access_info();
 
-  max_ncycles = 0;
-
-  prepare_shared_memory_access();
 
   double tstart = Logs.second();
+
+  int global_left_particles = 0;
+
+  MPI_Allreduce(&ndensities, &global_left_particles, 1, MPI_INT, MPI_SUM, D->Communicator);
 
   do
     {
       double t0 = Logs.second();
 
+ /*  Since EntropyToInvGammaPred of remote particles can change, we have to import the particles in every iteration */
+
+      MaxForeignNodes  = nspace;
+      MaxForeignPoints = 8 * nspace;
+      NumForeignNodes  = 0;
+      NumForeignPoints = 0;
+
+      sum_NumForeignNodes  = 0;
+      sum_NumForeignPoints = 0;
+
+      tree_initialize_leaf_node_access_info();
+
+      max_ncycles = 0;
+
+      prepare_shared_memory_access();
+
       /* now do the primary work with this call */
       densities_determine(ndensities, targetList);
+
+      MPI_Allreduce(MPI_IN_PLACE, &max_ncycles, 1, MPI_INT, MPI_MAX, D->Communicator);
+
+      cleanup_shared_memory_access();
 
       /* do final operations on results */
 
@@ -132,6 +152,8 @@ void sph::init_entropy(void)
 
       ndensities = npleft;
 
+      MPI_Allreduce(&ndensities, &global_left_particles, 1, MPI_INT, MPI_SUM, D->Communicator);
+
       double t1 = Logs.second();
 
       if(npleft > 0)
@@ -147,13 +169,11 @@ void sph::init_entropy(void)
       else
         D->mpi_printf("SPH-INIT-ENTROPY: ngb iteration %4d: took %8.3f\n", ++iter, Logs.timediff(t0, t1));
     }
-  while(ndensities > 0);
+  while(global_left_particles > 0);
 
-  MPI_Allreduce(MPI_IN_PLACE, &max_ncycles, 1, MPI_INT, MPI_MAX, D->Communicator);
 
   TIMER_STOP(CPU_DENSITY);
 
-  cleanup_shared_memory_access();
 
   /* free temporary buffers */
 
