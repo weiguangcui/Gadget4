@@ -54,10 +54,6 @@ void domain<partset>::domain_resize_storage(int count_get_total, int count_get_s
       int maxpartsphNew = max_sphload / (1.0 - 2 * ALLOC_TOLERANCE);
       if(option_flag == 2)
         {
-          /*
-          if(maxpartsphNew > NgbTree.MaxPart)
-            ngb_treemodifylength(maxpartsphNew - NgbTree.MaxPart);
-          */
           Terminate("need to reactivate this");
         }
       Tp->reallocate_memory_maxpartsph(maxpartsphNew);
@@ -79,9 +75,6 @@ void domain<partset>::domain_countToGo(int *toGoDM, int *toGoSph)
   for(int n = 0; n < Tp->NumPart; n++)
     {
       int no = n_to_no(n);
-
-      // FIXME: Why is this check to stay on local domain disabled?
-      //        if(TaskOfLeaf[no] != ThisTask)
 
       if(Tp->P[n].getType() == 0)
         toGoSph[TaskOfLeaf[no]]++;

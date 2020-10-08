@@ -100,12 +100,7 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild(int ninsert, 
               if(newvalue < oldvalue)
                 {
                   treefree();
-                  /*
-                     D->mpi_printf("TREE: max_numnodes=%d  MaxNodes=%d D->NTopnodes=%d\n", max_numnodes, MaxNodes,
-                     D->NTopnodes);
-                     D->mpi_printf("TREE: Decreasing TreeAllocFactor, new value=%g, old value=%g\n", newvalue,
-                     oldvalue);
-                  */
+
                   All.TreeAllocFactor = newvalue;
                   flag                = -1;
                   treeallocate(Tp->NumPart, Tp, D);
@@ -1188,11 +1183,6 @@ void tree<node, partset, point_data, foreign_point_data>::tree_fetch_foreign_nod
 
                       nop->nextnode         = pfirst;
                       nop->nextnode_shmrank = Shmem.Island_ThisTask;
-
-                      //                      if(nop->cannot_be_opened_locally == 0)  // don't remove this: acts a barrier to prevent
-                      //                      the compiler from
-                      //                        Terminate("bummer");                  // reordering the store operation on
-                      //                        'cannot_be_opened_locally'
 
                       nop->cannot_be_opened_locally.store(0, std::memory_order_release);
 

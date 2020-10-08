@@ -717,33 +717,11 @@ void domain<simparticles>::domain_init_sum_cost(void)
 
 #if defined(LIGHTCONE) && defined(LIGHTCONE_PARTICLES)
 
-/*
-template <>
-double domain<lcparticles>::domain_grav_tot_costfactor(int i)
-{
-  return 1.0;
-}
-
-template <>
-double domain<lcparticles>::domain_hydro_tot_costfactor(int i)
-{
-  return 0;
-}
-*/
-/*
-template <>
-void domain<lcparticles>::domain_combine_multipledomains(void)
-{
-}
-*/
-
 template <>
 void domain<lcparticles>::domain_init_sum_cost(void)
 {
   for(int i = 0; i < TIMEBINS; i++)
     {
-      //   domain_bintolevel[i]     = -1;
-      //   domain_refbin[i]         = -1;
       domain_to_be_balanced[i] = 0;
       domain_grav_weight[i]    = 1;
       domain_hydro_weight[i]   = 1;

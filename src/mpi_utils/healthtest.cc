@@ -154,18 +154,11 @@ double sim::measure_cpu_performance(MPI_Comm Communicator)
 
       MPI_Barrier(Communicator);
 
-      /*
-      mpi_printf(
-          "\n\nHEALTHTEST: We are stopping because the performance variation=%g of the CPUs lies above the prescribed tolerance "
-          "MAX_VARIATION_TOLERANCE=%g, possibly indicating a machine problem. (sum=%g)\n",
-          variation, MAX_VARIATION_TOLERANCE, sum);
-       */
+      // only issue a warning for now instead of terminating the code
       warn(
           "\n\nHEALTHTEST: We issue a warning because the performance variation=%g of the CPUs lies above the prescribed tolerance "
           "MAX_VARIATION_TOLERANCE=%g, possibly indicating a machine problem. (sum=%g)\n",
           variation, MAX_VARIATION_TOLERANCE, sum);
-
-      // endrun();    // only issue a warning for now
     }
 
   return sum;

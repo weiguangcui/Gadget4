@@ -317,23 +317,20 @@ class simparticles : public intposconvert, public setcomm
    */
   void dump_particles(void)
   {
-    /*
     FILE *fd;
     char buffer[200];
     sprintf(buffer, "particles_%d.dat", ThisTask);
     if((fd = fopen(buffer, "w")))
       {
-        my_fwrite(&NumPart, 1, sizeof(int), fd);
+        fwrite(&NumPart, 1, sizeof(int), fd);
         for(int i = 0; i < NumPart; i++)
-          my_fwrite(&P[i].IntPos[0], 3, sizeof(MyIntPosType), fd);
+          fwrite(&P[i].IntPos[0], 3, sizeof(MyIntPosType), fd);
         for(int i = 0; i < NumPart; i++)
-          my_fwrite(&P[i].Vel[0], 3, sizeof(MyFloat), fd);
+          fwrite(&P[i].Vel[0], 3, sizeof(MyFloat), fd);
         for(int i = 0; i < NumPart; i++)
-          my_fwrite(&P[i].ID, 1, sizeof(int), fd);
+          fwrite(&P[i].ID, 1, sizeof(MyIDStorage), fd);
         fclose(fd);
       }
-
-      */
   }
 
   /** \brief Print information relative to a particle / cell to standard output.

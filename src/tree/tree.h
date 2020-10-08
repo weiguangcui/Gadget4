@@ -164,9 +164,6 @@ class tree
 
   int TreeInfoHandle;
 
-  /** Number of tree nodes allocated (and counted in NumNodes) but actually
-   * unused (can happen with NUM_THREADS > 1 && TAKE_NSLOTS_IN_ONE_GO > 1) */
-
   double Buildtime;
 
   int NumOnFetchStack;

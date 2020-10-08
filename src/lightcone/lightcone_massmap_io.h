@@ -62,10 +62,6 @@ class lightcone_massmap_io : public IO_Def
   lightcone *LightCone;
 
   int selected_bnd;
-
-  /*
-   * special input/output functions for certain fields
-   */
 };
 
 #endif
