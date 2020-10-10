@@ -769,6 +769,8 @@ void sph::density_evaluate_kernel(pinfo &pdat)
   for(int n = pdat.numngb; n < array_length; n++) /* fill up neighbour array so that sensible data is accessed */
     Ngbdensdat[n] = Ngbdensdat[0];
 
+  Vec4d decayVel_loc(0);
+
   for(int n = 0; n < array_length; n += vector_length)
     {
       struct ngbdata_density *ngb0 = &Ngbdensdat[n + 0];
@@ -838,9 +840,9 @@ void sph::density_evaluate_kernel(pinfo &pdat)
 
       targetSphP->DhsmlDensityFactor += horizontal_add(-mass_j * (NUMDIMS * hinv * wk + u * dwk));
 
-      Vec4db decision = (r > 0);
+      Vec4db decision_r_gt_0 = (r > 0);
 
-      r = select(decision, r, 1.0); /* note, for r=0, we have dwk=0 */
+      r = select(decision_r_gt_0, r, 1.0); /* note, for r=0, we have dwk=0 */
 
       Vec4d mj_dwk_r = mass_j * dwk / r;
 
@@ -887,25 +889,36 @@ void sph::density_evaluate_kernel(pinfo &pdat)
           vdotr2 += dpos[i] * dv[i];
         }
 
+      if(All.ComovingIntegrationOn)
+    	  vdotr2 += All.cf_atime2_hubble_a * r2;
+
+      Vec4d mu_ij = vdotr2  /(All.cf_afac3 * All.Time * r);
+
       Vec4d cs_j(ngb0->Csnd, ngb1->Csnd, ngb2->Csnd, ngb3->Csnd);
       Vec4d cs_sum = cs_i + cs_j;
 
-      Vec4d decay_vel_2 = cs_sum - vdotr2;
+      Vec4d decay_vel_2 = cs_sum - mu_ij;
 
-      decision = (vdotr2 > 0);
+      Vec4db decision = (vdotr2 > 0);
 
       Vec4d decay_vel = select(decision, cs_sum, decay_vel_2);
 
-      // find maximum element in vector
-      Vec4d h2 = permute4d<2, 3, 0, 1>(decay_vel);
-      Vec4d h3 = max(decay_vel, h2);
-      Vec4d h4 = permute4d<1, 0, 3, 2>(h3);
-      Vec4d h5 = max(h3, h4);
 
-      if(h5[0] > targetSphP->decayVel)
-        targetSphP->decayVel = h5[0];
+	  Vec4d fac_decay_vel = select(decision_r_gt_0, 1, 0);
+
+	  decay_vel = decay_vel * fac_decay_vel;
+
+      decayVel_loc = max(decayVel_loc, decay_vel);
+
 #endif
     }
+
+#ifdef TIMEDEP_ART_VISC
+  for(int i = 0; i < vector_length; i++) {
+	  if(decayVel_loc[i] > targetSphP->decayVel)
+		  targetSphP->decayVel = decayVel_loc[i];
+  }
+#endif
 }
 
 #else
@@ -1011,11 +1024,17 @@ void sph::density_evaluate_kernel(pinfo &pdat)
               vdotr2 += kernel.dpos[i] * kernel.dv[i];
             }
 
+          if(All.ComovingIntegrationOn)
+        	  vdotr2 += All.cf_atime2_hubble_a * r2;
+
+          double mu_ij = vdotr2 / (All.cf_afac3 * All.Time * kernel.r);
           double decay_vel;
+
           if(vdotr2 < 0)
-            decay_vel = targetSphP->Csnd + ngb->Csnd - vdotr2;
+            decay_vel = targetSphP->Csnd + ngb->Csnd - mu_ij;
           else
             decay_vel = targetSphP->Csnd + ngb->Csnd;
+
           if(decay_vel > targetSphP->decayVel)
             targetSphP->decayVel = decay_vel;
 #endif

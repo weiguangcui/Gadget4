@@ -137,15 +137,16 @@ void sph_particle_data::set_velocity_gradients(void)
 void sph_particle_data::set_viscosity_coefficient(double dt)
 {
   double dDivVel_dt = dt > 0 ? (DivVel - DivVelOld) / (dt) : 0;
-  dDivVel_dt *= All.cf_a2inv;
+  dDivVel_dt *= All.cf_a2inv; //now in physical coordinates
   double shockIndicator = -dDivVel_dt > 0 ? -dDivVel_dt : 0;
-  double hsml           = Hsml * All.cf_atime;
-  double Hsml2          = hsml * hsml;
-  double alpha_tar      = (Hsml2 * shockIndicator) / (Hsml2 * shockIndicator + Csnd * Csnd) * All.ArtBulkViscConst;
+  double hsml_p           = Hsml * All.cf_atime;
+  double hsml2_p          = hsml_p * hsml_p;
+  double csnd_p           = Csnd * All.cf_afac3;
+  double alpha_tar      = (hsml2_p * shockIndicator) / (hsml2_p * shockIndicator + csnd_p * csnd_p) * All.ArtBulkViscConst;
 
-  double DivVel2       = DivVel * DivVel;
-  double CurlVel2      = CurlVel * CurlVel;
-  double CsndOverHsml2 = (Csnd / Hsml) * (Csnd / Hsml);
+  double DivVel2       = (DivVel * All.cf_a2inv) * (DivVel * All.cf_a2inv);
+  double CurlVel2      = (CurlVel * All.cf_a2inv) * (CurlVel * All.cf_a2inv);
+  double CsndOverHsml2 = (csnd_p / hsml_p) * (csnd_p / hsml_p);
   double limiter       = DivVel2 / (DivVel2 + CurlVel2 + 0.00001 * CsndOverHsml2);
 #ifdef NO_SHEAR_VISCOSITY_LIMITER
   limiter = 1.;
@@ -156,7 +157,10 @@ void sph_particle_data::set_viscosity_coefficient(double dt)
       Alpha = alpha_tar * limiter;
       return;
     }
-  double DecayTime = 10. * Hsml / decayVel;
+
+  double devayVel_p = decayVel  * All.cf_afac3;  //has the same a factor as sound speed
+
+  double DecayTime = 10. * hsml_p / devayVel_p;
   Alpha            = limiter * (alpha_tar + (Alpha - alpha_tar) * exp(-dt / DecayTime));
   if(Alpha < All.AlphaMin)
     Alpha = All.AlphaMin;
