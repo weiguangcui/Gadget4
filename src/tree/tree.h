@@ -321,6 +321,7 @@ class tree
   int treebuild(int ninsert, int *indexlist);
   void treefree(void);
   void treeallocate(int max_partindex, partset *Pptr, domain<partset> *Dptr);
+  void treeallocate_share_topnode_addresses(void);
 
   void tree_export_node_threads(int no, int i, thread_data *thread, offset_tuple off = 0);
   void tree_export_node_threads_by_task_and_node(int task, int nodeindex, int i, thread_data *thread, offset_tuple off = 0);

@@ -778,10 +778,12 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
   D  = Dptr;
   Tp = Tp_ptr;
 
+  /* split up the communicator into pieces overlap with different shared memory regions */
   if(max_partindex != -1)
-    {
-      MPI_Allreduce(&max_partindex, &MaxPart, 1, MPI_INT, MPI_MAX, D->Communicator);
-    }
+    MPI_Comm_split(D->Communicator, Shmem.Island_Smallest_WorldTask, 0, &TreeSharedMemComm);
+
+  if(max_partindex != -1)
+    MPI_Allreduce(&max_partindex, &MaxPart, 1, MPI_INT, MPI_MAX, D->Communicator);
 
   if(MaxPart == 0)
     return;  // nothing to be done
@@ -815,9 +817,6 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
     {
       max_partindex = MaxPart;
     }
-
-  /* now split up the communicator into pieces overlap with different shared memory regions */
-  MPI_Comm_split(D->Communicator, Shmem.Island_Smallest_WorldTask, 0, &TreeSharedMemComm);
 
   MPI_Comm_rank(TreeSharedMemComm, &TreeSharedMem_ThisTask);
   MPI_Comm_size(TreeSharedMemComm, &TreeSharedMem_NTask);
@@ -880,6 +879,16 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
         }
     }
 
+  Nodes = (node *)Mem.mymalloc_movable(&Nodes, "Nodes", (MaxNodes - D->NTopnodes + 1) * sizeof(node));
+  Nodes -= (MaxPart + D->NTopnodes);
+
+  if(max_partindex != -1)
+    treeallocate_share_topnode_addresses();
+}
+
+template <typename node, typename partset, typename point_data, typename foreign_point_data>
+void tree<node, partset, point_data, foreign_point_data>::treeallocate_share_topnode_addresses(void)
+{
   MPI_Bcast(&TreeInfoHandle, 1, MPI_INT, 0, TreeSharedMemComm);
 
   ptrdiff_t off[4] = {((char *)NodeLevel - Mem.Base), ((char *)NodeSibling - Mem.Base), ((char *)NodeIndex - Mem.Base),
@@ -894,9 +903,6 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
   NodeSibling = (int *)((char *)Shmem.SharedMemBaseAddr[shmrank] + off[1]);
   NodeIndex   = (int *)((char *)Shmem.SharedMemBaseAddr[shmrank] + off[2]);
   TopNodes    = (node *)((char *)Shmem.SharedMemBaseAddr[shmrank] + off[3]);
-
-  Nodes = (node *)Mem.mymalloc_movable(&Nodes, "Nodes", (MaxNodes - D->NTopnodes + 1) * sizeof(node));
-  Nodes -= (MaxPart + D->NTopnodes);
 }
 
 template <typename node, typename partset, typename point_data, typename foreign_point_data>
@@ -1221,13 +1227,13 @@ void tree<node, partset, point_data, foreign_point_data>::tree_fetch_foreign_nod
 template <typename node, typename partset, typename point_data, typename foreign_point_data>
 void tree<node, partset, point_data, foreign_point_data>::treefree(void)
 {
+  MPI_Comm_free(&TreeSharedMemComm);
+
   if(MaxPart == 0)
     return;  // nothing to be done
 
   if(Nodes)
     {
-      MPI_Comm_free(&TreeSharedMemComm);
-
       if(Father)
         {
           Mem.myfree_movable(Father);

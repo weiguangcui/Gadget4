@@ -298,6 +298,9 @@ void restart::work_files(int modus)
 
   MPI_Gather(&seq_loc, sizeof(seq_data), MPI_BYTE, seq, sizeof(seq_data), MPI_BYTE, 0, Communicator);
 
+  if(modus == MODUS_READ)
+    MPI_Comm_split(Communicator, Shmem.Island_Smallest_WorldTask, 0, &Sim->NgbTree.TreeSharedMemComm);
+
   if(ThisTask == 0)
     {
       std::sort(seq, seq + NTask);
@@ -357,6 +360,9 @@ void restart::work_files(int modus)
       /* send back completion notice */
       MPI_Ssend(&ThisTask, 1, MPI_INT, 0, TAG_KEY, Communicator);
     }
+
+  if(modus == MODUS_READ)
+    Sim->NgbTree.treeallocate_share_topnode_addresses();
 }
 
 void restart::contents_restart_file(int modus)
@@ -523,12 +529,16 @@ void restart::contents_restart_file(int modus)
     {
       byten(Sim->NgbTree.Nodes + Sim->NgbTree.MaxPart + Sim->Domain.NTopnodes,
             (Sim->NgbTree.NumNodes - Sim->Domain.NTopnodes) * sizeof(ngbnode), modus);
-      byten(Sim->NgbTree.TopNodes + Sim->NgbTree.MaxPart, Sim->Domain.NTopnodes * sizeof(ngbnode), modus);
-      byten(Sim->NgbTree.NodeIndex, Sim->Domain.NTopleaves * sizeof(int), modus);
-      byten(Sim->NgbTree.NodeSibling, Sim->Domain.NTopleaves * sizeof(int), modus);
-      byten(Sim->NgbTree.NodeLevel, Sim->Domain.NTopleaves * sizeof(unsigned char), modus);
       byten(Sim->NgbTree.Nextnode, (Sim->NgbTree.MaxPart + Sim->Domain.NTopleaves) * sizeof(int), modus);
       byten(Sim->NgbTree.Father, Sim->NgbTree.MaxPart * sizeof(int), modus);
+
+      if(Sim->NgbTree.TreeSharedMem_ThisTask == 0)
+        {
+          byten(Sim->NgbTree.TopNodes + Sim->NgbTree.MaxPart, Sim->Domain.NTopnodes * sizeof(ngbnode), modus);
+          byten(Sim->NgbTree.NodeIndex, Sim->Domain.NTopleaves * sizeof(int), modus);
+          byten(Sim->NgbTree.NodeSibling, Sim->Domain.NTopleaves * sizeof(int), modus);
+          byten(Sim->NgbTree.NodeLevel, Sim->Domain.NTopleaves * sizeof(unsigned char), modus);
+        }
     }
 
   byten(Sim->Domain.TopNodes, Sim->Domain.NTopnodes * Sim->Domain.domain_sizeof_topnode_data(), modus);
