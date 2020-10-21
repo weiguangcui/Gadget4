@@ -496,6 +496,9 @@ void restart::contents_restart_file(int modus)
   in(&Sim->NgbTree.NumNodes, modus);
   in(&Sim->NgbTree.NumPartImported, modus);
   in(&Sim->NgbTree.FirstNonTopLevelNode, modus);
+  in(&Sim->NgbTree.ImportedNodeOffset, modus);
+  in(&Sim->NgbTree.EndOfTreePoints, modus);
+  in(&Sim->NgbTree.EndOfForeignNodes, modus);
 
   if(modus == MODUS_READ)
     {
