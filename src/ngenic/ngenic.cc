@@ -1186,6 +1186,59 @@ void ngenic::print_spec(void)
         }
       fclose(fd);
     }
+
+  /* create an output file with the growth factor as a function of redshift, which
+   * can be handy in analysis routines
+   */
+  if(ThisTask == 0)
+    {
+      if(All.cf_atime < 1.0)
+        {
+          char buf[3 * MAXLEN_PATH];
+          sprintf(buf, "%s/growthfac.txt", All.OutputDir);
+
+          FILE *fd = fopen(buf, "w");
+
+          const int NSTEPS = 100;
+
+          for(int i = 0; i <= NSTEPS; i++)
+            {
+              double a = exp(log(All.cf_atime) + ((log(1.0) - log(All.cf_atime)) / NSTEPS) * i);
+
+              double d = ngenic_growth_factor(a, 1.0);
+
+              fprintf(fd, "%12g %12g\n", a, 1.0 / d);
+            }
+          fclose(fd);
+        }
+    }
+
+  /* also create an output file with the sigma(M), i.e. the variance as a function of the mass scale,
+   * for simplifying analytic mass function plots, such as Press-Schechter
+   */
+
+  if(ThisTask == 0)
+    {
+      char buf[3 * MAXLEN_PATH];
+      sprintf(buf, "%s/variance.txt", All.OutputDir);
+
+      FILE *fd = fopen(buf, "w");
+
+      double rhoback = All.Omega0 * 3 * All.Hubble * All.Hubble / (8 * M_PI * All.G);
+
+      for(double M = 1.0e5; M <= 1.01e16; M *= pow(10.0, 1.0 / 16))  // mass in solar masses / h
+        {
+          double Mint = M * (SOLAR_MASS / All.UnitMass_in_g);
+
+          double R = pow(3.0 * Mint / (4 * M_PI * rhoback), 1.0 / 3);
+
+          double sigma2 = ngenic_tophat_sigma2(R);
+
+          fprintf(fd, "%12g %12g %12g %12g\n", M, Mint, sigma2, sqrt(sigma2));
+        }
+
+      fclose(fd);
+    }
 }
 
 #endif
