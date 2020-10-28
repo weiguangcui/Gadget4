@@ -521,9 +521,11 @@ void sim::create_snapshot_if_desired(void)
           if(Sp.P[i].Ti_Current != All.Ti_Current)
             Terminate("P[i].Ti_Current != All.Ti_Current");
 
+#ifndef OUTPUT_NON_SYNCHRONIZED_ALLOWED
         NgbTree.treefree();
         Sp.TimeBinsGravity.timebins_free();
         Sp.TimeBinsHydro.timebins_free();
+#endif
 
 #ifdef FOF
         mpi_printf("\nFOF: We shall first compute a group catalog for this snapshot file\n");
@@ -606,6 +608,7 @@ void sim::create_snapshot_if_desired(void)
         All.SnapshotFileCount++;
         All.Ti_nextoutput = find_next_outputtime(All.Ti_Current + 1);
 
+#ifndef OUTPUT_NON_SYNCHRONIZED_ALLOWED
         Sp.TimeBinsHydro.timebins_allocate();
         Sp.TimeBinsGravity.timebins_allocate();
 
@@ -617,6 +620,7 @@ void sim::create_snapshot_if_desired(void)
 
         NgbTree.treeallocate(Sp.NumGas, &Sp, &Domain);
         NgbTree.treebuild(Sp.NumGas, NULL);
+#endif
       }
 
 #if defined(LIGHTCONE_PARTICLES)
