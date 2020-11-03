@@ -405,6 +405,14 @@ void sim::init(int RestartSnapNum)
       Sp.PS = (subfind_data *)Mem.mymalloc_movable(&Sp.PS, "PS", Sp.MaxPart * sizeof(subfind_data));
       memset(Sp.PS, 0, Sp.MaxPart * sizeof(subfind_data));
 
+      for(int i = 0; i < Sp.NumGas; i++)
+        {
+          if(ThisTask == 0 && i == 0)
+            printf("INIT: Converting u -> entropy   All.cf_a3inv=%g\n", All.cf_a3inv);
+
+          Sp.SphP[i].Entropy = GAMMA_MINUS1 * Sp.SphP[i].Entropy / pow(Sp.SphP[i].Density * All.cf_a3inv, GAMMA_MINUS1);
+        }
+
       /* First, we save the original location of the particles, in order to be able to revert to this layout later on */
       for(int i = 0; i < Sp.NumPart; i++)
         {
