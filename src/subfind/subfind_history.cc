@@ -289,8 +289,6 @@ void fof<partset>::subfind_hbt_single_group(domain<partset> *SubDomain, domain<p
       /* sort the candidates by size */
       mycxxsort(all_candidates, all_candidates + totcand, subfind_hbt_compare_subcand_len);
 
-      hbt_subcand_t maxlen_candidate = all_candidates[totcand - 1];
-
       /* sort the candidates by summed previous length, as this is arguably a more robust decision of which one should be the largest
        */
       mycxxsort(all_candidates, all_candidates + totcand, subfind_hbt_compare_subcand_summedprevlen);
