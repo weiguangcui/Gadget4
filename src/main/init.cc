@@ -129,7 +129,6 @@ void sim::init(int RestartSnapNum)
 
       Mem.myfree(tmp);
 
-      All.FlagICsContainedEntropy = 0;
 
       int count = 0;
       for(int i = 0; i < Sp.NumPart; i++)
@@ -477,15 +476,16 @@ void sim::init(int RestartSnapNum)
    * Once the density has been computed, we can convert to entropy.
    */
 #ifdef PRESSURE_ENTROPY_SPH
-  if(All.FlagICsContainedEntropy == 0)
+#ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
     NgbTree.setup_entropy_to_invgamma();
+#endif
 #endif
 
   double mass = 0;
   for(int i = 0; i < Sp.NumGas; i++)
     {
-      if(All.FlagICsContainedEntropy == 0)
-        {
+#ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
+        
           if(ThisTask == 0 && i == 0)
             printf("INIT: Converting u -> entropy\n");
 
@@ -493,8 +493,8 @@ void sim::init(int RestartSnapNum)
           Sp.SphP[i].Entropy = GAMMA_MINUS1 * Sp.SphP[i].Entropy / pow(Sp.SphP[i].Density * All.cf_a3inv, GAMMA_MINUS1);
 #endif
           Sp.SphP[i].EntropyPred = Sp.SphP[i].Entropy;
-        }
-
+        
+#endif
       /* The predicted entropy values have been already set for all SPH formulation */
       /* so it should be ok computing pressure and csound now */
       Sp.SphP[i].set_thermodynamic_variables();

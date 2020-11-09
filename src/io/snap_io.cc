@@ -415,11 +415,14 @@ void snap_io::read_ic(const char *fname)
   Sp->NumPart += add_numpart;
 #endif
 
-  All.FlagICsContainedEntropy = 0;
+
 
 #ifdef GADGET2_HEADER
-  if(header.flag_entropy_instead_u)
-    All.FlagICsContainedEntropy = 1;
+#ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
+  if(header.flag_entropy_instead_u) Terminate("Initial condition file contains entropy, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is not set\n");
+#else    
+  if(! header.flag_entropy_instead_u)Terminate("Initial condition file contains uthermal, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is set\n");
+#endif
 #endif
 
   TIMER_STOP(CPU_SNAPSHOT);

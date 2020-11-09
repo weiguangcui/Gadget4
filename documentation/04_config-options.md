@@ -598,6 +598,12 @@ formulation. This is only useful if `PRESSURE_ENTROPY_SPH` is used.
 
 -------
 
+**INITIAL_CONDITIONS_CONTAIN_ENTROPY**
+
+The intial conditions file contains entropy instead of the thermal energy.
+
+------
+
 **GAMMA** = 1.4
 
 Sets the equation of state index in the ideal gas law that is normally
@@ -870,7 +876,6 @@ you need to increase `NUMBER_OF_MPI_LISTENERS_PER_NODE`.
 
 Output/Input options                                       {#io}
 ====================
-
 
 **POWERSPEC_ON_OUTPUT**
 
