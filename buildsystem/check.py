@@ -94,7 +94,7 @@ def filter_template_config(fin):
 def filter_template_ioparam(fin):
     defines = set()
     s = fin.read()
-    d = re.findall(r"add_param\(\"([a-zA-Z_][a-zA-Z_0-9]*)\"",s)
+    d = re.findall("add_param\(\"([a-zA-Z_][a-zA-Z_0-9]*)\"",s)
     for dd in d:
         defines.update([dd])
 
