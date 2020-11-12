@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Code that plots different radial profiles for the Evrard collapse
+Code that plots different radial profiles for the Evrard collapse.
+The results are compared with 1D PPM results from (Steinmetz & Mueller 1993) for t= 0.8
 
 """
 # load libraries
@@ -76,7 +77,7 @@ def get_data_bins(radius,Density, vr, A):
 
 	return r_bin,rho_bin, vr_bin, entropy_bin
 
-#loads 1d ppm results
+#loads 1D PPM results
 def load_ppm_result():
 	gamma = 5./3.
 	rost = 3./4./np.pi
