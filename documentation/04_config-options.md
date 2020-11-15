@@ -350,6 +350,13 @@ and/or parameters what this external field is.
 
 -------
 
+**EXTERNALGRAVITY_STATICHQ**
+
+Activates a simple external potential due to a Hernquist dark matter
+halo, with parameters specified in the parameterfile.
+
+-------
+
 
 TreePM Options                                             {#treepm}
 ==============

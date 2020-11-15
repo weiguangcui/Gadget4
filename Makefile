@@ -288,7 +288,7 @@ INCL    += time_integration/timestep.h time_integration/driftfac.h
 
 SUBDIRS += gravity
 OBJS    += gravity/gravity.o gravity/ewald.o gravity/ewald_test.o \
-           gravity/grav_forcetest.o \
+           gravity/grav_forcetest.o gravity/grav_external.o \
            gravity/grav_direct.o gravity/second_order_ics.o
 INCL    += gravity/ewald.h gravity/ewaldtensors.h gravity/grav_forcetest.h
 

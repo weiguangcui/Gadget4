@@ -176,7 +176,7 @@ class sim : public pinning, public test_io_bandwidth
 #endif
 
 #ifdef EXTERNALGRAVITY
-  void gravity_external(void) { Terminate("Currently, no external gravity field is implemented.\n"); }
+  void gravity_external(void);
 #endif
 };
 

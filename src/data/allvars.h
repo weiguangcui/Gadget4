@@ -348,6 +348,11 @@ struct global_data_all_processes : public parameters
   int GridSize;
 #endif
 
+#ifdef EXTERNALGRAVITY_STATICHQ
+  double A_StaticHQHalo;
+  double Mass_StaticHQHalo;
+#endif
+
   void set_cosmo_factors_for_current_time(void);
   void register_parameters(void);
   void read_outputlist(char *fname);

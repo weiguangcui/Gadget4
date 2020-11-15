@@ -270,6 +270,10 @@
 #error "LIGHTCONE_OUTPUT_ACCELERATIONS only works with PMGRID if TREEPM_NOTIMESPLIT is used and HIERARCHICAL_GRAVITY is not used"
 #endif
 
+#if defined(EXTERNALGRAVITY_STATICHQ) && !defined(EXTERNALGRAVITY)
+#error "EXTERNALGRAVITY_STATICHQ only works when EXTERNALGRAVITY is activated"
+#endif
+
 #ifndef ASMTH
 /** ASMTH gives the scale of the short-range/long-range force split in units of FFT-mesh cells */
 #define ASMTH 1.25

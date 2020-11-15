@@ -1165,3 +1165,25 @@ temperature onto the gas. This is however done in terms of a minimum
 energy per unit mass `u` , i.e. if `MinEgySpec` is set to some finite
 value, `u` will not be allowed to drop below this value.
 
+-------
+
+Special features                                      {#special}
+================
+
+
+**A_StaticHQHalo**        5.0
+
+In case the `EXTERNALGRAVITY_STATICHQ` option is activated, this
+specifies the scale length of a static Hernquist halo whose
+gravitational potential is added to the force calculation. The
+halo is centered at the origin, and the scale length is given
+in internal length units.
+
+-------
+
+**Mass_StaticHQHalo**     100.0
+
+This parameter is only active when `EXTERNALGRAVITY_STATICHQ` is
+enabled, and then gives the total mass (in internal units) of the
+halos that is added as a static potential to the force computation.
+

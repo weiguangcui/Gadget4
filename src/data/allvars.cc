@@ -194,6 +194,11 @@ void global_data_all_processes::register_parameters(void)
 #ifdef CREATE_GRID
   add_param("GridSize", &GridSize, PARAM_INT, PARAM_FIXED);
 #endif
+
+#ifdef EXTERNALGRAVITY_STATICHQ
+  add_param("A_StaticHQHalo", &A_StaticHQHalo, PARAM_DOUBLE, PARAM_FIXED);
+  add_param("Mass_StaticHQHalo", &Mass_StaticHQHalo, PARAM_DOUBLE, PARAM_FIXED);
+#endif
 }
 
 /*! \brief This function reads a table with a list of desired output times.
