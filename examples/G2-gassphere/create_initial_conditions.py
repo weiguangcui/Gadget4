@@ -15,6 +15,7 @@ IntType = np.int32
 
 Grid= 14 #size of the grid used to generate particle distribution
 Mtot= 1.0 #total mass of the sphere
+gamma = 5./3.
 
 x = np.zeros((Grid,Grid,Grid))
 y = np.zeros((Grid,Grid,Grid))
@@ -80,6 +81,13 @@ Mass[:] = particle_mass
 
 Uthermal[:] = 0.05
 
+rad = np.sqrt(x[:]**2+y[:]**2+z[:]**2)
+
+rho = 1.0/(2.* np.pi * rad[:])
+
+
+entr = (gamma - 1) *  Uthermal[:] / (rho[:]**(gamma - 1))
+
 #write intial conditions file
 
 IC = h5py.File('IC.hdf5', 'w')
@@ -107,7 +115,6 @@ header.attrs.create("Flag_Cooling", 0)
 header.attrs.create("Flag_StellarAge", 0)
 header.attrs.create("Flag_Metals", 0)
 header.attrs.create("Flag_Feedback", 0)
-header.attrs.create("Flag_Entropy_ICs", 0)
 if Pos.dtype == np.float64:
     header.attrs.create("Flag_DoublePrecision", 1)
 else:
@@ -120,6 +127,6 @@ part0.create_dataset("Coordinates", data=Pos)
 part0.create_dataset("Masses", data=Mass)
 
 part0.create_dataset("Velocities", data=Vel)
-part0.create_dataset("InternalEnergy", data=Uthermal)
+part0.create_dataset("InternalEnergy", data=entr)
 
 IC.close()

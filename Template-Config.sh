@@ -109,6 +109,7 @@ DOUBLEPRECISION=1                             # if activated and set to 1, use d
 
 #---------------------------------------- Output/Input options
 
+INITIAL_CONDITIONS_CONTAIN_ENTROPY
 #OUTPUT_VELOCITY_GRADIENT                     # output velocity gradients
 #OUTPUT_PRESSURE                              # output gas pressure   
 #OUTPUT_ENTROPY                               # output gas entropy

@@ -97,7 +97,6 @@ struct global_data_all_processes : public parameters
   double InitGasU;         /**< the same, but converted to thermal energy per unit mass */
   double MinEgySpec;       /**< the minimum allowed temperature expressed as energy per unit mass */
 
-  int FlagICsContainedEntropy;
 
   /* some force counters  */
 
