@@ -56,7 +56,7 @@ void sim::gravity_external(void)
           Sp.P[target].GravAccel += (-All.G * m / (r * r * r)) * pos;
 
 #if defined(EVALPOTENTIAL) || defined(OUTPUT_POTENTIAL)
-        Sp.P[target].ExtPotential += (-All.G * m / (r + All.A_StaticHQHalo));
+        Sp.P[target].ExtPotential += (-All.G * All.Mass_StaticHQHalo / (r + All.A_StaticHQHalo));
 #endif
       }
 #endif

@@ -584,13 +584,7 @@ void logs::compute_global_quantities_of_system(void)
 #endif
 
 #if defined(EXTERNALGRAVITY) && defined(EVALPOTENTIAL)
-#if defined(SELFGRAVITY)
-      sys.EnergyPotComp[P[i].getType()] +=
-          0.5 * P[i].getMass() * P[i].ExtPotential;  // note: ExtPotential already included on P[].p.Potential, that's why only 0.5 is
-                                                     // needed here to recover the rest
-#else
-      sys.EnergyPotComp[P[i].getType()] += 1.0 * P[i].getMass() * P[i].ExtPotential;
-#endif
+      sys.EnergyPotComp[P[i].getType()] += P[i].getMass() * P[i].ExtPotential;
 #endif
 
       double vel[3] = {0, 0, 0};
