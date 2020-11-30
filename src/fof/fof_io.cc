@@ -75,7 +75,7 @@ fof_io<partset>::fof_io(fof<partset> *FoF_ptr, MPI_Comm comm, int format) : IO_D
   init_field("FMTY", "GroupMassType", MEM_MY_DOUBLE, FILE_MY_IO_FLOAT, READ_IF_PRESENT, NTYPES, A_G, &FoF->Group[0].MassType[0], NULL,
              GROUPS, 0, 0, 0, 0, 0, 0, 0);
 
-  init_field("FMAS", "GroupAscale", MEM_MY_DOUBLE, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 1, A_G, &FoF->Group[0].Ascale, NULL, GROUPS, 0,
+  init_field("FMAA", "GroupAscale", MEM_MY_DOUBLE, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 1, A_G, &FoF->Group[0].Ascale, NULL, GROUPS, 0,
              0, 0, 0, 0, 0, 0);
 
 #if defined(SUBFIND_ORPHAN_TREATMENT)
