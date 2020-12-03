@@ -243,6 +243,7 @@ SUBDIRS += logs
 OBJS    += logs/logs.o
 INCL    += logs/logs.h logs/timer.h
 
+
 SUBDIRS += gitversion
 INCL    += gitversion/version.h
 
@@ -260,11 +261,6 @@ OBJS    += pm/pm_nonperiodic.o pm/pm_periodic.o \
 INCL    += pm/pm.h pm/pm_mpi_fft.h pm/pm_periodic.h pm/pm_nonperiodic.h
 
 
-SUBDIRS += vectorclass
-OBJS    += vectorclass/instrset_detect.o
-INCL    +=
-
-
 SUBDIRS += sort
 OBJS    += sort/peano.o
 INCL    += sort/peano.h sort/cxxsort.h sort/parallel_sort.h
@@ -273,6 +269,7 @@ INCL    += sort/peano.h sort/cxxsort.h sort/parallel_sort.h
 SUBDIRS += sph
 OBJS    += sph/density.o sph/hydra.o sph/init_entropy.o sph/artificial_viscosity.o
 INCL    += sph/kernel.h sph/sph.h
+
 
 SUBDIRS += system
 OBJS    += system/pinning.o system/system.o
@@ -306,6 +303,13 @@ INCL    += gravtree/gravtree.h  gravtree/gwalk.h
 SUBDIRS += ngbtree
 OBJS    += ngbtree/ngbtree_build.o 
 INCL    += ngbtree/ngbtree.h
+
+
+ifeq (EXPLICIT_VECTORIZATION,$(findstring EXPLICIT_VECTORIZATION,$(CONFIGVARS)))
+SUBDIRS += vectorclass
+OBJS    += vectorclass/instrset_detect.o
+INCL    +=
+endif
 
 
 ifeq (COOLING,$(findstring COOLING,$(CONFIGVARS)))
@@ -361,6 +365,7 @@ endif
 ifeq (LIGHTCONE_MASSMAPS,$(findstring LIGHTCONE_MASSMAPS,$(CONFIGVARS)))
 MAPS_LIBS += -lchealpix -lcfitsio #-lcurl
 endif
+
 
 ifeq (LIGHTCONE_PARTICLES,$(findstring LIGHTCONE_PARTICLES,$(CONFIGVARS)))
 MAPS_LIBS += -lchealpix -lcfitsio #-lcurl
