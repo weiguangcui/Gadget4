@@ -303,13 +303,13 @@ void ngenic::ngenic_displace_particles(void)
   FFTW(destroy_plan)(myplan.backward_plan_ydir);
   FFTW(destroy_plan)(myplan.backward_plan_xdir);
 
+  print_spec();
+
   if(All.PowerSpectrumType == 2)
     free_power_table();
 
   gsl_rng_free(rnd_generator);
   gsl_rng_free(rnd_generator_conjugate);
-
-  print_spec();
 
   TIMER_STOP(CPU_NGENIC);
 }
