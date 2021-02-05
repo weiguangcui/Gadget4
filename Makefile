@@ -134,6 +134,7 @@ include buildsystem/Makefile.comp.gcc
 include buildsystem/Makefile.gen.libs
 endif
 
+# MR: this entry seems inconsistent (gcc/Intel). Should we remove it or fix it?
 ifeq ($(SYSTYPE), "Generic-intel-single")
 include buildsystem/Makefile.comp.gcc-paranoia
 include buildsystem/Makefile.gen.libs
