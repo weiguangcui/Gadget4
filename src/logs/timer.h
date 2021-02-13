@@ -59,7 +59,6 @@ TIMER_CREATE(CPU_TREEDIRECT, "treedirect", CPU_TREE, 'r', '2')
 #ifdef PMGRID
 TIMER_CREATE(CPU_PM_GRAVITY, "pm_grav", CPU_ALL, '|', 'n')
 #endif
-TIMER_CREATE(CPU_NGBTREEBUILD, "ngbtreebuild", CPU_ALL, 'A', 'a')
 TIMER_CREATE(CPU_NGBTREEUPDATEVEL, "ngbtreevelupdate", CPU_ALL, 'B', 'b')
 TIMER_CREATE(CPU_NGBTREEUPDATEMAXHSML, "ngbtreehsmlupdate", CPU_ALL, 'h', 'H')
 TIMER_CREATE(CPU_SPH, "sph", CPU_ALL, 0, 0)
