@@ -318,6 +318,10 @@ void sim::begrun2(void)
   All.FlushLast = Logs.CPUThisRun;
 #endif
 
+  // update All on shared memory handler, just to allow it to access its elements if needed
+  if(Shmem.Island_NTask != Shmem.World_NTask && Shmem.Island_ThisTask == 0)
+    MPI_Send(All.get_data_ptr(), All.get_data_size(), MPI_BYTE, Shmem.MyShmRankInGlobal, TAG_ALL_UPDATE, MPI_COMM_WORLD);
+
 #if defined(FORCETEST) && defined(FORCETEST_TESTFORCELAW)
   gravity_forcetest_testforcelaw();
 #endif

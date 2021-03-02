@@ -200,6 +200,11 @@ void shmem::shared_memory_handler(void)
           Mem.myfree(message);
           Driftfac.init_drift_table();
         }
+      else if(tag == TAG_ALL_UPDATE)  // make the shared memory handler update the contents of the All structure
+        {
+          memcpy(All.get_data_ptr(), message, All.get_data_size());
+          Mem.myfree(message);
+        }
     }
 }
 
