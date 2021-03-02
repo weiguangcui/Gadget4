@@ -189,7 +189,7 @@ class sngb_comm : public generic_comm<sngb_in, sngb_out, T_tree, T_domain, T_par
           {
             if(no < Tree->MaxPart) /* single particle */
               {
-                particle_data *P = Tree->get_Pp(no, shmrank);
+                auto *P          = Tree->get_Pp(no, shmrank);
                 subfind_data *PS = Tree->get_PSp(no, shmrank);
 
                 no = Tree->get_nextnodep(shmrank)[no]; /* note: here shmrank cannot change */
