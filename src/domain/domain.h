@@ -255,7 +255,7 @@ class domain : public setcomm
     return a.targetindex < b.targetindex;
   }
 
-#if defined(PLACEHIGHRESREGION) || defined(RANDOMIZE_DOMAINCENTER)
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(RANDOMIZE_DOMAINCENTER)
   MyIntPosType domainInnersize;
   MyIntPosType domainReferenceIntPos[3];
   MySignedIntPosType domainXmintot[3], domainXmaxtot[3];

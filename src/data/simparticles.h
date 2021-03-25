@@ -153,6 +153,9 @@ class simparticles : public intposconvert, public setcomm
   MyIntPosType Left[2][3];
   MyIntPosType OldMeshSize[2];
   MyIntPosType ReferenceIntPos[2][3];
+#endif
+
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
   MyIntPosType PlacingMask;
   MyIntPosType PlacingBlocksize;
 #endif

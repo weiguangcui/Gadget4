@@ -10,6 +10,7 @@
 #PERIODIC                                     # enables periodic boundary condistions
 #NTYPES=6                                     # number of particle types 
 #RANDOMIZE_DOMAINCENTER                       # shifts the particle distribution randomly each step to reduce correlations of force errors in time
+#RANDOMIZE_DOMAINCENTER_TYPES                 # can be used to set a zoom region via a particle type which is then never placed across large node boundaries
 #LEAN                                         # selects a special 'lean' mode of code operation, which is optimized for aggressive memory saving
 #LONG_X_BITS=2                                # can be used to reduce periodic box-dimension in x-direction relative to nominal box size
 #LONG_Y_BITS=2                                # can be used to reduce periodic box-dimension in y-direction relative to nominal box size

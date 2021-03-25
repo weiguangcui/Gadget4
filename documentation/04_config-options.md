@@ -324,6 +324,18 @@ recommended, and should have only positive effects.
 
 -------
 
+**RANDOMIZE_DOMAINCENTER_TYPES** = 2
+
+Can be set to select one or several types (this is a bitmask) which
+will then be used to locate the extension of a certain region. When
+the particle set is randomly translated throughout the box, the code
+will then try to avoid intersecting large oct-tree node boundaries
+with this region. When this option is not set explicitely but
+PLACEHIGHRESREGION is active, then this is automatically done
+with a default setting RANDOMIZE_DOMAINCENTER_TYPES=PLACEHIGHRESREGION.
+
+-------
+
 **EVALPOTENTIAL**
 
 When this is activated, the code also computes the gravitational
