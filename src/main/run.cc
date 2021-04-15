@@ -521,6 +521,15 @@ void sim::create_snapshot_if_desired(void)
           if(Sp.P[i].Ti_Current != All.Ti_Current)
             Terminate("P[i].Ti_Current != All.Ti_Current");
 
+#if defined(STARFORMATION) && defined(FOF)
+        // do an extra domain decomposition here to make sure that there are no new stars among the block of gas particles
+        NgbTree.treefree();
+        Domain.domain_free();
+        Domain.domain_decomposition(STANDARD);
+        NgbTree.treeallocate(Sp.NumGas, &Sp, &Domain);
+        NgbTree.treebuild(Sp.NumGas, NULL);
+#endif
+
 #ifndef OUTPUT_NON_SYNCHRONIZED_ALLOWED
         NgbTree.treefree();
         Sp.TimeBinsGravity.timebins_free();
