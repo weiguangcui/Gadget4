@@ -413,7 +413,6 @@ class simparticles : public intposconvert, public setcomm
   int test_if_grav_timestep_is_too_large(int p, int bin);
   int get_timestep_bin(integertime ti_step);
 
- private:
 #ifdef ADAPTIVE_HYDRO_SOFTENING
   int get_softeningtype_for_hydro_particle(int i)
   {
