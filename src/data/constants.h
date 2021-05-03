@@ -147,6 +147,10 @@
 #define HRPMGRID PMGRID
 #endif
 
+#if !defined(RANDOMIZE_DOMAINCENTER_TYPES) && defined(PLACEHIGHRESREGION)
+#define RANDOMIZE_DOMAINCENTER_TYPES PLACEHIGHRESREGION
+#endif
+
 #if defined(SUBFIND) && !defined(SELFGRAVITY)
 #error "Running SUBFIND without SELFGRAVITY enabled does not make sense."
 #endif

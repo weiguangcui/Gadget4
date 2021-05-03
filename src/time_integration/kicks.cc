@@ -557,6 +557,9 @@ void sim::hydro_force(int step_indicator)
       if(step_indicator == SECOND_HALF_STEP)
         {
           Sp.SphP[target].EntropyPred = Sp.SphP[target].Entropy;
+#ifdef PRESSURE_ENTROPY_SPH
+          Sp.SphP[target].EntropyToInvGammaPred = pow(Sp.SphP[target].EntropyPred, 1.0 / GAMMA);
+#endif
           Sp.SphP[target].set_thermodynamic_variables();
 
           Sp.SphP[target].VelPred[0] += (Sp.SphP[target].HydroAccel[0] - Old[i].HydroAccel[0]) * dt_hydrokick;

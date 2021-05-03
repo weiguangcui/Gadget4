@@ -119,13 +119,13 @@ void domain<simparticles>::do_box_wrapping(void)
 #ifdef RANDOMIZE_DOMAINCENTER
   /* determine new shift vector */
 
-#if defined(PLACEHIGHRESREGION)
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
   domain_find_type_extension();
 #endif
 
   if(ThisTask == 0)
     {
-#if defined(PLACEHIGHRESREGION)
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
       int count = 0;
 #endif
 
@@ -145,7 +145,7 @@ void domain<simparticles>::do_box_wrapping(void)
           Tp->CurrentShiftVector[j] += get_random_number() * pow(2.0, 32);
 #endif
 
-#if defined(PLACEHIGHRESREGION)
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
           MyIntPosType boxoff   = (Tp->CurrentShiftVector[j] & Tp->PlacingMask);
           MyIntPosType inboxoff = (Tp->CurrentShiftVector[j] - boxoff) % (Tp->PlacingBlocksize - domainInnersize);
 
@@ -190,7 +190,7 @@ void domain<simparticles>::do_box_wrapping(void)
 #endif
 }
 
-#if defined(PLACEHIGHRESREGION)
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
 
 template <typename partset>
 int domain<partset>::domain_type_extension_overlap(int j)
@@ -217,7 +217,7 @@ void domain<partset>::domain_find_type_extension(void)
 
   for(int i = 0; i < Tp->NumPart; i++)
     {
-      if(((1 << Tp->P[i].getType()) & (PLACEHIGHRESREGION)))
+      if(((1 << Tp->P[i].getType()) & (RANDOMIZE_DOMAINCENTER_TYPES)))
         {
           for(int j = 0; j < 3; j++)
             domainReferenceIntPos[j] = Tp->P[i].IntPos[j];
@@ -232,8 +232,8 @@ void domain<partset>::domain_find_type_extension(void)
   MPI_Allreduce(MPI_IN_PLACE, have_global, 1, MPI_2INT, MPI_MINLOC, Communicator);
 
   if(have_global[0] >= NTask)
-    Terminate("have_global[0]=%d  >= NTask=%d: Don't we have any particle?  Note: PLACEHIGHRESREGION=%d is a bitmask", have_global[0],
-              NTask, PLACEHIGHRESREGION);
+    Terminate("have_global[0]=%d  >= NTask=%d: Don't we have any particle?  Note: RANDOMIZE_DOMAINCENTER_TYPES=%d is a bitmask",
+              have_global[0], NTask, RANDOMIZE_DOMAINCENTER_TYPES);
 
   MPI_Bcast(domainReferenceIntPos, 3 * sizeof(MyIntPosType), MPI_BYTE, have_global[1], Communicator);
 
@@ -249,7 +249,7 @@ void domain<partset>::domain_find_type_extension(void)
 
   for(int i = 0; i < Tp->NumPart; i++)
     {
-      if(((1 << Tp->P[i].getType()) & (PLACEHIGHRESREGION)))
+      if(((1 << Tp->P[i].getType()) & (RANDOMIZE_DOMAINCENTER_TYPES)))
         {
           MyIntPosType diff[3] = {Tp->P[i].IntPos[0] - domainReferenceIntPos[0], Tp->P[i].IntPos[1] - domainReferenceIntPos[1],
                                   Tp->P[i].IntPos[2] - domainReferenceIntPos[2]};
@@ -280,10 +280,10 @@ void domain<partset>::domain_find_type_extension(void)
   if((MyIntPosType)(domainXmaxtot[2] - domainXmintot[2]) > domainInnersize)
     domainInnersize = domainXmaxtot[2] - domainXmintot[2];
 
-  domain_printf("DOMAIN: Shrink-wrap region size for PLACEHIGHRESREGION is %g\n", domainInnersize * Tp->FacIntToCoord);
+  domain_printf("DOMAIN: Shrink-wrap region size for RANDOMIZE_DOMAINCENTER_TYPES is %g\n", domainInnersize * Tp->FacIntToCoord);
 
   if(domainInnersize * Tp->FacIntToCoord >= 0.125 * All.BoxSize)
-    Terminate("inappropriately big region selection for PLACEHIGHRESREGION");
+    Terminate("inappropriately big region selection for RANDOMIZE_DOMAINCENTER_TYPES");
 
   /* increase the region by at least 1/8 of its size to still allow some randomness in placing the particles within the high-res node
    */
