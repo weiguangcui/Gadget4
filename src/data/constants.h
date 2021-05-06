@@ -225,6 +225,10 @@
 #error "If PMGRID is used without PERIODIC, TREEPM_NOTIMESPLIT needs to be activated"
 #endif
 
+#if defined(PMGRID) && defined(HIERARCHICAL_GRAVITY) && !defined(TREEPM_NOTIMESPLIT)
+#error "If PMGRID is used together with HIERARCHICAL_GRAVITY, you also need to use TREEPM_NOTIMESPLIT"
+#endif
+
 #if defined(PLACEHIGHRESREGION) && !defined(RANDOMIZE_DOMAINCENTER)
 #error "PLACEHIGHRESREGION requires RANDOMIZE_DOMAINCENTER."
 #endif
