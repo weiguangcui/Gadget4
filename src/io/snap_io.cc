@@ -415,13 +415,13 @@ void snap_io::read_ic(const char *fname)
   Sp->NumPart += add_numpart;
 #endif
 
-
-
 #ifdef GADGET2_HEADER
 #ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
-  if(header.flag_entropy_instead_u) Terminate("Initial condition file contains entropy, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is not set\n");
-#else    
-  if(! header.flag_entropy_instead_u)Terminate("Initial condition file contains uthermal, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is set\n");
+  if(header.flag_entropy_instead_u)
+    Terminate("Initial condition file contains entropy, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is not set\n");
+#else
+  if(!header.flag_entropy_instead_u)
+    Terminate("Initial condition file contains uthermal, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is set\n");
 #endif
 #endif
 
@@ -735,6 +735,11 @@ void snap_io::fill_file_header(int writeTask, int lastTask, long long *n_type, l
 #endif
   header.Omega0      = All.Omega0;
   header.OmegaLambda = All.OmegaLambda;
+
+#if !(defined(REARRANGE_OPTION) && defined(MERGERTREE))
+  header.HubbleParam = All.HubbleParam;
+  header.Hubble      = All.Hubble;
+#endif
 
 #ifdef OUTPUT_IN_DOUBLEPRECISION
   header.flag_doubleprecision = 1;

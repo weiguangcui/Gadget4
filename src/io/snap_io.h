@@ -79,10 +79,13 @@ class snap_io : public IO_Def
     double BoxSize;                                /**< box-size of simulation in case periodic boundaries were used */
     double Omega0;                                 /**< matter density in units of critical density */
     double OmegaLambda;                            /**< cosmological constant parameter */
-    long long Ntrees;                              // this replaces the storage space for HubbleParam
-    long long TotNtrees;                           // this replaces the storage space for Hubble
-    //  double HubbleParam;                             /**< little 'h' to scale units systems */
-    //   double Hubble;                                  /**< Hubble constant in internal units */
+#if defined(REARRANGE_OPTION) && defined(MERGERTREE)
+    long long Ntrees;     // this replaces the storage space for HubbleParam
+    long long TotNtrees;  // this replaces the storage space for Hubble
+#else
+    double HubbleParam; /**< little 'h' to scale units systems */
+    double Hubble;      /**< Hubble constant in internal units */
+#endif
     unsigned int npartTotalHighWord[NTYPES_HEADER]; /**< High word of the total number of particles of each type */
     int flag_entropy_instead_u;                     /**< flags that IC-file contains entropy instead of u */
     int flag_doubleprecision;                       /**< flags that snapshot contains double-precision instead of single precision */
