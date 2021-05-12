@@ -172,11 +172,11 @@ void sim::run(void)
         {
           mpi_printf("\nFinal time=%g reached. Simulation ends.\n", All.TimeMax);
 
-          if(All.Ti_lastoutput != All.Ti_Current) /* make a snapshot at the final time in case none has been produced at this time */
+          /* make a snapshot at the final time in case none has been produced at this time yet */
+          if(All.Ti_lastoutput != All.Ti_Current)
             {
-              snap_io Snap(&Sp, Communicator, All.SnapFormat); /* get an I/O object */
-              /* this snapshot will be overwritten if All.TimeMax is increased and the run is continued */
-              Snap.write_snapshot(All.SnapshotFileCount++, NORMAL_SNAPSHOT);
+              All.Ti_nextoutput = All.Ti_Current;
+              create_snapshot_if_desired();
             }
 
           break;
