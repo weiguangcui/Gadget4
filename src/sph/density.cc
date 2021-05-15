@@ -895,7 +895,7 @@ void sph::density_evaluate_kernel(pinfo &pdat)
       if(All.ComovingIntegrationOn)
         vdotr2 += All.cf_atime2_hubble_a * r2;
 
-      Vec4d mu_ij = vdotr2 / (All.cf_afac3 * All.Time * r);
+      Vec4d mu_ij = vdotr2 / (All.cf_afac3 * All.cf_atime * r);
 
       Vec4d cs_j(ngb0->Csnd, ngb1->Csnd, ngb2->Csnd, ngb3->Csnd);
       Vec4d cs_sum = cs_i + cs_j;
@@ -1030,7 +1030,7 @@ void sph::density_evaluate_kernel(pinfo &pdat)
           if(All.ComovingIntegrationOn)
             vdotr2 += All.cf_atime2_hubble_a * r2;
 
-          double mu_ij = vdotr2 / (All.cf_afac3 * All.Time * kernel.r);
+          double mu_ij = vdotr2 / (All.cf_afac3 * All.cf_atime * kernel.r);
           double decay_vel;
 
           if(vdotr2 < 0)
