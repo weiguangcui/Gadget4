@@ -137,7 +137,7 @@ void snap_io::init_basic(simparticles *Sp_ptr)
 #ifdef OUTPUT_PRESSURE
   init_field("PRES", "Pressure", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, SKIP_ON_READ, 1, A_NONE, 0, io_func_pressure,
              GAS_ONLY, /* particle pressure */
-             1, -3., 2., -3., 1., 2., All.UnitDensity_in_cgs * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s);
+             1, -3 * GAMMA, 2, -1, 1, -2, All.UnitDensity_in_cgs * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s);
 #endif
 
 #if defined(TIMEDEP_ART_VISC) && defined(OUTPUT_VISCOSITY_PARAMETER)
