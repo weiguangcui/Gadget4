@@ -27,3 +27,10 @@ For documentation of the code as well as the code paper, please refer
 to the [code's web-site](https://wwwmpa.mpa-garching.mpg.de/gadget4).
 
 
+contributes to Gadget4-Simba
+============================
+
+The default Gadget4-Simba branch is set to Gadget4-Simba. Please leave 
+the master branch untouched for automatic pulling from Volker's repository.
+You are more than velcome to branch your own and make pull request to 
+the Gadget4-Simba branch.
