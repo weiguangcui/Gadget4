@@ -147,6 +147,10 @@
 #define HRPMGRID PMGRID
 #endif
 
+#if !defined(RANDOMIZE_DOMAINCENTER_TYPES) && defined(PLACEHIGHRESREGION)
+#define RANDOMIZE_DOMAINCENTER_TYPES PLACEHIGHRESREGION
+#endif
+
 #if defined(SUBFIND) && !defined(SELFGRAVITY)
 #error "Running SUBFIND without SELFGRAVITY enabled does not make sense."
 #endif
@@ -219,6 +223,10 @@
 
 #if defined(PMGRID) && !defined(PERIODIC) && !defined(TREEPM_NOTIMESPLIT)
 #error "If PMGRID is used without PERIODIC, TREEPM_NOTIMESPLIT needs to be activated"
+#endif
+
+#if defined(PMGRID) && defined(HIERARCHICAL_GRAVITY) && !defined(TREEPM_NOTIMESPLIT)
+#error "If PMGRID is used together with HIERARCHICAL_GRAVITY, you also need to use TREEPM_NOTIMESPLIT"
 #endif
 
 #if defined(PLACEHIGHRESREGION) && !defined(RANDOMIZE_DOMAINCENTER)

@@ -1,4 +1,4 @@
-#defines for headers
+# defines for headers
 VERSION_H
 HDF5UTIL_H
 ALLVARS_H

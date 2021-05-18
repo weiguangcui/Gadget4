@@ -137,7 +137,7 @@ void snap_io::init_basic(simparticles *Sp_ptr)
 #ifdef OUTPUT_PRESSURE
   init_field("PRES", "Pressure", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, SKIP_ON_READ, 1, A_NONE, 0, io_func_pressure,
              GAS_ONLY, /* particle pressure */
-             1, -3., 2., -3., 1., 2., All.UnitDensity_in_cgs * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s);
+             1, -3 * GAMMA, 2., -3., 1., 2., All.UnitDensity_in_cgs * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s);
 #endif
 
 #if defined(TIMEDEP_ART_VISC) && defined(OUTPUT_VISCOSITY_PARAMETER)
@@ -415,13 +415,13 @@ void snap_io::read_ic(const char *fname)
   Sp->NumPart += add_numpart;
 #endif
 
-
-
 #ifdef GADGET2_HEADER
 #ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
-  if(header.flag_entropy_instead_u) Terminate("Initial condition file contains entropy, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is not set\n");
-#else    
-  if(! header.flag_entropy_instead_u)Terminate("Initial condition file contains uthermal, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is set\n");
+  if(header.flag_entropy_instead_u)
+    Terminate("Initial condition file contains entropy, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is not set\n");
+#else
+  if(!header.flag_entropy_instead_u)
+    Terminate("Initial condition file contains uthermal, but INITIAL_CONDITIONS_CONTAIN_ENTROPY is set\n");
 #endif
 #endif
 
@@ -735,6 +735,11 @@ void snap_io::fill_file_header(int writeTask, int lastTask, long long *n_type, l
 #endif
   header.Omega0      = All.Omega0;
   header.OmegaLambda = All.OmegaLambda;
+
+#if !(defined(REARRANGE_OPTION) && defined(MERGERTREE))
+  header.HubbleParam = All.HubbleParam;
+  header.Hubble      = All.Hubble;
+#endif
 
 #ifdef OUTPUT_IN_DOUBLEPRECISION
   header.flag_doubleprecision = 1;

@@ -151,7 +151,7 @@ class subdens_comm : public generic_comm<subdens_in, subdens_out, T_tree, T_doma
           {
             int p, type;
             double mass, r2;
-            particle_data *P;
+            typename T_partset::pdata *P;
 
             if(no < Tree->MaxPart) /* single particle */
               {

@@ -122,7 +122,7 @@ class nearest_comm : public generic_comm<nearest_in, nearest_out, T_tree, T_doma
           {
             if(no < Tree->MaxPart) /* single particle */
               {
-                particle_data *P = Tree->get_Pp(no, shmrank);
+                auto *P = Tree->get_Pp(no, shmrank);
 
                 no = Tree->get_nextnodep(shmrank)[no]; /* note: here shmrank cannot change */
 

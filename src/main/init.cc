@@ -129,7 +129,6 @@ void sim::init(int RestartSnapNum)
 
       Mem.myfree(tmp);
 
-
       int count = 0;
       for(int i = 0; i < Sp.NumPart; i++)
 #ifdef SPLIT_PARTICLE_TYPE
@@ -189,6 +188,11 @@ void sim::init(int RestartSnapNum)
 
             Sp.P[j].setMass(Sp.P[j].getMass() * fac);
             Sp.P[i].setMass(Sp.P[i].getMass() * (1 - fac));
+
+#ifdef SECOND_ORDER_LPT_ICS
+            Sp.P[j].OldAcc *= fac;
+            Sp.P[i].OldAcc *= (1 - fac);
+#endif
 
             Sp.P[j].setType(0);
 #if NSOFTCLASSES > 1
@@ -477,7 +481,7 @@ void sim::init(int RestartSnapNum)
    */
 #ifdef PRESSURE_ENTROPY_SPH
 #ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
-    NgbTree.setup_entropy_to_invgamma();
+  NgbTree.setup_entropy_to_invgamma();
 #endif
 #endif
 
@@ -485,15 +489,15 @@ void sim::init(int RestartSnapNum)
   for(int i = 0; i < Sp.NumGas; i++)
     {
 #ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
-        
-          if(ThisTask == 0 && i == 0)
-            printf("INIT: Converting u -> entropy\n");
+
+      if(ThisTask == 0 && i == 0)
+        printf("INIT: Converting u -> entropy\n");
 
 #if !defined(PRESSURE_ENTROPY_SPH) && !defined(ISOTHERM_EQS)
-          Sp.SphP[i].Entropy = GAMMA_MINUS1 * Sp.SphP[i].Entropy / pow(Sp.SphP[i].Density * All.cf_a3inv, GAMMA_MINUS1);
+      Sp.SphP[i].Entropy = GAMMA_MINUS1 * Sp.SphP[i].Entropy / pow(Sp.SphP[i].Density * All.cf_a3inv, GAMMA_MINUS1);
 #endif
-          Sp.SphP[i].EntropyPred = Sp.SphP[i].Entropy;
-        
+      Sp.SphP[i].EntropyPred = Sp.SphP[i].Entropy;
+
 #endif
       /* The predicted entropy values have been already set for all SPH formulation */
       /* so it should be ok computing pressure and csound now */
