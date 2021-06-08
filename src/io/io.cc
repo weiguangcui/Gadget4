@@ -913,19 +913,19 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
                 {
                   if(file_format == FILEFORMAT_LEGACY1 || file_format == FILEFORMAT_LEGACY2)
                     {
+                      bytes_per_blockelement_in_file =
+                          IO_Fields[blocknr].values_per_block * H5Tget_size(get_hdf5_outputtype_of_block(blocknr));
+
                       if(file_format == FILEFORMAT_LEGACY2)
                         {
                           blksize = sizeof(int) + LABEL_LEN * sizeof(char);
                           SKIP;
                           get_Tab_IO_Label(blocknr, label);
                           my_fwrite(label, sizeof(char), LABEL_LEN, fd);
-                          int nextblock = npart_in_block * bytes_per_blockelement + 2 * sizeof(int);
+                          int nextblock = npart_in_block * bytes_per_blockelement_in_file + 2 * sizeof(int);
                           my_fwrite(&nextblock, sizeof(int), 1, fd);
                           SKIP;
                         }
-
-                      bytes_per_blockelement_in_file =
-                          IO_Fields[blocknr].values_per_block * H5Tget_size(get_hdf5_outputtype_of_block(blocknr));
 
                       blksize = npart_in_block * bytes_per_blockelement_in_file;
                       SKIP;
