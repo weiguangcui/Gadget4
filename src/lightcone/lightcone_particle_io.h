@@ -25,7 +25,11 @@
 class lightcone_particle_io : public IO_Def
 {
  public:
+#ifdef MERGERTREE
   lightcone_particle_io(lcparticles *Lp_ptr, lightcone *LightCone_ptr, mergertree *MergerTree_ptr, MPI_Comm comm, int format);
+#else
+  lightcone_particle_io(lcparticles *Lp_ptr, lightcone *LightCone_ptr, MPI_Comm comm, int format);
+#endif
 
   void lightcone_save(int num, int conenr, bool reordered_flag);
   void lightcone_read(int num, int conenr);
@@ -64,7 +68,9 @@ class lightcone_particle_io : public IO_Def
  private:
   lcparticles *Lp;
   lightcone *LightCone;
+#ifdef MERGERTREE
   mergertree *MergerTree;
+#endif
 
   int cone;
   bool reorder_flag;
