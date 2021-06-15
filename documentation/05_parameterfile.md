@@ -1090,9 +1090,10 @@ geometry.
 
 An example for a lightcone definition file could look like this:
 
+~~~~~~~~~~~~~
 0 0   0.5    1.0
-
 1 0   0.4    1.0    0
+~~~~~~~~~~~~~
 
 This would define a full-sky light cone from z=1 to z=0, and an octant
 covering positive x>0,y>0,z>0 from redshift z=1.5 to z=0.
