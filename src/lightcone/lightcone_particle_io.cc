@@ -41,14 +41,20 @@
  * For init_field( arguments read the documentation of init_field(.
  * Don't forget to add the new IO_FLAG to io_private.h
  */
-
+#ifdef MERGERTREE
 lightcone_particle_io::lightcone_particle_io(lcparticles *Lp_ptr, lightcone *LightCone_ptr, mergertree *MergerTree_ptr, MPI_Comm comm,
                                              int format)
     : IO_Def(comm, format)
+#else
+lightcone_particle_io::lightcone_particle_io(lcparticles *Lp_ptr, lightcone *LightCone_ptr, MPI_Comm comm, int format)
+    : IO_Def(comm, format)
+#endif
 {
-  Lp         = Lp_ptr;
-  LightCone  = LightCone_ptr;
+  Lp        = Lp_ptr;
+  LightCone = LightCone_ptr;
+#ifdef MERGERTREE
   MergerTree = MergerTree_ptr;
+#endif
 
   this->N_IO_Fields  = 0;
   this->N_DataGroups = NTYPES + 2;
@@ -113,12 +119,14 @@ lightcone_particle_io::lightcone_particle_io(lcparticles *Lp_ptr, lightcone *Lig
              1, 0., 0., 0., 0., 1., All.UnitVelocity_in_cm_per_s);
 #endif
 
+#ifdef MERGERTREE
   init_field("MTRL", "ParticleCount", MEM_INT, FILE_INT, SKIP_ON_READ, 1, A_TT, &MergerTree->TreeTable[0].HaloCount, NULL, TREETABLE,
              0, 0, 0, 0, 0, 0, 0, true);
   init_field("MTRS", "ParticleFirst", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_TT, &MergerTree->TreeTable[0].FirstHalo, NULL,
              TREETABLE, 0, 0, 0, 0, 0, 0, 0, true);
   init_field("MTRI", "TreeID", MEM_INT64, FILE_INT64, SKIP_ON_READ, 1, A_TT, &MergerTree->TreeTable[0].TreeID, NULL, TREETABLE, 0, 0,
              0, 0, 0, 0, 0, true);
+#endif
 
   init_field("HPHT", "ParticleCount", MEM_INT, FILE_INT, SKIP_ON_READ, 1, A_MM, &Lp->HealPixTab_PartCount[0], NULL, HEALPIXTAB, 0, 0,
              0, 0, 0, 0, 0, true);
@@ -268,7 +276,12 @@ void lightcone_particle_io::fill_file_header(int writeTask, int lastTask, long l
       if(Lp->P[n].getType() < NTYPES)
         n_type[Lp->P[n].getType()]++;
 
+#ifdef MERGERTREE
   n_type[NTYPES + 0] = MergerTree->Ntrees;
+#else
+  n_type[NTYPES + 0] = 0;
+#endif
+
   n_type[NTYPES + 1] = Lp->NpixLoc;
 
   /* determine particle numbers of each type in file */
@@ -304,9 +317,12 @@ void lightcone_particle_io::fill_file_header(int writeTask, int lastTask, long l
 
   if(reorder_flag)
     {
-      header.Ntrees    = ntot_type[NTYPES];
+      header.Ntrees = ntot_type[NTYPES];
+#ifdef MERGERTREE
       header.TotNtrees = MergerTree->TotNtrees;
-
+#else
+      header.TotNtrees = 0;
+#endif
       header.Npix    = 0;
       header.TotNpix = 0;
     }
@@ -365,8 +381,10 @@ void *lightcone_particle_io::get_base_address_of_structure(enum arrays array, in
       case A_PS:
         return (void *)(Lp->PS + index);
 
+#ifdef MERGERTREE
       case A_TT:
         return (void *)(MergerTree->TreeTable + index);
+#endif
 
       case A_MM:
         return (void *)(Lp->HealPixTab_PartCount + index);

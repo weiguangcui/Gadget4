@@ -680,9 +680,12 @@ void sim::create_snapshot_if_desired(void)
 #endif
 
           {
+#ifdef MERGERTREE
             MergerTree.Ntrees = 0;
             lightcone_particle_io Lcone(&Lp, &LightCone, &MergerTree, Communicator, All.SnapFormat); /* get an I/O object */
-
+#else
+        lightcone_particle_io Lcone(&Lp, &LightCone, Communicator, All.SnapFormat); /* get an I/O object */
+#endif
             long long NumLP_tot = Lp.NumPart;
             MPI_Allreduce(MPI_IN_PLACE, &NumLP_tot, 1, MPI_LONG_LONG, MPI_SUM, Communicator);
             mpi_printf("\nLIGHTCONE: writing particle lightcone conesnap files #%d ... (NumLP_tot = %lld)\n", All.LightconeFileCount,
