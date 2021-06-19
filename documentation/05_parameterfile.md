@@ -1047,6 +1047,58 @@ indirectly determines on how many output files the lightcone is
 distributed. By overriding the constant `LIGHTCONE_ALLOC_FAC` in the
 `Config.sh`-file, this can be influenced if desired.
 
+The file defining the lightcones has the following format. Each 
+line defines a separate lightcone, and is defined at least by four
+numbers:
+<type>  <flag>  <astart>  <aend>
+
+Here <type> can be either 0, 1, 2, 3, or 4, and defines the geometric
+selection of the specific lightcone, according to: 0 = full sky, 
+1 = one octant, 2 = a pencil beam cone with circular aperture, 
+3 = a disk like region, 4 = a pencil beam with a square-shaped aperture.
+
+<astart> sets the far edge of the lightcone to redshift zmax = 1/astart - 1
+<aend> sets the near edge of the lightcone to redshift zend = 1/aend - 1
+
+<flag> is normally 0. A value of 1 only makes sense combined with the 
+SUBFIND_ORPHAN_TREATMENT option and then restricts the output to formerly
+most bound particles.
+
+For type=1 (octant), an additional number <octantnr> with value 0, 1, ..., 
+or 7 is needed to select the specific octant.
+
+For type=2 (cone), three additional numbers are expected to define the 
+principal direction vector of the cone (this does not need to be normalized), 
+followed by its half opening angle in degrees. 
+
+For type=3 (disk), three additional number are expected that define
+the normal of the disk region, followed by a further number defining
+its comoving thickness.
+
+For type=4 (pyramid with square base), first three additional number are 
+expected to define the direction vector of the pencil beam, then a further
+vector is expected that is used to set the orientation of the x-direction
+of the patch of sky that is mapped by the lightcone, with the y-direction
+being orthogonal to that. Finally, a last number gives the half opening
+angle of the pyramid-shaped pencil beam in degrees.
+
+Multiple lightcones, also of the same type, can be specified if desired. 
+Note that the output will get extremely large if you select even a moderate
+redshift depth, because the code will automatically periodically 
+replicate the simulation box as needed to cover the specified lightcone
+geometry. 
+
+An example for a lightcone definition file could look like this:
+
+~~~~~~~~~~~~~
+0 0   0.5    1.0
+1 0   0.4    1.0    0
+~~~~~~~~~~~~~
+
+This would define a full-sky light cone from z=1 to z=0, and an octant
+covering positive x>0,y>0,z>0 from redshift z=1.5 to z=0.
+
+
 -------
 
 **LightConeMassMapsNside**  12
