@@ -689,7 +689,7 @@ void snap_io::fill_file_header(int writeTask, int lastTask, long long *n_type, l
       header.npartTotal[n] = ntot_type_all[n];
     }
 
-#ifdef MERGERTREE
+#if defined(MERGERTREE) && !defined(GADGET2_HEADER)
   if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT_REORDERED)
     {
       header.Ntrees = ntot_type[NTYPES];
@@ -854,7 +854,7 @@ void snap_io::read_file_header(const char *fname, int filenr, int readTask, int 
       nall += n_for_this_task;
     }
 
-#ifdef MERGERTREE
+#if defined(MERGERTREE) && !defined(GADGET2_HEADER)
   if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT_REORDERED)
     ntot_type[NTYPES] = header.Ntrees;
 #endif
@@ -940,7 +940,7 @@ void snap_io::read_header_fields(const char *fname)
 
   read_vector_attribute(handle, "NumPart_Total", header.npartTotal, H5T_NATIVE_UINT64, ntypes);
 
-#ifdef MERGERTREE
+#if defined(MERGERTREE) && !defined(GADGET2_HEADER)
   if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT_REORDERED)
     {
       read_scalar_attribute(handle, "Ntrees_ThisFile", &header.Ntrees, H5T_NATIVE_UINT64);
