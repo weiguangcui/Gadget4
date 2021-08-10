@@ -323,7 +323,8 @@ integertime simparticles::get_timestep_hydro(int p /*!< particle index */)
     {
       if(SphP[p].Sfr > 0)
         {
-          double dt_sfr = 0.1 * P[p].getMass() / SphP[p].Sfr;
+          double dt_sfr =
+              0.1 * P[p].getMass() / (SphP[p].Sfr / ((All.UnitMass_in_g / SOLAR_MASS) / (All.UnitTime_in_s / SEC_PER_YEAR)));
           if(dt_sfr < dt)
             dt = dt_sfr;
         }

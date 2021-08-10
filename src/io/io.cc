@@ -817,14 +817,14 @@ void IO_Def::write_multiple_files(char *fname, int numfilesperdump, int append_f
 void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuffer, int numfilesperdump, int chunksize)
 {
   int typelist[N_DataGroups];
-  long long n_type[N_DataGroups], npart[N_DataGroups];
+  long long n_type[N_DataGroups], npart[N_DataGroups], pcsum = 0;
   char label[LABEL_LEN + 1];
   unsigned int blksize, bytes_per_blockelement_in_file = 0;
   FILE *fd        = 0;
   hid_t hdf5_file = 0, hdf5_grp[N_DataGroups], hdf5_headergrp = 0, hdf5_dataspace_memory;
   hid_t hdf5_dataspace_in_file = 0, hdf5_dataset = 0, hdf5_prop = 0;
   hsize_t dims[2], count[2], start[2];
-  int rank = 0, pcsum = 0;
+  int rank             = 0;
   hid_t hdf5_paramsgrp = 0;
   hid_t hdf5_configgrp = 0;
 
@@ -995,7 +995,7 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
 
                       for(int task = writeTask, offset = 0; task <= lastTask; task++)
                         {
-                          int n_for_this_task;
+                          long long n_for_this_task;
 
                           if(task == ThisTask)
                             {
@@ -1003,14 +1003,15 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
 
                               for(int p = writeTask; p <= lastTask; p++)
                                 if(p != ThisTask)
-                                  MPI_Send(&n_for_this_task, 1, MPI_INT, p, TAG_NFORTHISTASK, Communicator);
+                                  MPI_Send(&n_for_this_task, sizeof(n_for_this_task), MPI_BYTE, p, TAG_NFORTHISTASK, Communicator);
                             }
                           else
-                            MPI_Recv(&n_for_this_task, 1, MPI_INT, task, TAG_NFORTHISTASK, Communicator, MPI_STATUS_IGNORE);
+                            MPI_Recv(&n_for_this_task, sizeof(n_for_this_task), MPI_BYTE, task, TAG_NFORTHISTASK, Communicator,
+                                     MPI_STATUS_IGNORE);
 
                           while(n_for_this_task > 0)
                             {
-                              int pc = n_for_this_task;
+                              long long pc = n_for_this_task;
 
                               if(pc > blockmaxlen)
                                 pc = blockmaxlen;
@@ -1117,11 +1118,11 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
 void IO_Def::append_file(char *fname, int writeTask, int lastTask, void *CommBuffer, int numfilesperdump, int chunksize)
 {
   int typelist[N_DataGroups];
-  long long n_type[N_DataGroups], npart[N_DataGroups], n_previous[N_DataGroups];
+  long long n_type[N_DataGroups], npart[N_DataGroups], n_previous[N_DataGroups], pcsum = 0;
   hid_t hdf5_file = 0, hdf5_grp[N_DataGroups], hdf5_headergrp = 0, hdf5_dataspace_memory;
   hid_t hdf5_dataspace_in_file = 0, hdf5_dataset = 0;
   hsize_t dims[2], count[2], start[2];
-  int rank = 0, pcsum = 0;
+  int rank = 0;
 
   if(file_format != FILEFORMAT_HDF5)
     Terminate("appending to files only works with HDF5 format\n");
@@ -1226,7 +1227,7 @@ void IO_Def::append_file(char *fname, int writeTask, int lastTask, void *CommBuf
 
                       for(int task = writeTask, offset = 0; task <= lastTask; task++)
                         {
-                          int n_for_this_task;
+                          long long n_for_this_task;
 
                           if(task == ThisTask)
                             {
@@ -1234,14 +1235,15 @@ void IO_Def::append_file(char *fname, int writeTask, int lastTask, void *CommBuf
 
                               for(int p = writeTask; p <= lastTask; p++)
                                 if(p != ThisTask)
-                                  MPI_Send(&n_for_this_task, 1, MPI_INT, p, TAG_NFORTHISTASK, Communicator);
+                                  MPI_Send(&n_for_this_task, sizeof(n_for_this_task), MPI_BYTE, p, TAG_NFORTHISTASK, Communicator);
                             }
                           else
-                            MPI_Recv(&n_for_this_task, 1, MPI_INT, task, TAG_NFORTHISTASK, Communicator, MPI_STATUS_IGNORE);
+                            MPI_Recv(&n_for_this_task, sizeof(n_for_this_task), MPI_BYTE, task, TAG_NFORTHISTASK, Communicator,
+                                     MPI_STATUS_IGNORE);
 
                           while(n_for_this_task > 0)
                             {
-                              int pc = n_for_this_task;
+                              long long pc = n_for_this_task;
 
                               if(pc > blockmaxlen)
                                 pc = blockmaxlen;
