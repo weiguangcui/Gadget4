@@ -551,12 +551,6 @@ void sph::density(int *list, int ntarget)
                 }
 
 #endif
-#ifdef TIMEDEP_ART_VISC
-              double dt = (Tp->P[target].getTimeBinHydro() ? (((integertime)1) << Tp->P[target].getTimeBinHydro()) : 0) *
-                          All.Timebase_interval;
-              double dtime = All.cf_atime * dt / All.cf_atime_hubble_a;
-              SphP[target].set_viscosity_coefficient(dtime);
-#endif
 #ifdef ADAPTIVE_HYDRO_SOFTENING
               Tp->P[target].setSofteningClass(Tp->get_softeningtype_for_hydro_particle(target));
 #endif
@@ -576,6 +570,12 @@ void sph::density(int *list, int ntarget)
                   if(Left[target] > 0 && Right[target] > 0)
                     if((Right[target] - Left[target]) < 1.0e-3 * Left[target])
                       {
+#ifdef TIMEDEP_ART_VISC
+                        double dt = (Tp->P[target].getTimeBinHydro() ? (((integertime)1) << Tp->P[target].getTimeBinHydro()) : 0) *
+                                    All.Timebase_interval;
+                        double dtime = All.cf_atime * dt / All.cf_atime_hubble_a;
+                        SphP[target].set_viscosity_coefficient(dtime);
+#endif
                         /* this one should be ok */
                         continue;
                       }
