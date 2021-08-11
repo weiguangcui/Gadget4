@@ -570,12 +570,6 @@ void sph::density(int *list, int ntarget)
                   if(Left[target] > 0 && Right[target] > 0)
                     if((Right[target] - Left[target]) < 1.0e-3 * Left[target])
                       {
-#ifdef TIMEDEP_ART_VISC
-                        double dt = (Tp->P[target].getTimeBinHydro() ? (((integertime)1) << Tp->P[target].getTimeBinHydro()) : 0) *
-                                    All.Timebase_interval;
-                        double dtime = All.cf_atime * dt / All.cf_atime_hubble_a;
-                        SphP[target].set_viscosity_coefficient(dtime);
-#endif
                         /* this one should be ok */
                         continue;
                       }
@@ -668,6 +662,17 @@ void sph::density(int *list, int ntarget)
         D->mpi_printf("SPH-DENSITY: ngb iteration %4d: took %8.3f\n", ++iter, Logs.timediff(t0, t1));
     }
   while(ndensities > 0);
+
+#ifdef TIMEDEP_ART_VISC
+  for(int i = 0; i < ntarget; i++)
+    {
+      int target = list[i];
+      double dt =
+          (Tp->P[target].getTimeBinHydro() ? (((integertime)1) << Tp->P[target].getTimeBinHydro()) : 0) * All.Timebase_interval;
+      double dtime = All.cf_atime * dt / All.cf_atime_hubble_a;
+      Tp->SphP[target].set_viscosity_coefficient(dtime);
+    }
+#endif
 
   TIMER_START(CPU_DENSIMBALANCE);
 
