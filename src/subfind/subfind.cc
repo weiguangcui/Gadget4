@@ -402,6 +402,7 @@ void fof<partset>::subfind_find_subhalos(int num, const char *basename, const ch
     else
       subfind_processing(&SubDomain, SERIAL_SUBFIND); /* we have several groups in full to be done by the local CPU */
   }
+  MPI_Barrier(Communicator);
   double ti1 = Logs.second();
   mpi_printf("SUBFIND: Processing overall took  (total time=%g sec)\n", Logs.timediff(ti0, ti1));
 
