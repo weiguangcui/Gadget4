@@ -116,9 +116,9 @@ void fof<simparticles>::subfind_match_ids_of_previously_most_bound_ids(simpartic
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(MyIDType), MPI_BYTE, recvTask, TAG_DENS_B,
-                       &import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(MyIDType), MPI_BYTE, recvTask, TAG_DENS_B,
-                       Communicator, MPI_STATUS_IGNORE);
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(MyIDType), MPI_BYTE, recvTask, TAG_DENS_B,
+                         &import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(MyIDType), MPI_BYTE, recvTask, TAG_DENS_B,
+                         Communicator, MPI_STATUS_IGNORE);
     }
 
   /* incoming data should already be sorted, so now do the match */
