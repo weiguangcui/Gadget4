@@ -980,9 +980,10 @@ void lightcone::lightcone_massmap_binning(void)
 
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&send_P[Send_offset[recvTask]], Send_count[recvTask] * sizeof(lightcone_massmap_data), MPI_BYTE, recvTask,
-                       TAG_DENS_A, &Mp->P[Mp->NumPart + Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(lightcone_massmap_data),
-                       MPI_BYTE, recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
+          myMPI_Sendrecv(&send_P[Send_offset[recvTask]], Send_count[recvTask] * sizeof(lightcone_massmap_data), MPI_BYTE, recvTask,
+                         TAG_DENS_A, &Mp->P[Mp->NumPart + Recv_offset[recvTask]],
+                         Recv_count[recvTask] * sizeof(lightcone_massmap_data), MPI_BYTE, recvTask, TAG_DENS_A, Communicator,
+                         MPI_STATUS_IGNORE);
     }
 
   Mp->NumPart += nimport;

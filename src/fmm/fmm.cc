@@ -1688,7 +1688,7 @@ void fmm::gravity_fmm(int timebin)
   NumOnWorkStack         = 0;
   AllocWorkStackBaseLow  = std::max<int>(1.5 * (Tp->NumPart + NumPartImported), TREE_MIN_WORKSTACK_SIZE);
   AllocWorkStackBaseHigh = AllocWorkStackBaseLow + TREE_EXPECTED_CYCLES * TREE_MIN_WORKSTACK_SIZE;
-  MaxOnWorkStack         = AllocWorkStackBaseLow;
+  MaxOnWorkStack         = std::max<int>(AllocWorkStackBaseLow, 2 * 8 * 8 * TREE_NUM_BEFORE_NODESPLIT * TREE_NUM_BEFORE_NODESPLIT);
 
   FMM_WorkStack   = (fmm_workstack_data *)Mem.mymalloc("FMM_WorkStack", AllocWorkStackBaseHigh * sizeof(fmm_workstack_data));
   ResultIndexList = (int *)Mem.mymalloc("ResultIndexList", NumPartImported * sizeof(int));
@@ -1743,6 +1743,7 @@ void fmm::gravity_fmm(int timebin)
 
   // set a default size of the fetch stack equal to half the work stack (this may still be somewhat too large)
   MaxOnFetchStack = std::max<int>(0.1 * (Tp->NumPart + NumPartImported), TREE_MIN_WORKSTACK_SIZE);
+  MaxOnFetchStack = std::max<int>(MaxOnFetchStack, 2 * 8 * 8 * TREE_NUM_BEFORE_NODESPLIT * TREE_NUM_BEFORE_NODESPLIT);
   StackToFetch    = (fetch_data *)Mem.mymalloc_movable(&StackToFetch, "StackToFetch", MaxOnFetchStack * sizeof(fetch_data));
 
   // let's grab at most half the still available memory for imported points and nodes
@@ -1793,6 +1794,7 @@ void fmm::gravity_fmm(int timebin)
           NewOnWorkStack  = 0;  // gives the new entries
           NumOnFetchStack = 0;
           MaxOnWorkStack  = std::min<int>(AllocWorkStackBaseLow + max_ncycles * TREE_MIN_WORKSTACK_SIZE, AllocWorkStackBaseHigh);
+          MaxOnWorkStack  = std::max<int>(MaxOnWorkStack, 2 * 8 * 8 * TREE_NUM_BEFORE_NODESPLIT * TREE_NUM_BEFORE_NODESPLIT);
 
           TIMER_START(CPU_TREEWALK);
 

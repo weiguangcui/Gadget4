@@ -619,10 +619,10 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
                         {
                           if(Send_count[target] > 0 || Recv_count[target] > 0)
                             {
-                              MPI_Sendrecv(sphBuf + Send_offset[target], Send_count[target] * sizeof(sph_particle_data), MPI_BYTE,
-                                           target, TAG_SPHDATA, Tp->SphP + Recv_offset[target] + nstay,
-                                           Recv_count[target] * sizeof(sph_particle_data), MPI_BYTE, target, TAG_SPHDATA, Communicator,
-                                           MPI_STATUS_IGNORE);
+                              myMPI_Sendrecv(sphBuf + Send_offset[target], Send_count[target] * sizeof(sph_particle_data), MPI_BYTE,
+                                             target, TAG_SPHDATA, Tp->SphP + Recv_offset[target] + nstay,
+                                             Recv_count[target] * sizeof(sph_particle_data), MPI_BYTE, target, TAG_SPHDATA,
+                                             Communicator, MPI_STATUS_IGNORE);
                             }
                         }
                     }
@@ -724,9 +724,9 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
                     {
                       if(Send_count[target] > 0 || Recv_count[target] > 0)
                         {
-                          MPI_Sendrecv(partBuf + Send_offset[target], Send_count[target] * sizeof(pdata), MPI_BYTE, target, TAG_PDATA,
-                                       Tp->P + Recv_offset[target] + nlocal, Recv_count[target] * sizeof(pdata), MPI_BYTE, target,
-                                       TAG_PDATA, Communicator, MPI_STATUS_IGNORE);
+                          myMPI_Sendrecv(partBuf + Send_offset[target], Send_count[target] * sizeof(pdata), MPI_BYTE, target,
+                                         TAG_PDATA, Tp->P + Recv_offset[target] + nlocal, Recv_count[target] * sizeof(pdata), MPI_BYTE,
+                                         target, TAG_PDATA, Communicator, MPI_STATUS_IGNORE);
                         }
                     }
                 }
@@ -822,9 +822,9 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
                     {
                       if(Send_count[target] > 0 || Recv_count[target] > 0)
                         {
-                          MPI_Sendrecv(subBuf + Send_offset[target], Send_count[target] * sizeof(subfind_data), MPI_BYTE, target,
-                                       TAG_KEY, Tp->PS + Recv_offset[target] + nlocal, Recv_count[target] * sizeof(subfind_data),
-                                       MPI_BYTE, target, TAG_KEY, Communicator, MPI_STATUS_IGNORE);
+                          myMPI_Sendrecv(subBuf + Send_offset[target], Send_count[target] * sizeof(subfind_data), MPI_BYTE, target,
+                                         TAG_KEY, Tp->PS + Recv_offset[target] + nlocal, Recv_count[target] * sizeof(subfind_data),
+                                         MPI_BYTE, target, TAG_KEY, Communicator, MPI_STATUS_IGNORE);
                         }
                     }
                 }
