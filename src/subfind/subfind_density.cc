@@ -524,7 +524,7 @@ void fof<partset>::subfind_density_hsml_guess(void) /* set the initial guess for
           if(hsml_prev)
             Tp->PS[i].v.DM_Hsml = hsml_prev;
           else
-            Tp->PS[i].v.DM_Hsml = All.SofteningTable[Tp->P[i].getType()];
+            Tp->PS[i].v.DM_Hsml = All.SofteningTable[All.SofteningClassOfPartType[Tp->P[i].getType()]];
         }
     }
 }
