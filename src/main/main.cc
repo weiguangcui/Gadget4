@@ -224,6 +224,7 @@ int main(int argc, char **argv)
     {
       restart Restart{Sim.Communicator};
       Restart.load(&Sim);
+      All.RestartFlag = RST_RESUME;  // prevent that this is overwritten by All.RestartFlag in restart set
     }
   else
     {
