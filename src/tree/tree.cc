@@ -957,6 +957,10 @@ void tree<node, partset, point_data, foreign_point_data>::prepare_shared_memory_
       Shmem.inform_offset_table(Foreign_Nodes);
       Shmem.inform_offset_table(Foreign_Points);
 
+      MPI_Barrier(Shmem.SharedMemComm);  // this barrier is in principle superfluous, but on some systems,
+                                         // the MPI_Gather in prepare_offset_table() can return prematurely
+                                         // on the target rank before all data has arrived
+
       /* the following is needed to make sure that the shared memory handler on different nodes is already properly initialized */
       MPI_Barrier(D->Communicator);
     }
