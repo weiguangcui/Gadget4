@@ -5,12 +5,16 @@
  *******************************************************************************/
 #include "gadgetconfig.h"
 
+#include <fcntl.h>
 #include <math.h>
 #include <mpi.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "../data/allvars.h"
 #include "../data/dtypes.h"
@@ -87,7 +91,7 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
   MPI_Info_create(&win_info);
   MPI_Info_set(win_info, "alloc_shared_noncontig", "true");
 
-  if(MPI_Win_allocate_shared(n, 1, win_info, Shmem.SharedMemComm, &Base, &Shmem.SharedMemWin) != MPI_SUCCESS)
+  if(myMPI_Win_allocate_shared(n, 1, win_info, Shmem.SharedMemComm, &Base, &Shmem.SharedMemWin) != MPI_SUCCESS)
     Terminate("Failed to allocate memory for `Base' (%d Mbytes).\n", All.MaxMemSize);
 
   /* we now make sure that the allocated local buffer is really aligned, not all MPI libraries guarantee this */
@@ -156,7 +160,7 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
     {
       MPI_Aint size;
       int disp_unit;
-      MPI_Win_shared_query(Shmem.SharedMemWin, i, &size, &disp_unit, &Shmem.SharedMemBaseAddr[i]);
+      myMPI_Win_shared_query(Shmem.SharedMemWin, i, &size, &disp_unit, &Shmem.SharedMemBaseAddr[i]);
     }
 
   // now propagte the alignment correction also to the base addresses that all the other processes see
@@ -168,6 +172,93 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
     Shmem.SharedMemBaseAddr[i] = (char *)Shmem.SharedMemBaseAddr[i] + off_list[i];
 
   Mem.myfree(off_list);
+}
+
+int memory::myMPI_Win_allocate_shared(MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
+{
+#ifndef ALLOCATE_SHARED_MEMORY_VIA_POSIX
+  return MPI_Win_allocate_shared(size, disp_unit, info, comm, baseptr, win);
+#else
+
+  char shmpath[NAME_MAX];
+
+  /* Base offsets of the other MPI ranks in our shared memory mapping */
+  Shmem.SharedMemBaseAddrRaw = (char **)malloc(Shmem.Island_NTask * sizeof(char *));
+
+  long long *size_list = (long long *)malloc(Shmem.Island_NTask * sizeof(long long));
+
+  long long loc_bytes = size;
+  MPI_Allgather(&loc_bytes, 1, MPI_LONG_LONG, size_list, 1, MPI_LONG_LONG, comm);
+
+  long long tot_bytes = 0;
+  for(int i = 0; i < Shmem.Island_NTask; i++)
+    tot_bytes += size_list[i];
+
+  if(Shmem.Island_ThisTask == 0)
+    {
+      sprintf(shmpath, "/G4-%lld.dat", (long long)getpid());
+
+      int fd = shm_open(shmpath, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
+      if(fd == -1)
+        Terminate("shm_open failed in creation");
+
+      if(ftruncate(fd, tot_bytes) == -1)
+        Terminate("ftruncate failed");
+
+      /* Map the object into the caller's address space. */
+
+      void *buf = mmap(NULL, tot_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      if(buf == MAP_FAILED)
+        Terminate("mmap failed");
+
+      Shmem.SharedMemBaseAddrRaw[0] = (char *)buf;
+    }
+
+  MPI_Bcast(shmpath, NAME_MAX, MPI_BYTE, 0, comm);
+
+  if(Shmem.Island_ThisTask != 0)
+    {
+      int fd = shm_open(shmpath, O_RDWR, 0);
+      if(fd == -1)
+        Terminate("shm open failed in access");
+
+      void *buf = mmap(NULL, tot_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      if(buf == MAP_FAILED)
+        Terminate("mmap failed");
+
+      Shmem.SharedMemBaseAddrRaw[0] = (char *)buf;
+    }
+
+  for(int i = 1; i < Shmem.Island_NTask; i++)
+    Shmem.SharedMemBaseAddrRaw[i] = (char *)Shmem.SharedMemBaseAddrRaw[i - 1] + size_list[i - 1];
+
+  char **p = (char **)baseptr;
+
+  *p = Shmem.SharedMemBaseAddrRaw[Shmem.Island_ThisTask];
+
+  free(size_list);
+
+  MPI_Barrier(comm);
+
+  if(Shmem.Island_ThisTask == 0)
+    shm_unlink(shmpath);
+
+  return MPI_SUCCESS;
+#endif
+}
+
+int memory::myMPI_Win_shared_query(MPI_Win win, int rank, MPI_Aint *size, int *disp_unit, void *baseptr)
+{
+#ifndef ALLOCATE_SHARED_MEMORY_VIA_POSIX
+  return MPI_Win_shared_query(win, rank, size, disp_unit, baseptr);
+#else
+
+  char **p = (char **)baseptr;
+
+  *p = Shmem.SharedMemBaseAddrRaw[rank];
+
+  return MPI_SUCCESS;
+#endif
 }
 
 void memory::report_memory_usage(int rank, char *tabbuf)
