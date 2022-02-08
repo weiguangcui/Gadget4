@@ -117,8 +117,8 @@ void gravtree<simparticles>::gravity_direct(simparticles *Sp, domain<simparticle
       Send_offset[j] = Recv_offset[j] * sizeof(directdata);
     }
 
-  MPI_Allgatherv(DirectDataIn, nforces * sizeof(directdata), MPI_BYTE, DirectDataAll, Send_count, Send_offset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(DirectDataIn, nforces * sizeof(directdata), MPI_BYTE, DirectDataAll, Send_count, Send_offset, MPI_BYTE,
+                   D->Communicator);
 
   /* subdivide the work evenly */
   int first, count;

@@ -40,7 +40,7 @@ int myMPI_Alltoallv_new_prep(int *sendcnt, int *recvcnt, int *rdispls, MPI_Comm 
   MPI_Comm_rank(comm, &rank);
 
   if(method == 0 || method == 1)
-    MPI_Alltoall(sendcnt, 1, MPI_INT, recvcnt, 1, MPI_INT, comm);
+    myMPI_Alltoall(sendcnt, 1, MPI_INT, recvcnt, 1, MPI_INT, comm);
   else if(method == 10)
     {
       for(int i = 0; i < nranks; ++i)
@@ -80,6 +80,10 @@ void myMPI_Alltoallv_new(void *sendbuf, int *sendcnt, int *sdispls, MPI_Datatype
   MPI_Type_size(sendtype, &itsz);
   size_t tsz = itsz;  // to enforce size_t data type in later computations
 
+#ifdef MPI_HYPERCUBE_ALLTOALL
+  method = 1;
+#endif
+
   if(method == 0)  // standard Alltoallv
     MPI_Alltoallv(sendbuf, sendcnt, sdispls, sendtype, recvbuf, recvcnt, rdispls, recvtype, comm);
   else if(method == 1)  // blocking sendrecv
@@ -90,7 +94,6 @@ void myMPI_Alltoallv_new(void *sendbuf, int *sendcnt, int *sdispls, MPI_Datatype
       while(lptask < nranks)
         lptask <<= 1;
       int tag = 42;
-      MPI_Status status;
 
       if(recvcnt[rank] > 0)  // local communication
         memcpy(PCHAR(recvbuf) + tsz * rdispls[rank], PCHAR(sendbuf) + tsz * sdispls[rank], tsz * recvcnt[rank]);
@@ -100,8 +103,8 @@ void myMPI_Alltoallv_new(void *sendbuf, int *sendcnt, int *sdispls, MPI_Datatype
           int otask = rank ^ ngrp;
           if(otask < nranks)
             if(sendcnt[otask] > 0 || recvcnt[otask] > 0)
-              MPI_Sendrecv(PCHAR(sendbuf) + tsz * sdispls[otask], sendcnt[otask], sendtype, otask, tag,
-                           PCHAR(recvbuf) + tsz * rdispls[otask], recvcnt[otask], recvtype, otask, tag, comm, &status);
+              myMPI_Sendrecv(PCHAR(sendbuf) + tsz * sdispls[otask], sendcnt[otask], sendtype, otask, tag,
+                             PCHAR(recvbuf) + tsz * rdispls[otask], recvcnt[otask], recvtype, otask, tag, comm, MPI_STATUS_IGNORE);
         }
     }
   else if(method == 2)  // asynchronous communication
@@ -145,6 +148,7 @@ void myMPI_Alltoallv_new(void *sendbuf, int *sendcnt, int *sdispls, MPI_Datatype
       int *disp_at_sender  = (int *)Mem.mymalloc("disp_at_sender", nranks * sizeof(int));
       disp_at_sender[rank] = sdispls[rank];
       MPI_Win win;
+      // TODO:supply info object with "no_lock"
       MPI_Win_create(sdispls, nranks * sizeof(MPI_INT), sizeof(MPI_INT), MPI_INFO_NULL, comm, &win);
       MPI_Win_fence(0, win);
       for(int i = 1; i < nranks; ++i)
@@ -180,6 +184,7 @@ void myMPI_Alltoallv(void *sendb, size_t *sendcounts, size_t *sdispls, void *rec
   char *sendbuf = (char *)sendb;
   char *recvbuf = (char *)recvb;
 
+#ifndef MPI_HYPERCUBE_ALLTOALL
   if(big_flag == 0)
     {
       int ntask;
@@ -206,6 +211,7 @@ void myMPI_Alltoallv(void *sendb, size_t *sendcounts, size_t *sdispls, void *rec
       Mem.myfree(scount);
     }
   else
+#endif
     {
       /* here we definitely have some large messages. We default to the
        * pair-wise protocol, which should be most robust anyway.
@@ -238,6 +244,7 @@ void my_int_MPI_Alltoallv(void *sendb, int *sendcounts, int *sdispls, void *recv
   char *sendbuf = (char *)sendb;
   char *recvbuf = (char *)recvb;
 
+#ifndef MPI_HYPERCUBE_ALLTOALL
   if(big_flag == 0)
     {
       int ntask;
@@ -264,6 +271,7 @@ void my_int_MPI_Alltoallv(void *sendb, int *sendcounts, int *sdispls, void *recv
       Mem.myfree(scount);
     }
   else
+#endif
     {
       /* here we definitely have some large messages. We default to the
        * pair-wise protocoll, which should be most robust anyway.
@@ -288,4 +296,40 @@ void my_int_MPI_Alltoallv(void *sendb, int *sendcounts, int *sdispls, void *recv
             }
         }
     }
+}
+
+int myMPI_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                   MPI_Comm comm)
+
+{
+#ifndef MPI_HYPERCUBE_ALLTOALL
+  return MPI_Alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+#else
+  int ntask, ptask, thistask, size_sendtype, size_recvtype;
+
+  MPI_Comm_rank(comm, &thistask);
+  MPI_Comm_size(comm, &ntask);
+
+  MPI_Type_size(sendtype, &size_sendtype);
+  MPI_Type_size(recvtype, &size_recvtype);
+
+  for(ptask = 0; ntask > (1 << ptask); ptask++)
+    ;
+
+  for(int ngrp = 1; ngrp < (1 << ptask); ngrp++)
+    {
+      int recvtask = thistask ^ ngrp;
+
+      if(recvtask < ntask)
+        myMPI_Sendrecv((char *)sendbuf + recvtask * sendcount * size_sendtype, sendcount, sendtype, recvtask, TAG_PDATA + ngrp,
+                       (char *)recvbuf + recvtask * recvcount * size_recvtype, recvcount, recvtype, recvtask, TAG_PDATA + ngrp, comm,
+                       MPI_STATUS_IGNORE);
+    }
+
+  memcpy((char *)recvbuf + thistask * recvcount * size_recvtype, (char *)sendbuf + thistask * sendcount * size_sendtype,
+         sendcount * size_sendtype);
+
+  return 0;
+
+#endif
 }

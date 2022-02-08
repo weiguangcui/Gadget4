@@ -1378,7 +1378,7 @@ course, is to increase the number of MPI ranks.
 
 This option can be used to replace the default communication pattern
 used in the domain decomposition (and also in FOF and SUBFIND) which
-is based on a hypercube with synchronous MPI_Sendrecv() calls, with a
+is based on a hypercube with synchronous myMPI_Sendrecv() calls, with a
 bunch of asynchronous communications. This should be faster in
 principle, but it also tends to result in a huge number of
 simultaneously open communication requests which can also choke the
@@ -1396,7 +1396,7 @@ function. This is done when this option is set, and one then
 effectively hopes that the internal algorithm used by Alltoallv is the
 most robust and fastest for the communication task at hand. This may
 be the case, but there is no guarantee for it. The default algorithm
-of GADGET-4 (hypercube with synchronous MPI_Sendrecv), which is used
+of GADGET-4 (hypercube with synchronous myMPI_Sendrecv), which is used
 when this option is not used, should always be a reliable alternative,
 however.
 
@@ -1408,7 +1408,15 @@ Another issue with some MPI-libraries is that they may use quite a bit
 of internal storage for carrying out MPI_Allgatherv. If this turns out
 to be a problem, one can set this option. The code will then replace all
 uses of MPI_Allgatherv() with a simpler communication pattern that
-uses hypercubes with MPI_Sendrecv as a work-around.
+uses hypercubes with myMPI_Sendrecv as a work-around.
+
+-------
+
+**MPI_HYPERCUBE_ALLTOALL**
+
+Some MPI libraries tend to be unstable for their myMPI_Alltoall. This is
+replacing this with a robust hypercube communication pattern. Not 
+necessarily the fastest, but very robust, scalable and with decent speed.
 
 -------
 

@@ -195,6 +195,7 @@ INITIAL_CONDITIONS_CONTAIN_ENTROPY
 #USE_MPIALLTOALLV_IN_DOMAINDECOMP             # replaces hypercube communication in domain particle exchance with a single MPI_Allgatherv (can be less stable)
 #MPI_HYPERCUBE_ALLGATHERV                     # if your MPI-library uses too much internal storage for MPI_Allgatherv, this uses a hypercube as a work-around
 #MPI_MESSAGE_SIZELIMIT_IN_MB=200              # limit the message size of very large MPI transfers
+#MPI_HYPERCUBE_ALLTOALL                       # use a robust hyercube for MPI_Alltoall instead the native algorithm if the MPI library
 #ISEND_IRECV_IN_DOMAIN                        # uses asynchronous communication instead of synchronous communication in hypercube pattern (can be less stable)
 
 
