@@ -12,10 +12,6 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#ifdef MPI_HYPERCUBE_ALLGATHERV
-#define MPI_Allgatherv MPI_hypercube_Allgatherv
-#endif
-
 #define Terminate(...)                                                                                                      \
   {                                                                                                                         \
     {                                                                                                                       \

@@ -57,7 +57,7 @@ void fof<partset>::subfind_distribute_groups(void)
         Send_count[target]++;
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
   Recv_offset[0] = Send_offset[0] = 0;
   int nexport = 0, nimport = 0;
@@ -110,7 +110,7 @@ void fof<partset>::subfind_distribute_groups(void)
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
             {
               /* get the group info */
-              MPI_Sendrecv(&send_Group[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_properties), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&send_Group[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_properties), MPI_BYTE, recvTask,
                            TAG_DENS_A, &Group[Ngroups + Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_properties),
                            MPI_BYTE, recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
@@ -163,7 +163,7 @@ void fof<partset>::subfind_distribute_particles(MPI_Comm Communicator)
         }
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
   int nimport = 0, nexport = 0;
   Recv_offset[0] = 0, Send_offset[0] = 0;

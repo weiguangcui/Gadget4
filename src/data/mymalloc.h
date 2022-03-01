@@ -65,6 +65,9 @@ class memory : public setcomm
 
   void check_maxmemsize_setting(int maxmemsize);
 
+  int myMPI_Win_allocate_shared(MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win);
+  int myMPI_Win_shared_query(MPI_Win win, int rank, MPI_Aint *size, int *disp_unit, void *baseptr);
+
   inline double getAllocatedBytesInMB(void) { return AllocatedBytes * TO_MBYTE_FAC; }
 
   template <typename T>

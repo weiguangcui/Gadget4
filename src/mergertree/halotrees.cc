@@ -335,7 +335,7 @@ void mergertree::halotrees_assign_global_subhalonr_and_groupnr(void)
 
           if(mode == 0)
             {
-              MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+              myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
               Recv_offset[0] = Send_offset[0] = 0;
               for(int j = 0; j < NTask; j++)
                 {
@@ -359,7 +359,7 @@ void mergertree::halotrees_assign_global_subhalonr_and_groupnr(void)
           int recvTask = ThisTask ^ ngrp;
           if(recvTask < NTask)
             if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-              MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(exch_data), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(exch_data), MPI_BYTE, recvTask,
                            TAG_DENS_B, &import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(exch_data), MPI_BYTE,
                            recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
         }
@@ -389,7 +389,7 @@ void mergertree::halotrees_assign_global_subhalonr_and_groupnr(void)
           int recvTask = ThisTask ^ ngrp;
           if(recvTask < NTask)
             if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-              MPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(exch_data), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(exch_data), MPI_BYTE, recvTask,
                            TAG_DENS_B, &export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(exch_data), MPI_BYTE,
                            recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
         }
@@ -998,7 +998,7 @@ void mergertree::halotrees_reshuffle(char **ptr, size_t len, int ncurrent, int n
       Send_count[target]++;
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
   Recv_offset[0] = Send_offset[0] = 0;
 
   for(int j = 0; j < NTask; j++)
@@ -1021,7 +1021,7 @@ void mergertree::halotrees_reshuffle(char **ptr, size_t len, int ncurrent, int n
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&buf[Send_offset[recvTask] * len], Send_count[recvTask] * len, MPI_BYTE, recvTask, TAG_DENS_B,
+          myMPI_Sendrecv(&buf[Send_offset[recvTask] * len], Send_count[recvTask] * len, MPI_BYTE, recvTask, TAG_DENS_B,
                        *ptr + Recv_offset[recvTask] * len, Recv_count[recvTask] * len, MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);
     }
@@ -1198,7 +1198,7 @@ void mergertree::halotrees_remap_treepointers(void)
 
                     if(mode == 0)  // prepare offset tables
                       {
-                        MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+                        myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
                         Recv_offset[0] = Send_offset[0] = 0;
                         for(int j = 0; j < NTask; j++)
                           {
@@ -1222,7 +1222,7 @@ void mergertree::halotrees_remap_treepointers(void)
                     int recvTask = ThisTask ^ ngrp;
                     if(recvTask < NTask)
                       if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-                        MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(remap_data), MPI_BYTE,
+                        myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(remap_data), MPI_BYTE,
                                      recvTask, TAG_DENS_B, &import_data[Recv_offset[recvTask]],
                                      Recv_count[recvTask] * sizeof(remap_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                                      MPI_STATUS_IGNORE);
@@ -1277,7 +1277,7 @@ void mergertree::halotrees_remap_treepointers(void)
                     int recvTask = ThisTask ^ ngrp;
                     if(recvTask < NTask)
                       if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-                        MPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(remap_data), MPI_BYTE,
+                        myMPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(remap_data), MPI_BYTE,
                                      recvTask, TAG_DENS_B, &export_data[Send_offset[recvTask]],
                                      Send_count[recvTask] * sizeof(remap_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                                      MPI_STATUS_IGNORE);
@@ -1552,7 +1552,7 @@ int mergertree::halotrees_join_via_descendants(int num)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -1576,7 +1576,7 @@ int mergertree::halotrees_join_via_descendants(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
                        TAG_DENS_B, &import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -1624,7 +1624,7 @@ int mergertree::halotrees_join_via_descendants(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
                        TAG_DENS_B, &export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -1726,7 +1726,7 @@ int mergertree::halotrees_join_via_progenitors(int num)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -1750,7 +1750,7 @@ int mergertree::halotrees_join_via_progenitors(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
                        TAG_DENS_B, &import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -1799,7 +1799,7 @@ int mergertree::halotrees_join_via_progenitors(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_data), MPI_BYTE, recvTask,
                        TAG_DENS_B, &export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -1928,7 +1928,7 @@ void mergertree::halotrees_propagate_max_branch_length_descendants(int num)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -1952,7 +1952,7 @@ void mergertree::halotrees_propagate_max_branch_length_descendants(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, &import_data[Recv_offset[recvTask]],
                        Recv_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);
@@ -2067,7 +2067,7 @@ void mergertree::halotrees_propagate_max_branch_length_progenitors(int num)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -2091,7 +2091,7 @@ void mergertree::halotrees_propagate_max_branch_length_progenitors(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, &import_data[Recv_offset[recvTask]],
                        Recv_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);
@@ -2133,7 +2133,7 @@ void mergertree::halotrees_propagate_max_branch_length_progenitors(int num)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
+          myMPI_Sendrecv(&import_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, &export_data[Send_offset[recvTask]],
                        Send_count[recvTask] * sizeof(halotrees_propagate_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);

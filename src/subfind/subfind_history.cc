@@ -167,7 +167,7 @@ void fof<partset>::subfind_hbt_single_group(domain<partset> *SubDomain, domain<p
   for(int i = 1; i < SubNTask; i++)
     offset[i] = offset[i - 1] + countlist[i - 1];
 
-  MPI_Allgatherv(loc_candidates, count, MPI_BYTE, all_candidates, countlist, offset, MPI_BYTE, SubComm);
+  myMPI_Allgatherv(loc_candidates, count, MPI_BYTE, all_candidates, countlist, offset, MPI_BYTE, SubComm);
 
   /* sort the candidates by subhalonr */
   mycxxsort(all_candidates, all_candidates + totcand, subfind_hbt_compare_subcand_subhalonr);
@@ -688,7 +688,7 @@ void fof<partset>::subfind_hbt_single_group(domain<partset> *SubDomain, domain<p
 
   hbt_subhalo_t *all_subhalo_list = (hbt_subhalo_t *)Mem.mymalloc("all_subhalo_list", countall * sizeof(hbt_subhalo_t));
 
-  MPI_Allgatherv(subhalo_list, sizelocsubhalolist, MPI_BYTE, all_subhalo_list, countlist, offset, MPI_BYTE, SubComm);
+  myMPI_Allgatherv(subhalo_list, sizelocsubhalolist, MPI_BYTE, all_subhalo_list, countlist, offset, MPI_BYTE, SubComm);
 
   /* sort locally  */
   mycxxsort(all_subhalo_list, all_subhalo_list + countall, subfind_hbt_compare_subhalolist_prevsubhalonr);

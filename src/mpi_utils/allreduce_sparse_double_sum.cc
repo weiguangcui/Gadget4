@@ -74,7 +74,7 @@ void allreduce_sparse_double_sum(double *loc, double *glob, int N, MPI_Comm Comm
         }
     }
 
-  MPI_Alltoall(send_count, 1, MPI_INT, recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(send_count, 1, MPI_INT, recv_count, 1, MPI_INT, Communicator);
 
   int nimport = 0, nexport = 0;
 
@@ -126,9 +126,9 @@ void allreduce_sparse_double_sum(double *loc, double *glob, int N, MPI_Comm Comm
       int recvTask = thistask ^ ngrp;
       if(recvTask < ntask)
         if(send_count[recvTask] > 0 || recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[send_offset[recvTask]], send_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
-                       &import_data[recv_offset[recvTask]], recv_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
-                       Communicator, MPI_STATUS_IGNORE);
+          myMPI_Sendrecv(&export_data[send_offset[recvTask]], send_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
+                         &import_data[recv_offset[recvTask]], recv_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
+                         Communicator, MPI_STATUS_IGNORE);
     }
 
   for(int i = 0; i < nimport; i++)
@@ -155,7 +155,7 @@ void allreduce_sparse_double_sum(double *loc, double *glob, int N, MPI_Comm Comm
   for(int task = 1; task < ntask; task++)
     byteoffset[task] = byteoffset[task - 1] + bytecounts[task - 1];
 
-  MPI_Allgatherv(loc_data, bytecounts[thistask], MPI_BYTE, glob, bytecounts, byteoffset, MPI_BYTE, Communicator);
+  myMPI_Allgatherv(loc_data, bytecounts[thistask], MPI_BYTE, glob, bytecounts, byteoffset, MPI_BYTE, Communicator);
 
   Mem.myfree(byteoffset);
   Mem.myfree(bytecounts);

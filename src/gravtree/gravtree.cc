@@ -156,7 +156,7 @@ void gravtree<partset>::gravity_exchange_forces(void)
             k++;
           }
       }
-  MPI_Alltoall(recv_count, 1, MPI_INT, send_count, 1, MPI_INT, D->Communicator);
+  myMPI_Alltoall(recv_count, 1, MPI_INT, send_count, 1, MPI_INT, D->Communicator);
 
   recv_offset[0] = 0;
   send_offset[0] = 0;
@@ -187,7 +187,7 @@ void gravtree<partset>::gravity_exchange_forces(void)
         {
           if(send_count[recvTask] > 0 || recv_count[recvTask] > 0)
             {
-              MPI_Sendrecv(&ResultsActiveImported[recv_offset[recvTask]], recv_count[recvTask] * sizeof(resultsactiveimported_data),
+              myMPI_Sendrecv(&ResultsActiveImported[recv_offset[recvTask]], recv_count[recvTask] * sizeof(resultsactiveimported_data),
                            MPI_BYTE, recvTask, TAG_FOF_A, &tmp_results[send_offset[recvTask]],
                            send_count[recvTask] * sizeof(resultsactiveimported_data), MPI_BYTE, recvTask, TAG_FOF_A, D->Communicator,
                            MPI_STATUS_IGNORE);

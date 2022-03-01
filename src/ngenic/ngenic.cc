@@ -406,7 +406,7 @@ void ngenic::ngenic_distribute_particles(void)
       Sndpm_offset[ind] = Sndpm_offset[ind_prev] + Sndpm_count[ind_prev];
     }
 
-  MPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
+  myMPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
 
   nimport = 0, nexport = 0, Rcvpm_offset[0] = 0, Sndpm_offset[0] = 0;
   for(int j = 0; j < NTask; j++)

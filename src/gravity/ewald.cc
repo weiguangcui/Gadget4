@@ -205,7 +205,7 @@ void ewald::ewald_init(void)
           recvoffs[i] = off * sizeof(ewald_data);
         }
 
-      MPI_Allgatherv(MPI_IN_PLACE, size * sizeof(ewald_data), MPI_BYTE, Ewd, recvcnts, recvoffs, MPI_BYTE, Communicator);
+      myMPI_Allgatherv(MPI_IN_PLACE, size * sizeof(ewald_data), MPI_BYTE, Ewd, recvcnts, recvoffs, MPI_BYTE, Communicator);
 
       Mem.myfree(recvoffs);
       Mem.myfree(recvcnts);

@@ -290,7 +290,7 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_construct(voi
         Send_count[task]++;
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, D->Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, D->Communicator);
 
   NumPartImported = 0;
   NumPartExported = 0;
@@ -359,7 +359,7 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_construct(voi
       int recvTask = D->ThisTask ^ ngrp;
       if(recvTask < D->NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_Points[Send_offset[recvTask]], Send_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_Points[Send_offset[recvTask]], Send_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
                        TAG_DENS_A, &Points[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
                        TAG_DENS_A, D->Communicator, MPI_STATUS_IGNORE);
     }

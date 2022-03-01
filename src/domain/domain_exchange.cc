@@ -117,7 +117,7 @@ void domain<partset>::domain_exchange(void)
       toGo[2 * i]     = toGoDM[i];
       toGo[2 * i + 1] = toGoSph[i];
     }
-  MPI_Alltoall(toGo, 2, MPI_INT, toGet, 2, MPI_INT, Communicator);
+  myMPI_Alltoall(toGo, 2, MPI_INT, toGet, 2, MPI_INT, Communicator);
   for(int i = 0; i < NTask; ++i)
     {
       toGetDM[i]  = toGet[2 * i];
@@ -582,7 +582,7 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
 
               if(rep == 0)
                 {
-                  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+                  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
                   nimport = 0, nexport = 0;
                   Recv_offset[0] = Send_offset[0] = 0;
@@ -681,7 +681,7 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
 
           if(rep == 0)
             {
-              MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+              myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
               nimport = 0, nexport = 0;
               Recv_offset[0] = Send_offset[0] = 0;
@@ -785,7 +785,7 @@ void domain<partset>::particle_exchange_based_on_PS(MPI_Comm Communicator)
 
           if(rep == 0)
             {
-              MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+              myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
               nimport = 0, nexport = 0;
               Recv_offset[0] = Send_offset[0] = 0;

@@ -6,7 +6,8 @@
 
 /*! \file  sizelimited_sendrecv.cc
  *
- *  \brief implements a wrapper around MPI_Sendrecv that if needed transmits the data in smaller pieces than a prescribed maximum size
+ *  \brief implements a wrapper around myMPI_Sendrecv that if needed transmits the data in smaller pieces than a prescribed maximum
+ * size
  */
 
 #include "gadgetconfig.h"

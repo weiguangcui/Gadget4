@@ -107,8 +107,8 @@ void foftree<partset>::exchange_topleafdata(void)
         }
     }
 
-  MPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
+                   D->Communicator);
 
   for(int task = 0; task < D->NTask; task++)
     recvcounts[task] = 0;

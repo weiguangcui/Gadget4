@@ -194,7 +194,7 @@ double sim::measure_hyper_cube_speed(const char *tag, MPI_Comm Communicator)
       if(recvTask < loc_ntask)
         {
           double t0 = Logs.second();
-          MPI_Sendrecv(sendbuf, bytecount, MPI_BYTE, recvTask, TAG_DENS_A, recvbuf, bytecount, MPI_BYTE, recvTask, TAG_DENS_A,
+          myMPI_Sendrecv(sendbuf, bytecount, MPI_BYTE, recvTask, TAG_DENS_A, recvbuf, bytecount, MPI_BYTE, recvTask, TAG_DENS_A,
                        Communicator, MPI_STATUS_IGNORE);
           double t1 = Logs.second();
 
