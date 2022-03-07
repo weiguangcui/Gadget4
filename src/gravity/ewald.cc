@@ -148,9 +148,6 @@ void ewald::ewald_init(void)
           double yy = 0.5 * DBY * (1.0 / LONG_Y) * ((double)j) / ENY;
           double zz = 0.5 * DBZ * (1.0 / LONG_Z) * ((double)k) / ENZ;
 
-          if(i == 0 && j == 0)
-            printf("k=%d  zz=%g\n", k, zz);
-
           ewald_data *ewdp = Ewd + ewd_offset(i, j, k);
 
 #ifndef GRAVITY_TALLBOX
