@@ -136,16 +136,20 @@ void ewald::ewald_init(void)
 
           if(ThisTask == 0)
             {
-              if(((n - first) % (count / 20)) == 0)
-                {
-                  printf("%4.1f percent done\n", (n - first) / (count / 100.0));
-                  myflush(stdout);
-                }
+              if(count > 20)
+                if(((n - first) % (count / 20)) == 0)
+                  {
+                    printf("%4.1f percent done\n", (n - first) / (count / 100.0));
+                    myflush(stdout);
+                  }
             }
 
           double xx = 0.5 * DBX * (1.0 / LONG_X) * ((double)i) / ENX;
           double yy = 0.5 * DBY * (1.0 / LONG_Y) * ((double)j) / ENY;
           double zz = 0.5 * DBZ * (1.0 / LONG_Z) * ((double)k) / ENZ;
+
+          if(i == 0 && j == 0)
+            printf("k=%d  zz=%g\n", k, zz);
 
           ewald_data *ewdp = Ewd + ewd_offset(i, j, k);
 
@@ -167,9 +171,9 @@ void ewald::ewald_init(void)
           ewdp->D7phi = ewald_D7(xx, yy, zz);
 #endif
 #else
-          ewdp->D0phi   = ewald_D0(xx, zz, yy);
+          ewdp->D0phi   = ewald_D0(xx, yy, zz);
 
-          vector<double> force = ewald_D1(yy, zz, xx);
+          vector<double> force = ewald_D1(xx, yy, zz);
 
           switch(GRAVITY_TALLBOX)
             {
@@ -306,49 +310,83 @@ void ewald::ewald_gridlookup(const MyIntPosType *p_intpos, const MyIntPosType *t
 {
   // we determine the closest available point in our Ewald look-up table
 
-  static MyIntPosType const halflen   = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - (EWLEVEL + 1));
-  static MyIntPosType const intlen    = halflen << 1;
-  static MyIntPosType const ewaldmask = ~(intlen - 1);
+  static MyIntPosType const halflenX   = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - (EWLEVEL + 1) - MAX_LONG_X_BITS);
+  static MyIntPosType const intlenX    = halflenX << 1;
+  static MyIntPosType const ewaldmaskX = ~(intlenX - 1);
+
+  static MyIntPosType const halflenY   = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - (EWLEVEL + 1) - MAX_LONG_Y_BITS);
+  static MyIntPosType const intlenY    = halflenY << 1;
+  static MyIntPosType const ewaldmaskY = ~(intlenY - 1);
+
+  static MyIntPosType const halflenZ   = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - (EWLEVEL + 1) - MAX_LONG_Z_BITS);
+  static MyIntPosType const intlenZ    = halflenZ << 1;
+  static MyIntPosType const ewaldmaskZ = ~(intlenZ - 1);
 
   MyIntPosType temppos[3] = {p_intpos[0] - target_intpos[0], p_intpos[1] - target_intpos[1], p_intpos[2] - target_intpos[2]};
 
+  constrain_intpos(temppos);
+
   MyIntPosType gridpos[3];
-  gridpos[0] = (temppos[0] + halflen) & ewaldmask;
-  gridpos[1] = (temppos[1] + halflen) & ewaldmask;
-  gridpos[2] = (temppos[2] + halflen) & ewaldmask;
+  gridpos[0] = (temppos[0] + halflenX) & ewaldmaskX;
+  gridpos[1] = (temppos[1] + halflenY) & ewaldmaskY;
+  gridpos[2] = (temppos[2] + halflenZ) & ewaldmaskZ;
 
   vector<double> off;
   nearest_image_intpos_to_pos(temppos, gridpos, off.da);
 
-  int i = (gridpos[0] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1)));
-  int j = (gridpos[1] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1)));
-  int k = (gridpos[2] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1)));
+  int i = (gridpos[0] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1) - MAX_LONG_X_BITS));
+  int j = (gridpos[1] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1) - MAX_LONG_Y_BITS));
+  int k = (gridpos[2] >> (BITS_FOR_POSITIONS - (EWLEVEL + 1) - MAX_LONG_Z_BITS));
 
   int signx = 1, signy = 1, signz = 1;
 
-  if(i > EN)
+#if defined(GRAVITY_TALLBOX) && (GRAVITY_TALLBOX == 0)
+  if(p_intpos[0] < target_intpos[0])
     {
-      i     = 2 * EN - i;
+      signx = -1;
+      i     = ENX - i;
+    }
+#else
+  if(i > ENX)
+    {
+      i = 2 * ENX - i;
       signx = -1;
     }
-  else if(i == EN && gridpos[0] < temppos[0])
+  else if(i == ENX && gridpos[0] < temppos[0])
     signx = -1;
+#endif
 
-  if(j > EN)
+#if defined(GRAVITY_TALLBOX) && (GRAVITY_TALLBOX == 1)
+  if(p_intpos[1] < target_intpos[1])
     {
-      j     = 2 * EN - j;
+      signx = -1;
+      j     = ENY - i;
+    }
+#else
+  if(j > ENY)
+    {
+      j = 2 * ENY - j;
       signy = -1;
     }
-  else if(j == EN && gridpos[1] < temppos[1])
+  else if(j == ENY && gridpos[1] < temppos[1])
     signy = -1;
+#endif
 
-  if(k > EN)
+#if defined(GRAVITY_TALLBOX) && (GRAVITY_TALLBOX == 2)
+  if(p_intpos[2] < target_intpos[2])
     {
-      k     = 2 * EN - k;
+      signz = -1;
+      k     = ENZ - k;
+    }
+#else
+  if(k > ENZ)
+    {
+      k = 2 * ENZ - k;
       signz = -1;
     }
-  else if(k == EN && gridpos[2] < temppos[2])
+  else if(k == ENZ && gridpos[2] < temppos[2])
     signz = -1;
+#endif
 
   fper = Ewd[ewd_offset(i, j, k)];
 
@@ -778,7 +816,8 @@ double ewald::ewald_D0(double x, double y, double z)
               {
                 double ex = exp(-k * z);
                 if(ex > 0)
-                  D0 += -M_PI / (BOXX * BOXY) * (erfc(k / (2 * alpha) + alpha * z) / ex + ex * erfc(k / (2 * alpha) - alpha * z)) / k;
+                  D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) *
+                        (erfc(k / (2 * alpha) + alpha * z) / ex + ex * erfc(k / (2 * alpha) - alpha * z)) / k;
               }
             else
               {

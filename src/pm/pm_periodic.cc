@@ -2328,9 +2328,6 @@ double pm_periodic::pmperiodic_tallbox_long_range_potential(double x, double y, 
 
   double r = sqrt(x * x + y * y + z * z);
 
-  if(r == 0)
-    return 0;
-
   double xx, yy, zz;
   switch(GRAVITY_TALLBOX)
     {
@@ -2370,11 +2367,24 @@ double pm_periodic::pmperiodic_tallbox_long_range_potential(double x, double y, 
   for(int nx = -qxmax; nx <= qxmax; nx++)
     for(int ny = -qymax; ny <= qymax; ny++)
       {
-        double dx = x - nx * BOXX;
-        double dy = y - ny * BOXY;
-        double r  = sqrt(dx * dx + dy * dy + z * z);
-        if(r > 0)
-          sum1 += erfc(alpha * r) / r;
+        if(nx != 0 || ny != 0)
+          {
+            double dx = x - nx * BOXX;
+            double dy = y - ny * BOXY;
+            double r  = sqrt(dx * dx + dy * dy + z * z);
+            if(r > 0)
+              sum1 += erfc(alpha * r) / r;
+          }
+        else
+          {
+            // in the nx/ny=0 case, correct for the short range force
+            double alpha_star = 0.5 / (((double)ASMTH) / PMGRID);
+            double u          = alpha_star * r;
+            if(r > 0)
+              sum1 += (erfc(alpha * r) - erfc(u)) / r;
+            else
+              sum1 += 2.0 / sqrt(M_PI) * (alpha_star - alpha);
+          }
       }
 
   double alpha2 = alpha * alpha;

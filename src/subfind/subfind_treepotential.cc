@@ -161,7 +161,7 @@ class potdata_comm : public generic_comm<potdata_in, potdata_out, T_tree, T_doma
 
                 nop = Tree->get_nodep(no, shmrank);
 
-                if(nop->level == 0)
+                if(nop->level <= LEVEL_ALWAYS_OPEN)
                   {
                     /* we always open the root node (its full node length couldn't be stored in the integer type */
                     no      = nop->nextnode;
