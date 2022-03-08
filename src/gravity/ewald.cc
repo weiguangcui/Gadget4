@@ -168,28 +168,78 @@ void ewald::ewald_init(void)
           ewdp->D7phi = ewald_D7(xx, yy, zz);
 #endif
 #else
-          ewdp->D0phi   = ewald_D0(xx, yy, zz);
-
-          vector<double> force = ewald_D1(xx, yy, zz);
 
           switch(GRAVITY_TALLBOX)
             {
               case 0:
-                ewdp->D1phi[0] = force[2];
-                ewdp->D1phi[1] = force[0];
-                ewdp->D1phi[2] = force[1];
+                {
+                  ewdp->D0phi = ewald_D0(yy, zz, xx);
+                  auto D1phi  = ewald_D1(yy, zz, xx);
+                  auto D2phi  = ewald_D2(yy, zz, xx);
+                  auto D3phi  = ewald_D3(yy, zz, xx);
+
+                  ewdp->D1phi[vX] = D1phi[vZ];
+                  ewdp->D1phi[vY] = D1phi[vX];
+                  ewdp->D1phi[vZ] = D1phi[vY];
+
+                  ewdp->D2phi[qXX] = D2phi[qZZ];
+                  ewdp->D2phi[qXY] = D2phi[qZX];
+                  ewdp->D2phi[qXZ] = D2phi[qZY];
+                  ewdp->D2phi[qYY] = D2phi[qXX];
+                  ewdp->D2phi[qYZ] = D2phi[qXY];
+                  ewdp->D2phi[qZZ] = D2phi[qYY];
+
+                  ewdp->D3phi[dXXX] = D3phi[dZZZ];
+                  ewdp->D3phi[dXXY] = D3phi[dZZX];
+                  ewdp->D3phi[dXXZ] = D3phi[dZZY];
+                  ewdp->D3phi[dXYY] = D3phi[dZXX];
+                  ewdp->D3phi[dXYZ] = D3phi[dZXY];
+                  ewdp->D3phi[dXZZ] = D3phi[dZYY];
+                  ewdp->D3phi[dYYY] = D3phi[dXXX];
+                  ewdp->D3phi[dYYZ] = D3phi[dXXY];
+                  ewdp->D3phi[dYZZ] = D3phi[dXYY];
+                  ewdp->D3phi[dZZZ] = D3phi[dYYY];
+                }
                 break;
 
               case 1:
-                ewdp->D1phi[0] = force[0];
-                ewdp->D1phi[1] = force[2];
-                ewdp->D1phi[2] = force[1];
+                {
+                  ewdp->D0phi = ewald_D0(xx, zz, yy);
+                  auto D1phi  = ewald_D1(xx, zz, yy);
+                  auto D2phi  = ewald_D2(xx, zz, yy);
+                  auto D3phi  = ewald_D3(xx, zz, yy);
+
+                  ewdp->D1phi[vX] = D1phi[vX];
+                  ewdp->D1phi[vY] = D1phi[vZ];
+                  ewdp->D1phi[vZ] = D1phi[vY];
+
+                  ewdp->D2phi[qXX] = D2phi[qXX];
+                  ewdp->D2phi[qXY] = D2phi[qXZ];
+                  ewdp->D2phi[qXZ] = D2phi[qXY];
+                  ewdp->D2phi[qYY] = D2phi[qZZ];
+                  ewdp->D2phi[qYZ] = D2phi[qZY];
+                  ewdp->D2phi[qZZ] = D2phi[qYY];
+
+                  ewdp->D3phi[dXXX] = D3phi[dXXX];
+                  ewdp->D3phi[dXXY] = D3phi[dXXZ];
+                  ewdp->D3phi[dXXZ] = D3phi[dXXY];
+                  ewdp->D3phi[dXYY] = D3phi[dXZZ];
+                  ewdp->D3phi[dXYZ] = D3phi[dXZY];
+                  ewdp->D3phi[dXZZ] = D3phi[dXYY];
+                  ewdp->D3phi[dYYY] = D3phi[dZZZ];
+                  ewdp->D3phi[dYYZ] = D3phi[dZZY];
+                  ewdp->D3phi[dYZZ] = D3phi[dZYY];
+                  ewdp->D3phi[dZZZ] = D3phi[dYYY];
+                }
                 break;
 
               case 2:
-                ewdp->D1phi[0] = force[0];
-                ewdp->D1phi[1] = force[1];
-                ewdp->D1phi[2] = force[2];
+                {
+                  ewdp->D0phi = ewald_D0(xx, yy, zz);
+                  ewdp->D1phi = ewald_D1(xx, yy, zz);
+                  ewdp->D2phi = ewald_D2(xx, yy, zz);
+                  ewdp->D3phi = ewald_D3(xx, yy, zz);
+                }
                 break;
             }
 #endif
@@ -528,11 +578,8 @@ void ewald::ewald_gridlookup(const MyIntPosType *p_intpos, const MyIntPosType *t
   // only second order Taylor expansion, i.e. EWALD_TAYLOR_ORDER==2
 
   // now Taylor corrections
-
-#ifndef GRAVITY_TALLBOX
   fper.D0phi += fper.D1phi * off + 0.5 * ((fper.D2phi * off) * off);
   fper.D1phi += fper.D2phi * off + 0.5 * ((fper.D3phi * off) * off);
-#endif
 
   if(flag == POINTMASS)
     return;
@@ -809,20 +856,7 @@ double ewald::ewald_D0(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            if(k * z > 0)
-              {
-                double ex = exp(-k * z);
-                if(ex > 0)
-                  D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) *
-                        (erfc(k / (2 * alpha) + alpha * z) / ex + ex * erfc(k / (2 * alpha) - alpha * z)) / k;
-              }
-            else
-              {
-                double ex = exp(k * z);
-                if(ex > 0)
-                  D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) *
-                        (ex * erfc(k / (2 * alpha) + alpha * z) + erfc(k / (2 * alpha) - alpha * z) / ex) / k;
-              }
+            D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
           }
       }
 
@@ -831,6 +865,24 @@ double ewald::ewald_D0(double x, double y, double z)
 #endif
 
   return D0;
+}
+
+double ewald::specerf(double z, double k, double alpha) { return exp(k * z) * erfc(k / (2 * alpha) + alpha * z); }
+
+double ewald::d_specerf(double z, double k, double alpha)
+{
+  return -2 * alpha / (sqrt(M_PI) * exp(pow(k / (2 * alpha), 2) + pow(alpha * z, 2))) + k * specerf(z, k, alpha);
+}
+
+double ewald::dd_specerf(double z, double k, double alpha)
+{
+  return +4 * pow(alpha, 3) * z / (sqrt(M_PI) * exp(pow(k / (2 * alpha), 2) + pow(alpha * z, 2))) + k * d_specerf(z, k, alpha);
+}
+
+double ewald::ddd_specerf(double z, double k, double alpha)
+{
+  return +4 * pow(alpha, 3) / (sqrt(M_PI) * exp(pow(k / (2 * alpha), 2) + pow(alpha * z, 2))) -
+         8 * pow(alpha, 5) * z * z / (sqrt(M_PI) * exp(pow(k / (2 * alpha), 2) + pow(alpha * z, 2))) + k * dd_specerf(z, k, alpha);
 }
 
 /*! \brief This function computes the force correction term (difference between full
@@ -1013,13 +1065,11 @@ vector<double> ewald::ewald_D1(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            double val = M_PI / (BOXX * BOXY) * sin(kx * x + ky * y) *
-                         (exp(k * z) * erfc(k / (2 * alpha) + alpha * z) + exp(-k * z) * erfc(k / (2 * alpha) - alpha * z)) / k;
+            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
 
-            D1[0] -= -kx * val;
-            D1[1] -= -ky * val;
-            D1[2] -= M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) *
-                     (exp(k * z) * erfc(k / (2 * alpha) + alpha * z) - exp(-k * z) * erfc(k / (2 * alpha) - alpha * z));
+            D1[0] += kx * val * sin(kx * x + ky * y);
+            D1[1] += ky * val * sin(kx * x + ky * y);
+            D1[2] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
           }
       }
 
@@ -1034,6 +1084,8 @@ symtensor2<double> ewald::ewald_D2(double x, double y, double z)
   static int printed = 0;
 
   symtensor2<double> D2 = 0.0;
+
+#ifndef GRAVITY_TALLBOX
 
   double leff   = pow((1.0 / LONG_X) * (1.0 / LONG_Y) * (1.0 / LONG_Z), 1.0 / 3);
   double alpha  = 2.0 / leff;
@@ -1143,6 +1195,103 @@ symtensor2<double> ewald::ewald_D2(double x, double y, double z)
               D2 += (val * kxyz) % kxyz;
             }
         }
+#else
+  /* this is the case with periodicity only in two dimensions */
+  /* this is the case with periodicity only in two dimensions */
+
+  double leff = sqrt(BOXX * BOXY);
+  double alpha = 2.0 / leff;
+  double alpha2 = alpha * alpha;
+
+  int qxmax = (int)(8.0 / (BOXX * alpha) + 0.5);
+  int qymax = (int)(8.0 / (BOXY * alpha) + 0.5);
+
+  int nxmax = (int)(2.0 * alpha * BOXX + 0.5);
+  int nymax = (int)(2.0 * alpha * BOXY + 0.5);
+
+  if(printed == 0)
+    {
+      mpi_printf("EWALD: D2 table: qxmax=%d qymax=%d    nxmax=%d nymax=%d\n", qxmax, qymax, nxmax, nymax);
+      printed = 1;
+    }
+
+  for(int nx = -qxmax; nx <= qxmax; nx++)
+    for(int ny = -qymax; ny <= qymax; ny++)
+      {
+        double dx = x - nx * BOXX;
+        double dy = y - ny * BOXY;
+        double dz = z;
+
+        vector<double> dxyz(dx, dy, dz);
+
+        double r2 = dx * dx + dy * dy + dz * dz;
+        double r = sqrt(r2);
+
+        double rinv = (r > 0) ? 1.0 / r : 0.0;
+        double r2inv = rinv * rinv;
+        double r3inv = r2inv * rinv;
+        double r5inv = r3inv * r2inv;
+
+        double g1, g2;
+
+        if(nx != 0 || ny != 0)
+          {
+            g1 = (erfc(alpha * r) + 2.0 * alpha * r / sqrt(M_PI) * exp(-alpha2 * r2)) * r3inv;
+
+            g2 = -(3.0 * erfc(alpha * r) + (6.0 * alpha * r + 4.0 * pow(alpha * r, 3)) / sqrt(M_PI) * exp(-alpha2 * r2)) * r5inv;
+          }
+        else
+          {
+            /* we add the 1/r term here to the (0|0) entry */
+
+            if((alpha * r) < 0.5)
+              {
+                g1 = 4.0 * pow(alpha, 3) / sqrt(M_PI) *
+                     (-1.0 / 3.0 + pow(alpha * r, 2) / 5.0 - pow(alpha * r, 4) / 14.0 + pow(alpha * r, 6) / 54.0 -
+                      pow(alpha * r, 8) / 264.0 + pow(alpha * r, 10) / 1560.0);
+
+                g2 = 8.0 * pow(alpha, 5) / sqrt(M_PI) *
+                     (1.0 / 5.0 - pow(alpha * r, 2) / 7.0 + pow(alpha * r, 4) / 18.0 - pow(alpha * r, 6) / 66.0 +
+                      pow(alpha * r, 8) / 312.0 - pow(alpha * r, 10) / 1800.0);
+              }
+            else
+              {
+                g1 = (-erf(alpha * r) + 2.0 * alpha * r / sqrt(M_PI) * exp(-alpha2 * r2)) * r3inv;
+
+                g2 = (3.0 * erf(alpha * r) - (6.0 * alpha * r + 4.0 * pow(alpha * r, 3)) / sqrt(M_PI) * exp(-alpha2 * r2)) * r5inv;
+              }
+          }
+
+        D2 += g2 * (dxyz % dxyz);
+        D2[qXX] += g1;
+        D2[qYY] += g1;
+        D2[qZZ] += g1;
+      }
+
+  for(int nx = -nxmax; nx <= nxmax; nx++)
+    for(int ny = -nymax; ny <= nymax; ny++)
+      {
+        if(nx != 0 || ny != 0)
+          {
+            double kx = (2.0 * M_PI / BOXX) * nx;
+            double ky = (2.0 * M_PI / BOXY) * ny;
+            double k2 = kx * kx + ky * ky;
+            double k = sqrt(k2);
+
+            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+            double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+
+            D2[qXX] += kx * kx * val * cos(kx * x + ky * y);
+            D2[qXY] += kx * ky * val * cos(kx * x + ky * y);
+            D2[qXZ] += kx * dzval * sin(kx * x + ky * y);
+            D2[qYY] += ky * ky * val * cos(kx * x + ky * y);
+            D2[qYZ] += ky * dzval * sin(kx * x + ky * y);
+            D2[qZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+          }
+      }
+
+  D2[qZZ] += 4.0 * alpha * sqrt(M_PI) / (BOXX * BOXY) * exp(-pow(alpha * z, 2));
+#endif
 
   return D2;
 }
@@ -1151,11 +1300,9 @@ symtensor3<double> ewald::ewald_D3(double x, double y, double z)
 {
   static int printed = 0;
 
-#ifdef GRAVITY_TALLBOX
-  Terminate("GRAVITY_TALLBOX is not implemented for MULTIPOLE_ORDER >= 3");
-#endif
-
   symtensor3<double> D3 = 0.0;
+
+#ifndef GRAVITY_TALLBOX
 
   double leff   = pow((1.0 / LONG_X) * (1.0 / LONG_Y) * (1.0 / LONG_Z), 1.0 / 3);
   double alpha  = 2.0 / leff;
@@ -1270,6 +1417,114 @@ symtensor3<double> ewald::ewald_D3(double x, double y, double z)
               D3 += (val * kxyz) % (kxyz % kxyz);
             }
         }
+#else
+  /* this is the case with periodicity only in two dimensions */
+  /* this is the case with periodicity only in two dimensions */
+  /* this is the case with periodicity only in two dimensions */
+
+  double leff = sqrt(BOXX * BOXY);
+  double alpha = 2.0 / leff;
+  double alpha2 = alpha * alpha;
+
+  int qxmax = (int)(8.0 / (BOXX * alpha) + 0.5);
+  int qymax = (int)(8.0 / (BOXY * alpha) + 0.5);
+
+  int nxmax = (int)(2.0 * alpha * BOXX + 0.5);
+  int nymax = (int)(2.0 * alpha * BOXY + 0.5);
+
+  if(printed == 0)
+    {
+      mpi_printf("EWALD: D2 table: qxmax=%d qymax=%d    nxmax=%d nymax=%d\n", qxmax, qymax, nxmax, nymax);
+      printed = 1;
+    }
+
+  for(int nx = -qxmax; nx <= qxmax; nx++)
+    for(int ny = -qymax; ny <= qymax; ny++)
+      {
+        double dx = x - nx * BOXX;
+        double dy = y - ny * BOXY;
+        double dz = z;
+
+        vector<double> dxyz(dx, dy, dz);
+
+        double r2 = dx * dx + dy * dy + dz * dz;
+        double r = sqrt(r2);
+
+        double rinv = (r > 0) ? 1.0 / r : 0.0;
+        double r2inv = rinv * rinv;
+        double r3inv = r2inv * rinv;
+        double r4inv = r2inv * r2inv;
+        double r5inv = r2inv * r3inv;
+        double r7inv = r3inv * r4inv;
+
+        double g2, g3;
+
+        if(nx != 0 || ny != 0)
+          {
+            g2 = -(3.0 * erfc(alpha * r) + (6.0 * alpha * r + 4.0 * pow(alpha * r, 3)) / sqrt(M_PI) * exp(-alpha2 * r2)) * r5inv;
+
+            g3 = (15.0 * erfc(alpha * r) +
+                  (30.0 * alpha * r + 20.0 * pow(alpha * r, 3) + 8.0 * pow(alpha * r, 5)) / sqrt(M_PI) * exp(-alpha2 * r2)) *
+                 r7inv;
+          }
+        else
+          {
+            if((alpha * r) < 0.5)
+              {
+                g2 = 8.0 * pow(alpha, 5) / sqrt(M_PI) *
+                     (1.0 / 5.0 - pow(alpha * r, 2) / 7.0 + pow(alpha * r, 4) / 18.0 - pow(alpha * r, 6) / 66.0 +
+                      pow(alpha * r, 8) / 312.0 - pow(alpha * r, 10) / 1800.0);
+
+                g3 = 16.0 * pow(alpha, 7) / sqrt(M_PI) *
+                     (-1.0 / 7.0 + pow(alpha * r, 2) / 9.0 - pow(alpha * r, 4) / 22.0 + pow(alpha * r, 6) / 78.0 -
+                      pow(alpha * r, 8) / 360.0 + pow(alpha * r, 10) / 2040.0);
+              }
+            else
+              {
+                g2 = (3.0 * erf(alpha * r) - (6.0 * alpha * r + 4.0 * pow(alpha * r, 3)) / sqrt(M_PI) * exp(-alpha2 * r2)) * r5inv;
+
+                g3 = (-15.0 * erf(alpha * r) +
+                      (30.0 * alpha * r + 20.0 * pow(alpha * r, 3) + 8.0 * pow(alpha * r, 5)) / sqrt(M_PI) * exp(-alpha2 * r2)) *
+                     r7inv;
+              }
+          }
+
+        symtensor2<double> aux2 = dxyz % dxyz;
+        symtensor3<double> aux3;
+
+        setup_D3(ADD, D3, dxyz, aux2, aux3, g2, g3);
+      }
+
+  for(int nx = -nxmax; nx <= nxmax; nx++)
+    for(int ny = -nymax; ny <= nymax; ny++)
+      {
+        if(nx != 0 || ny != 0)
+          {
+            double kx = (2.0 * M_PI / BOXX) * nx;
+            double ky = (2.0 * M_PI / BOXY) * ny;
+            double k2 = kx * kx + ky * ky;
+            double k = sqrt(k2);
+
+            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+            double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+            double dzdzval = M_PI / (BOXX * BOXY) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+
+            D3[dXXX] += -kx * kx * kx * val * sin(kx * x + ky * y);
+            D3[dXXY] += -kx * kx * val * sin(kx * x + ky * y);
+            D3[dXXZ] += kx * kx * dzval * cos(kx * x + ky * y);
+            D3[dXYY] += -ky * ky * dzval * cos(kx * x + ky * y);
+            D3[dXYZ] += kx * ky * dzval * cos(kx * x + ky * y);
+            D3[dXZZ] += kx * dzdzval * sin(kx * x + ky * y);
+            D3[dYYY] += -ky * ky * val * sin(kx * x + ky * y);
+            D3[dYYZ] += ky * ky * dzval * cos(kx * x + ky * y);
+            D3[dYZZ] += ky * dzdzval * sin(kx * x + ky * y);
+            D3[dZZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (ddd_specerf(z, k, alpha) - ddd_specerf(-z, k, alpha));
+          }
+      }
+
+  D3[dZZZ] += -8.0 * pow(alpha, 3) * z * sqrt(M_PI) / (BOXX * BOXY) * exp(-pow(alpha * z, 2));
+
+#endif
 
   return D3;
 }
