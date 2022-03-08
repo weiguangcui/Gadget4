@@ -856,7 +856,10 @@ double ewald::ewald_D0(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+            double ex = exp(-k * z);  // note: z positive here
+
+            if(ex > 1.0e-60)  // to prevent divisions by zero due to underflows
+              D0 += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
           }
       }
 
@@ -1065,11 +1068,16 @@ vector<double> ewald::ewald_D1(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+            double ex = exp(-k * z);  // note: z positive here
 
-            D1[0] += kx * val * sin(kx * x + ky * y);
-            D1[1] += ky * val * sin(kx * x + ky * y);
-            D1[2] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+            if(ex > 1.0e-60)  // to prevent divisions by zero due to underflows
+              {
+                double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+
+                D1[0] += kx * val * sin(kx * x + ky * y);
+                D1[1] += ky * val * sin(kx * x + ky * y);
+                D1[2] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+              }
           }
       }
 
@@ -1278,15 +1286,20 @@ symtensor2<double> ewald::ewald_D2(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
-            double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+            double ex = exp(-k * z);  // note: z positive here
 
-            D2[qXX] += kx * kx * val * cos(kx * x + ky * y);
-            D2[qXY] += kx * ky * val * cos(kx * x + ky * y);
-            D2[qXZ] += kx * dzval * sin(kx * x + ky * y);
-            D2[qYY] += ky * ky * val * cos(kx * x + ky * y);
-            D2[qYZ] += ky * dzval * sin(kx * x + ky * y);
-            D2[qZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+            if(ex > 1.0e-60)  // to prevent divisions by zero due to underflows
+              {
+                double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+                double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+
+                D2[qXX] += kx * kx * val * cos(kx * x + ky * y);
+                D2[qXY] += kx * ky * val * cos(kx * x + ky * y);
+                D2[qXZ] += kx * dzval * sin(kx * x + ky * y);
+                D2[qYY] += ky * ky * val * cos(kx * x + ky * y);
+                D2[qYZ] += ky * dzval * sin(kx * x + ky * y);
+                D2[qZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+              }
           }
       }
 
@@ -1505,20 +1518,25 @@ symtensor3<double> ewald::ewald_D3(double x, double y, double z)
             double k2 = kx * kx + ky * ky;
             double k = sqrt(k2);
 
-            double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
-            double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
-            double dzdzval = M_PI / (BOXX * BOXY) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+            double ex = exp(-k * z);  // note: z positive here
 
-            D3[dXXX] += -kx * kx * kx * val * sin(kx * x + ky * y);
-            D3[dXXY] += -kx * kx * val * sin(kx * x + ky * y);
-            D3[dXXZ] += kx * kx * dzval * cos(kx * x + ky * y);
-            D3[dXYY] += -ky * ky * dzval * cos(kx * x + ky * y);
-            D3[dXYZ] += kx * ky * dzval * cos(kx * x + ky * y);
-            D3[dXZZ] += kx * dzdzval * sin(kx * x + ky * y);
-            D3[dYYY] += -ky * ky * val * sin(kx * x + ky * y);
-            D3[dYYZ] += ky * ky * dzval * cos(kx * x + ky * y);
-            D3[dYZZ] += ky * dzdzval * sin(kx * x + ky * y);
-            D3[dZZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (ddd_specerf(z, k, alpha) - ddd_specerf(-z, k, alpha));
+            if(ex > 1.0e-60)  // to prevent divisions by zero due to underflows
+              {
+                double val = M_PI / (BOXX * BOXY) / k * (specerf(z, k, alpha) + specerf(-z, k, alpha));
+                double dzval = M_PI / (BOXX * BOXY) / k * (d_specerf(z, k, alpha) - d_specerf(-z, k, alpha));
+                double dzdzval = M_PI / (BOXX * BOXY) / k * (dd_specerf(z, k, alpha) + dd_specerf(-z, k, alpha));
+
+                D3[dXXX] += -kx * kx * kx * val * sin(kx * x + ky * y);
+                D3[dXXY] += -kx * kx * ky * val * sin(kx * x + ky * y);
+                D3[dXXZ] += kx * kx * dzval * cos(kx * x + ky * y);
+                D3[dXYY] += -kx * ky * ky * val * sin(kx * x + ky * y);
+                D3[dXYZ] += kx * ky * dzval * cos(kx * x + ky * y);
+                D3[dXZZ] += kx * dzdzval * sin(kx * x + ky * y);
+                D3[dYYY] += -ky * ky * ky * val * sin(kx * x + ky * y);
+                D3[dYYZ] += ky * ky * dzval * cos(kx * x + ky * y);
+                D3[dYZZ] += ky * dzdzval * sin(kx * x + ky * y);
+                D3[dZZZ] += -M_PI / (BOXX * BOXY) * cos(kx * x + ky * y) / k * (ddd_specerf(z, k, alpha) - ddd_specerf(-z, k, alpha));
+              }
           }
       }
 
