@@ -732,7 +732,7 @@ void pm_mpi_fft::my_fft_column_remap(fft_complex *data, int Ndims[3], /* global 
 
   if(just_count_flag)
     {
-      MPI_Alltoall(count_send, sizeof(size_t), MPI_BYTE, count_recv, sizeof(size_t), MPI_BYTE, Communicator);
+      myMPI_Alltoall(count_send, sizeof(size_t), MPI_BYTE, count_recv, sizeof(size_t), MPI_BYTE, Communicator);
 
       for(j = 0, nimport = 0, nexport = 0, offset_send[0] = 0, offset_recv[0] = 0; j < NTask; j++)
         {
@@ -1200,7 +1200,7 @@ void pm_mpi_fft::my_fft_column_transpose(fft_real *data, int Ndims[3], /* global
         }
     }
   if(just_count_flag)
-    MPI_Alltoall(count_send, sizeof(size_t), MPI_BYTE, count_recv, sizeof(size_t), MPI_BYTE, Communicator);
+    myMPI_Alltoall(count_send, sizeof(size_t), MPI_BYTE, count_recv, sizeof(size_t), MPI_BYTE, Communicator);
 }
 
 #endif

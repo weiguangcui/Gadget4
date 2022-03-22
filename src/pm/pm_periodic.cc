@@ -378,7 +378,7 @@ void pm_periodic::pmforce_zoom_optimized_prepare_density(int mode, int *typelist
   rhogrid = (fft_real *)Mem.mymalloc_clear("rhogrid", maxfftsize * sizeof(fft_real));
 
   /* exchange data and add contributions to the local mesh-path */
-  MPI_Alltoall(localfield_sendcount, sizeof(size_t), MPI_BYTE, localfield_recvcount, sizeof(size_t), MPI_BYTE, Communicator);
+  myMPI_Alltoall(localfield_sendcount, sizeof(size_t), MPI_BYTE, localfield_recvcount, sizeof(size_t), MPI_BYTE, Communicator);
 
   for(level = 0; level < (1 << PTask); level++) /* note: for level=0, target is the same task */
     {
@@ -730,7 +730,7 @@ void pm_periodic::pmforce_uniform_optimized_prepare_density(int mode, int *typel
 
       if(rep == 0)
         {
-          MPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
+          myMPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
 
           nimport = 0, nexport = 0, Rcvpm_offset[0] = 0, Sndpm_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
@@ -1290,7 +1290,7 @@ void pm_periodic::pmforce_uniform_optimized_readout_forces_or_potential_xz(fft_r
 
       if(rep == 0)
         {
-          MPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, Communicator);
+          myMPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, Communicator);
 
           nimport = 0, nexport = 0;
           recv_offset[0] = send_offset[0] = 0;
@@ -1597,7 +1597,7 @@ void pm_periodic::pmforce_uniform_optimized_readout_forces_or_potential_zy(fft_r
 
       if(rep == 0)
         {
-          MPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, Communicator);
+          myMPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, Communicator);
 
           nimport = 0, nexport = 0;
           recv_offset[0] = send_offset[0] = 0;

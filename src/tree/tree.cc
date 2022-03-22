@@ -290,7 +290,7 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_construct(voi
         Send_count[task]++;
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, D->Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, D->Communicator);
 
   NumPartImported = 0;
   NumPartExported = 0;
@@ -359,7 +359,7 @@ int tree<node, partset, point_data, foreign_point_data>::treebuild_construct(voi
       int recvTask = D->ThisTask ^ ngrp;
       if(recvTask < D->NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_Points[Send_offset[recvTask]], Send_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_Points[Send_offset[recvTask]], Send_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
                        TAG_DENS_A, &Points[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(point_data), MPI_BYTE, recvTask,
                        TAG_DENS_A, D->Communicator, MPI_STATUS_IGNORE);
     }
@@ -956,6 +956,10 @@ void tree<node, partset, point_data, foreign_point_data>::prepare_shared_memory_
       Shmem.inform_offset_table(Tp->SphP);
       Shmem.inform_offset_table(Foreign_Nodes);
       Shmem.inform_offset_table(Foreign_Points);
+
+      MPI_Barrier(Shmem.SharedMemComm);  // this barrier is in principle superfluous, but on some systems,
+                                         // the MPI_Gather in prepare_offset_table() can return prematurely
+                                         // on the target rank before all data has arrived
 
       /* the following is needed to make sure that the shared memory handler on different nodes is already properly initialized */
       MPI_Barrier(D->Communicator);

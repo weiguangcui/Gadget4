@@ -621,7 +621,7 @@ void fof<partset>::fof_compile_catalogue(double inner_distance)
     Send_count[FOF_GList[i].MinIDTask]++;
 
   /* inform everybody about how much they have to receive */
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
   /* count how many we get and prepare offset tables */
   int nimport    = 0;
@@ -652,7 +652,7 @@ void fof<partset>::fof_compile_catalogue(double inner_distance)
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
             {
               /* get the group info */
-              MPI_Sendrecv(&FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
                            TAG_DENS_A, &get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list), MPI_BYTE,
                            recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
@@ -728,7 +728,7 @@ void fof<partset>::fof_compile_catalogue(double inner_distance)
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
             {
               /* get the group info */
-              MPI_Sendrecv(&get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
                            TAG_DENS_A, &FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE,
                            recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
@@ -999,7 +999,7 @@ void fof<partset>::fof_add_in_properties_of_group_segments(void)
   for(int i = 0; i < NgroupsExt; i++)
     Send_count[Group[i].MinIDTask]++;
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
   int nimport    = 0;
   Recv_offset[0] = 0, Send_offset[0] = 0;
@@ -1028,7 +1028,7 @@ void fof<partset>::fof_add_in_properties_of_group_segments(void)
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
             {
               /* get the group data */
-              MPI_Sendrecv(&Group[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_properties), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&Group[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_properties), MPI_BYTE, recvTask,
                            TAG_DENS_A, &get_Group[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_properties), MPI_BYTE,
                            recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }

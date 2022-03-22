@@ -122,8 +122,11 @@ void my_int_MPI_Alltoallv(void *sendb, int *sendcounts, int *sdispls, void *recv
 
 int myMPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 
-int MPI_hypercube_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcount, int *displs,
-                             MPI_Datatype recvtype, MPI_Comm comm);
+int myMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcount, int *displs,
+                     MPI_Datatype recvtype, MPI_Comm comm);
+
+int myMPI_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                   MPI_Comm comm);
 
 void allreduce_sparse_double_sum(double *loc, double *glob, int N, MPI_Comm comm);
 
@@ -220,7 +223,7 @@ void allreduce_sum(T *glob, int N, MPI_Comm Communicator)
 
       if(rep == 0)
         {
-          MPI_Alltoall(send_count, 1, MPI_INT, recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(send_count, 1, MPI_INT, recv_count, 1, MPI_INT, Communicator);
 
           send_offset[0] = 0;
 
@@ -246,9 +249,9 @@ void allreduce_sum(T *glob, int N, MPI_Comm Communicator)
 
                     ind_data *import_data = (ind_data *)Mem.mymalloc("import_data", nimport * sizeof(ind_data));
 
-                    MPI_Sendrecv(&export_data[send_offset[recvTask]], send_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask,
-                                 TAG_DENS_B, import_data, recv_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
-                                 Communicator, MPI_STATUS_IGNORE);
+                    myMPI_Sendrecv(&export_data[send_offset[recvTask]], send_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask,
+                                   TAG_DENS_B, import_data, recv_count[recvTask] * sizeof(ind_data), MPI_BYTE, recvTask, TAG_DENS_B,
+                                   Communicator, MPI_STATUS_IGNORE);
 
                     for(int i = 0; i < nimport; i++)
                       {
@@ -278,8 +281,8 @@ void allreduce_sum(T *glob, int N, MPI_Comm Communicator)
       int recvTask = thistask ^ ngrp;
       if(recvTask < ntask)
         if(blocksize[thistask] > 0 || blocksize[recvTask] > 0)
-          MPI_Sendrecv(loc_data, blocksize[thistask] * sizeof(T), MPI_BYTE, recvTask, TAG_DENS_A, &glob[blockstart[recvTask]],
-                       blocksize[recvTask] * sizeof(T), MPI_BYTE, recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
+          myMPI_Sendrecv(loc_data, blocksize[thistask] * sizeof(T), MPI_BYTE, recvTask, TAG_DENS_A, &glob[blockstart[recvTask]],
+                         blocksize[recvTask] * sizeof(T), MPI_BYTE, recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
     }
 
   Mem.myfree(loc_data);

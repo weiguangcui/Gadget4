@@ -64,6 +64,10 @@ class shmem
 
   void **SharedMemBaseAddr;
 
+#ifdef ALLOCATE_SHARED_MEMORY_VIA_POSIX
+  char **SharedMemBaseAddrRaw;
+#endif
+
   char *TableData;
   char *EwaldData;
 

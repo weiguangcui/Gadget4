@@ -114,8 +114,8 @@ void ngbtree::exchange_topleafdata(void)
         }
     }
 
-  MPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
+                   D->Communicator);
 
   for(int task = 0; task < D->NTask; task++)
     recvcounts[task] = 0;
@@ -502,9 +502,9 @@ void ngbtree::finish_vounds_update(int nchanged, int *nodelist)
   tot_nodelist        = (int *)Mem.mymalloc("tot_nodelist", tot_nchanged * sizeof(int));
   glob_leaf_node_data = (leafnode_data *)Mem.mymalloc("glob_leaf_node_data", tot_nchanged * sizeof(leafnode_data));
 
-  MPI_Allgatherv(nodelist, nchanged, MPI_INT, tot_nodelist, recvcounts, recvoffset, MPI_INT, D->Communicator);
-  MPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(nodelist, nchanged, MPI_INT, tot_nodelist, recvcounts, recvoffset, MPI_INT, D->Communicator);
+  myMPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
+                   D->Communicator);
 
   if(TreeSharedMem_ThisTask == 0) /* only one of the shared memory threads needs to update the toplevel tree */
     {
@@ -609,9 +609,9 @@ void ngbtree::finish_maxhsml_update(int nchanged, int *nodelist)
   tot_nodelist        = (int *)Mem.mymalloc("tot_nodelist", tot_nchanged * sizeof(int));
   glob_leaf_node_data = (leafnode_data *)Mem.mymalloc("glob_leaf_node_data", tot_nchanged * sizeof(leafnode_data));
 
-  MPI_Allgatherv(nodelist, nchanged, MPI_INT, tot_nodelist, recvcounts, recvoffset, MPI_INT, D->Communicator);
-  MPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(nodelist, nchanged, MPI_INT, tot_nodelist, recvcounts, recvoffset, MPI_INT, D->Communicator);
+  myMPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
+                   D->Communicator);
 
   if(TreeSharedMem_ThisTask == 0) /* only one of the shared memory threads needs to update the toplevel tree */
     {

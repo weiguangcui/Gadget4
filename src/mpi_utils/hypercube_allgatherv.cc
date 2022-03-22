@@ -19,14 +19,16 @@
 
 #include "../data/allvars.h"
 #include "../data/dtypes.h"
-
-#ifdef MPI_HYPERCUBE_ALLGATHERV
+#include "../mpi_utils/mpi_utils.h"
 
 #define TAG 100
 
-int MPI_hypercube_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcount, int *displs,
-                             MPI_Datatype recvtype, MPI_Comm comm)
+int myMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcount, int *displs,
+                     MPI_Datatype recvtype, MPI_Comm comm)
 {
+#ifndef MPI_HYPERCUBE_ALLGATHERV
+  return MPI_Allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcount, displs, recvtype, comm);
+#else
   int ntask, thistask, ptask, ngrp, size_sendtype, size_recvtype;
   MPI_Status status;
 
@@ -44,14 +46,22 @@ int MPI_hypercube_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype
       int recvtask = thistask ^ ngrp;
 
       if(recvtask < ntask)
-        MPI_Sendrecv(sendbuf, sendcount, sendtype, recvtask, TAG, (char *)recvbuf + displs[recvtask] * size_recvtype,
-                     recvcount[recvtask], recvtype, recvtask, TAG, comm, &status);
+        {
+          if(sendbuf == MPI_IN_PLACE)
+            myMPI_Sendrecv((char *)recvbuf + displs[thistask] * size_recvtype, recvcount[thistask], sendtype, recvtask, TAG,
+                           (char *)recvbuf + displs[recvtask] * size_recvtype, recvcount[recvtask], recvtype, recvtask, TAG, comm,
+                           &status);
+          else
+            myMPI_Sendrecv(sendbuf, sendcount, sendtype, recvtask, TAG, (char *)recvbuf + displs[recvtask] * size_recvtype,
+                           recvcount[recvtask], recvtype, recvtask, TAG, comm, &status);
+        }
     }
 
-  if((char *)sendbuf != (char *)recvbuf + displs[thistask] * size_recvtype)
-    memcpy((char *)recvbuf + displs[thistask] * size_recvtype, sendbuf, sendcount * size_sendtype);
+  if(sendbuf != MPI_IN_PLACE)
+    if((char *)sendbuf != (char *)recvbuf + displs[thistask] * size_recvtype)
+      memcpy((char *)recvbuf + displs[thistask] * size_recvtype, sendbuf, sendcount * size_sendtype);
 
   return 0;
-}
 
 #endif
+}

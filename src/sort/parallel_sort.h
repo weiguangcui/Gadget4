@@ -312,7 +312,7 @@ inline double mycxxsort_parallel(T *begin, T *end, Comp comp, MPI_Comm comm)
           /* now compute the global ranks by summing the local ranks */
           /* Note: the last element in current_loc_rank is not defined. It will be summed by the last processor, and stored in the last
            * element of current_glob_rank */
-          MPI_Alltoall(current_loc_rank, sizeof(size_t), MPI_BYTE, list, sizeof(size_t), MPI_BYTE, MPI_CommLocal);
+          myMPI_Alltoall(current_loc_rank, sizeof(size_t), MPI_BYTE, list, sizeof(size_t), MPI_BYTE, MPI_CommLocal);
           rank = 0;
           for(int j = 0; j < Local_NTask; j++)
             rank += list[j];
@@ -357,9 +357,9 @@ inline double mycxxsort_parallel(T *begin, T *end, Comp comp, MPI_Comm comm)
                 }
             }
 
-          MPI_Alltoall(source_range_len_list, sizeof(long long), MPI_BYTE, range_len_list, sizeof(long long), MPI_BYTE, MPI_CommLocal);
-          MPI_Alltoall(source_median_element_list, size, MPI_BYTE, median_element_list, size, MPI_BYTE, MPI_CommLocal);
-          MPI_Alltoall(source_tie_breaking_rank_list, sizeof(size_t), MPI_BYTE, tie_breaking_rank_list, sizeof(size_t), MPI_BYTE,
+          myMPI_Alltoall(source_range_len_list, sizeof(long long), MPI_BYTE, range_len_list, sizeof(long long), MPI_BYTE, MPI_CommLocal);
+          myMPI_Alltoall(source_median_element_list, size, MPI_BYTE, median_element_list, size, MPI_BYTE, MPI_CommLocal);
+          myMPI_Alltoall(source_tie_breaking_rank_list, sizeof(size_t), MPI_BYTE, tie_breaking_rank_list, sizeof(size_t), MPI_BYTE,
                        MPI_CommLocal);
 
           if(Local_ThisTask < Local_NTask - 1)
@@ -486,7 +486,7 @@ inline double mycxxsort_parallel(T *begin, T *end, Comp comp, MPI_Comm comm)
           send_count[target]++;
         }
 
-      MPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, MPI_CommLocal);
+      myMPI_Alltoall(send_count, sizeof(size_t), MPI_BYTE, recv_count, sizeof(size_t), MPI_BYTE, MPI_CommLocal);
 
       size_t nimport = 0;
 

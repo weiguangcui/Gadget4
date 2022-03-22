@@ -228,8 +228,8 @@ void gravtree<partset>::exchange_topleafdata(void)
 
   // optimise this step - only need to update this once per shared memory node
 
-  MPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
-                 D->Communicator);
+  myMPI_Allgatherv(loc_leaf_node_data, bytecounts[D->ThisTask], MPI_BYTE, glob_leaf_node_data, bytecounts, byteoffset, MPI_BYTE,
+                   D->Communicator);
 
   for(int task = 0; task < D->NTask; task++)
     recvcounts[task] = 0;

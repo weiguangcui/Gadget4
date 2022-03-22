@@ -528,7 +528,7 @@ void mergertree::mergertree_set_first_progenitor_with_same_descendant(void)
 
       if(mode == 0)  // prepare offset tables
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
           Recv_offset[0] = 0;
           Send_offset[0] = 0;
@@ -558,7 +558,7 @@ void mergertree::mergertree_set_first_progenitor_with_same_descendant(void)
       if(recvTask < NTask)
         {
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-            MPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
+            myMPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
                          &recv_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
                          Communicator, MPI_STATUS_IGNORE);
         }
@@ -638,7 +638,7 @@ void mergertree::mergertree_select_maximum_score_progenitors(int nmatch)
 
       if(mode == 0)  // prepare offset tables
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
           Recv_offset[0] = 0;
           Send_offset[0] = 0;
@@ -668,7 +668,7 @@ void mergertree::mergertree_select_maximum_score_progenitors(int nmatch)
       if(recvTask < NTask)
         {
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-            MPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(desc_partdata), MPI_BYTE, recvTask,
+            myMPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(desc_partdata), MPI_BYTE, recvTask,
                          TAG_DENS_A, &recv_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(desc_partdata), MPI_BYTE,
                          recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
         }
@@ -755,7 +755,7 @@ void mergertree::mergertree_select_maximum_score_descendants(int nmatch)
 
       if(mode == 0)  // prepare offset tables
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
           Recv_offset[0] = 0;
           Send_offset[0] = 0;
@@ -785,7 +785,7 @@ void mergertree::mergertree_select_maximum_score_descendants(int nmatch)
       if(recvTask < NTask)
         {
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-            MPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(desc_partdata), MPI_BYTE, recvTask,
+            myMPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(desc_partdata), MPI_BYTE, recvTask,
                          TAG_DENS_A, &recv_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(desc_partdata), MPI_BYTE,
                          recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
         }
@@ -885,7 +885,7 @@ void mergertree::mergertree_set_first_descendant_with_same_progenitor(void)
 
       if(mode == 0)  // prepare offset tables
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
           Recv_offset[0] = 0;
           Send_offset[0] = 0;
@@ -915,7 +915,7 @@ void mergertree::mergertree_set_first_descendant_with_same_progenitor(void)
       if(recvTask < NTask)
         {
           if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-            MPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
+            myMPI_Sendrecv(&send_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
                          &recv_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(pair_data), MPI_BYTE, recvTask, TAG_DENS_A,
                          Communicator, MPI_STATUS_IGNORE);
         }

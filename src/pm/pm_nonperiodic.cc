@@ -575,7 +575,7 @@ void pm_nonperiodic::pmforce_nonperiodic_zoom_optimized_prepare_density(int grnr
     rhogrid[ii] = 0;
 
   /* exchange data and add contributions to the local mesh-path */
-  MPI_Alltoall(localfield_sendcount, sizeof(size_t), MPI_BYTE, localfield_recvcount, sizeof(size_t), MPI_BYTE, Communicator);
+  myMPI_Alltoall(localfield_sendcount, sizeof(size_t), MPI_BYTE, localfield_recvcount, sizeof(size_t), MPI_BYTE, Communicator);
 
   for(int level = 0; level < (1 << PTask); level++) /* note: for level=0, target is the same task */
     {
@@ -863,7 +863,7 @@ void pm_nonperiodic::pmforce_nonperiodic_uniform_optimized_prepare_density(int g
       Sndpm_offset[ind] = Sndpm_offset[ind_prev] + Sndpm_count[ind_prev];
     }
 
-  MPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
+  myMPI_Alltoall(Sndpm_count, sizeof(size_t), MPI_BYTE, Rcvpm_count, sizeof(size_t), MPI_BYTE, Communicator);
 
   nimport = 0, nexport = 0, Rcvpm_offset[0] = 0, Sndpm_offset[0] = 0;
   for(int j = 0; j < NTask; j++)

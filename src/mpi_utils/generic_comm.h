@@ -293,7 +293,7 @@ class generic_comm
      * we have also two option experimental communication routines that use a sparse=communication pattern instead.
      */
     /* the default */
-    MPI_Alltoall(Send, sizeof(send_recv_counts), MPI_BYTE, Recv, sizeof(send_recv_counts), MPI_BYTE, D->Communicator);
+    myMPI_Alltoall(Send, sizeof(send_recv_counts), MPI_BYTE, Recv, sizeof(send_recv_counts), MPI_BYTE, D->Communicator);
   }
 
   /* initialize offset tables that we need for the communication
@@ -486,12 +486,12 @@ class generic_comm
                     size_t len = sizeof(T_in);
 
                     /* get the particles */
-                    MPI_Sendrecv(&DataIn[Send_offset[recvTask]], Send[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_A,
+                    myMPI_Sendrecv(&DataIn[Send_offset[recvTask]], Send[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_A,
                                  &DataGet[Nimport], Recv[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_A, D->Communicator,
                                  MPI_STATUS_IGNORE);
 
                     /* get the node info */
-                    MPI_Sendrecv(&NodeInfoIn[Send_offset_nodes[recvTask]], Send[recvTask].CountNodes * sizeof(node_info), MPI_BYTE,
+                    myMPI_Sendrecv(&NodeInfoIn[Send_offset_nodes[recvTask]], Send[recvTask].CountNodes * sizeof(node_info), MPI_BYTE,
                                  recvTask, TAG_GRAV_B, &NodeInfoGet[NimportNodes], Recv[recvTask].CountNodes * sizeof(node_info),
                                  MPI_BYTE, recvTask, TAG_GRAV_B, D->Communicator, MPI_STATUS_IGNORE);
 
@@ -521,7 +521,7 @@ class generic_comm
                     size_t len = sizeof(T_out);
 
                     /* exchange the results */
-                    MPI_Sendrecv(&DataResult[Nimport], Recv[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_B,
+                    myMPI_Sendrecv(&DataResult[Nimport], Recv[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_B,
                                  &DataOut[Send_offset[recvTask]], Send[recvTask].Count * len, MPI_BYTE, recvTask, TAG_HYDRO_B,
                                  D->Communicator, MPI_STATUS_IGNORE);
 

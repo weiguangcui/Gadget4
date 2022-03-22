@@ -162,7 +162,7 @@ void fof<partset>::subfind_find_subhalos(int num, const char *basename, const ch
   for(int task = 1; task < NTask; task++)
     byteoffset[task] = byteoffset[task - 1] + bytecounts[task - 1];
 
-  MPI_Allgatherv(locProcAssign, bytecounts[ThisTask], MPI_BYTE, ProcAssign, bytecounts, byteoffset, MPI_BYTE, Communicator);
+  myMPI_Allgatherv(locProcAssign, bytecounts[ThisTask], MPI_BYTE, ProcAssign, bytecounts, byteoffset, MPI_BYTE, Communicator);
 
   Mem.myfree(byteoffset);
   Mem.myfree(bytecounts);
@@ -688,7 +688,7 @@ void fof<partset>::subfind_assign_subhalo_offsettype(void)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -711,7 +711,7 @@ void fof<partset>::subfind_assign_subhalo_offsettype(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
                        TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -727,7 +727,7 @@ void fof<partset>::subfind_assign_subhalo_offsettype(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
                        TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -818,7 +818,7 @@ void fof<partset>::subfind_redetermine_groupnr(void)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -841,7 +841,7 @@ void fof<partset>::subfind_redetermine_groupnr(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
                        TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
@@ -877,7 +877,7 @@ void fof<partset>::subfind_redetermine_groupnr(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
+          myMPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
                        TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
                        recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }

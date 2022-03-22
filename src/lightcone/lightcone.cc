@@ -933,7 +933,7 @@ void lightcone::lightcone_massmap_binning(void)
         Send_count[target]++;
     }
 
-  MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+  myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
 
   Recv_offset[0] = Send_offset[0] = 0;
   int nexport = 0, nimport = 0;

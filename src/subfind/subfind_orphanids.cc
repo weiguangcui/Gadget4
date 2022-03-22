@@ -93,7 +93,7 @@ void fof<simparticles>::subfind_match_ids_of_previously_most_bound_ids(simpartic
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {

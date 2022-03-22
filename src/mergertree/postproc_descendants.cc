@@ -220,7 +220,7 @@ void mergertree::mergertree_match_ids_of_previous_snap(void)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -243,7 +243,7 @@ void mergertree::mergertree_match_ids_of_previous_snap(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, &import_data[Recv_offset[recvTask]],
                        Recv_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);
@@ -404,7 +404,7 @@ void mergertree::mergertree_assign_group_numbers(fof<simparticles> *FoF)
 
           if(mode == 0)
             {
-              MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+              myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
               Recv_offset[0] = Send_offset[0] = 0;
               for(int j = 0; j < NTask; j++)
                 {
@@ -427,7 +427,7 @@ void mergertree::mergertree_assign_group_numbers(fof<simparticles> *FoF)
           int recvTask = ThisTask ^ ngrp;
           if(recvTask < NTask)
             if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-              MPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
+              myMPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
                            TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
                            recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
         }
@@ -510,7 +510,7 @@ void mergertree::mergertree_assign_group_numbers(fof<simparticles> *FoF)
 
           if(mode == 0)
             {
-              MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+              myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
               Recv_offset[0] = Send_offset[0] = 0;
               for(int j = 0; j < NTask; j++)
                 {
@@ -533,7 +533,7 @@ void mergertree::mergertree_assign_group_numbers(fof<simparticles> *FoF)
           int recvTask = ThisTask ^ ngrp;
           if(recvTask < NTask)
             if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-              MPI_Sendrecv(&export_subhalo_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(subhalo_info), MPI_BYTE,
+              myMPI_Sendrecv(&export_subhalo_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(subhalo_info), MPI_BYTE,
                            recvTask, TAG_DENS_B, &import_subhalo_data[Recv_offset[recvTask]],
                            Recv_count[recvTask] * sizeof(subhalo_info), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                            MPI_STATUS_IGNORE);
@@ -642,7 +642,7 @@ void mergertree::mergertree_match_ids_of_current_snap(void)
 
       if(mode == 0)
         {
-          MPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
+          myMPI_Alltoall(Send_count, 1, MPI_INT, Recv_count, 1, MPI_INT, Communicator);
           Recv_offset[0] = Send_offset[0] = 0;
           for(int j = 0; j < NTask; j++)
             {
@@ -665,7 +665,7 @@ void mergertree::mergertree_match_ids_of_current_snap(void)
       int recvTask = ThisTask ^ ngrp;
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
-          MPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE,
+          myMPI_Sendrecv(&export_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE,
                        recvTask, TAG_DENS_B, &import_data[Recv_offset[recvTask]],
                        Recv_count[recvTask] * sizeof(mergertree_particle_data), MPI_BYTE, recvTask, TAG_DENS_B, Communicator,
                        MPI_STATUS_IGNORE);
