@@ -157,7 +157,7 @@ class fofdata_comm : public generic_comm<fofdata_in, fofdata_out, T_tree, T_doma
 
                 fofnode *current = Tree->get_nodep(no, shmrank);
 
-                if(current->level == 0)
+                if(current->level <= LEVEL_ALWAYS_OPEN)
                   {
                     /* we always open the root node (its full node length can't be stored in the integer type */
                     no      = current->nextnode; /* no change in shmrank expected here */

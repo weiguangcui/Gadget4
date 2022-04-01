@@ -404,7 +404,7 @@ int foftree<partset>::treefind_fof_primary(MyIntPosType *searchcenter, MyNgbTree
             {
               fofnode *current = get_nodep(no, shmrank);
 
-              if(current->level == 0)
+              if(current->level <= LEVEL_ALWAYS_OPEN)
                 {
                   /* we always open the root node (its full node length couldn't be stored in the integer type */
                   no      = current->nextnode; /* no change in shmrank expected here */

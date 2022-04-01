@@ -12,6 +12,11 @@
 #ifndef SRC_DATA_SYMTENSOR_INDICES_H_
 #define SRC_DATA_SYMTENSOR_INDICES_H_
 
+/* 1-vector*/
+#define vX 0
+#define vY 1
+#define vZ 2
+
 /* 2-tensor element mapping, symmetric 3x3 */
 #define qXX 0
 #define qXY 1
