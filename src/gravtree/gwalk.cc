@@ -167,7 +167,7 @@ inline void gwalk::evaluate_particle_particle_interaction(const pinfo &pdat, con
 
 inline int gwalk::evaluate_particle_node_opening_criterion_and_interaction(const pinfo &pdat, gravnode *nop)
 {
-  if(nop->level == 0)  // always open the root node (note: full node length does not fit in the integer type)
+  if(nop->level <= LEVEL_ALWAYS_OPEN)  // always open the root node (note: full node length does not fit in the integer type)
     return NODE_OPEN;
 
   MyIntPosType halflen = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - nop->level);

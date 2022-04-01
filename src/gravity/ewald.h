@@ -91,6 +91,10 @@ class ewald : public intposconvert, public io_streamcount, public setcomm
   ewald_data *Ewd;  // points to an [ENX + 1][ENY + 1][ENZ + 1] array
 
   inline int ewd_offset(int i, int j, int k) { return (i * (ENY + 1) + j) * (ENZ + 1) + k; }
+  inline double specerf(double z, double k, double alpha);
+  inline double d_specerf(double z, double k, double alpha);
+  inline double dd_specerf(double z, double k, double alpha);
+  inline double ddd_specerf(double z, double k, double alpha);
 
   double Ewd_fac_intp[3];
 

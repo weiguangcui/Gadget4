@@ -74,24 +74,6 @@ void snap_io::init_basic(simparticles *Sp_ptr)
              0., 0., 0., 1., All.UnitVelocity_in_cm_per_s);
 #endif
 
-#ifdef OUTPUT_ACCELERATION
-#ifdef OUTPUT_ACCELERATIONS_IN_HALF_PRECISION
-  All.accel_normalize_fac = 10.0 * All.Hubble * (100.0 * 1.0e5 / All.UnitVelocity_in_cm_per_s);
-
-  init_field("ACCE", "Acceleration", MEM_MY_FLOAT, FILE_HALF, SKIP_ON_READ, 3, A_NONE, 0, io_func_accel, ALL_TYPES, 1, -2.0, 1, -1, 0,
-             2, All.accel_normalize_fac * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s / All.UnitLength_in_cm);
-#else
-  All.accel_normalize_fac = 1.0;
-
-  init_field("ACCE", "Acceleration", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, SKIP_ON_READ, 3, A_NONE, 0, io_func_accel, ALL_TYPES, 1, -2.0, 1,
-             -1, 0, 2, All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s / All.UnitLength_in_cm);
-#endif
-
-  /* hydro acceleration */
-  init_field("HACC", "HydroAcceleration", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 3, A_SPHP, &Sp->SphP[0].HydroAccel, 0,
-             GAS_ONLY, 0, 0, 0, 0, 0, 0, 0);
-#endif
-
   init_field("ID  ", "ParticleIDs", MEM_MY_ID_TYPE, FILE_MY_ID_TYPE, READ_IF_PRESENT, 1, A_P, NULL, io_func_id, ALL_TYPES, 0, 0, 0, 0,
              0, 0, 0, true);
 
@@ -113,6 +95,24 @@ void snap_io::init_basic(simparticles *Sp_ptr)
 
   init_field("HSML", "SmoothingLength", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 1, A_SPHP, &Sp->SphP[0].Hsml, NULL, GAS_ONLY,
              1, 1., -1., 1., 0., 0., All.UnitLength_in_cm);
+
+#ifdef OUTPUT_ACCELERATION
+#ifdef OUTPUT_ACCELERATIONS_IN_HALF_PRECISION
+  All.accel_normalize_fac = 10.0 * All.Hubble * (100.0 * 1.0e5 / All.UnitVelocity_in_cm_per_s);
+
+  init_field("ACCE", "Acceleration", MEM_MY_FLOAT, FILE_HALF, SKIP_ON_READ, 3, A_NONE, 0, io_func_accel, ALL_TYPES, 1, -2.0, 1, -1, 0,
+             2, All.accel_normalize_fac * All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s / All.UnitLength_in_cm);
+#else
+  All.accel_normalize_fac = 1.0;
+
+  init_field("ACCE", "Acceleration", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, SKIP_ON_READ, 3, A_NONE, 0, io_func_accel, ALL_TYPES, 1, -2.0, 1,
+             -1, 0, 2, All.UnitVelocity_in_cm_per_s * All.UnitVelocity_in_cm_per_s / All.UnitLength_in_cm);
+#endif
+
+  /* hydro acceleration */
+  init_field("HACC", "HydroAcceleration", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 3, A_SPHP, &Sp->SphP[0].HydroAccel, 0,
+             GAS_ONLY, 0, 0, 0, 0, 0, 0, 0);
+#endif
 
 #ifdef STARFORMATION
 

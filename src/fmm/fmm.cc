@@ -1330,7 +1330,7 @@ inline int fmm::fmm_evaluate_particle_node_opening_criterion(int no_sink, char t
 #endif
     }
 
-  if(nop_source->level == 0)  // always open the root node (note: full node length does not fit in the integer type)
+  if(nop_source->level <= LEVEL_ALWAYS_OPEN)  // always open the root node (note: full node length does not fit in the integer type)
     return NODE_OPEN;
 
   MyIntPosType halflen = ((MyIntPosType)1) << ((BITS_FOR_POSITIONS - 1) - nop_source->level);
