@@ -954,6 +954,10 @@ void snap_io::read_header_fields(const char *fname)
   read_scalar_attribute(handle, "BoxSize", &header.BoxSize, H5T_NATIVE_DOUBLE);
   read_scalar_attribute(handle, "NumFilesPerSnapshot", &header.num_files, H5T_NATIVE_INT);
 
+#if defined(GADGET2_HEADER) && defined(SECOND_ORDER_LPT_ICS)
+  read_scalar_attribute(handle, "LptScalingfactor", &header.lpt_scalingfactor, H5T_NATIVE_FLOAT);
+#endif
+
   my_H5Gclose(handle, "/Header");
   my_H5Fclose(hdf5_file, fname);
 }
