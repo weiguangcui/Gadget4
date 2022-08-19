@@ -1,0 +1,37 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Merge upstream branches
+
+# Controls when the workflow will run
+on:
+  schedule:
+     # actually, ~5 minutes is the highest
+     # effective frequency you will get
+    - cron:  '0 * 1 * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "merge"
+  merge:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Merge Gadget4 upstream
+        run: |
+          echo Pulling from Gadget4 upstream.
+          git checkout master
+          git pull --unshallow
+          git remote add upstream https://gitlab.mpcdf.mpg.de/vrs/gadget4.git
+          git fetch upstream
+          git checkout -b master origin/master
+          git merge --no-edit upstream/master
+          git push origin master

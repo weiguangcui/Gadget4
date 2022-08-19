@@ -757,8 +757,12 @@ void snap_io::read_file_header(const char *fname, int filenr, int readTask, int 
 
 #ifdef GADGET2_HEADER
   for(int i = 0; i < NTYPES_HEADER; i++)
-    if(header.npartTotalLowWord[i] > 0)
-      header.npartTotal[i] = header.npartTotalLowWord[i];  // + (((long long)header.npartTotalHighWord[i]) << 32);
+    {
+      if(header.npartTotalLowWord[i] > 0)
+      header.npartTotal[i] = header.npartTotalLowWord[i];
+    if(header.npartTotalHighWord[i] > 0)
+      header.npartTotal[i] += (((long long)header.npartTotalHighWord[i]) << 32);
+    }
 #endif
 
   if(Sp->TotNumPart == 0)
