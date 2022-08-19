@@ -5,10 +5,10 @@ name: Merge upstream branches
 on:
   schedule:
      # actually, ~5 minutes is the highest
-     # effective frequency you will get. now it at 10 hours per run
-    - cron:  '0 10 * * *'
+     # effective frequency you will get
+    - cron:  '0 1 * * *'
   workflow_dispatch:
-  
+
 jobs:
   merge:
     runs-on: ubuntu-latest
@@ -34,8 +34,10 @@ jobs:
           # git merge --no-edit upstream/master
           # git push origin master
 
-          git checkout -b master origin/master
+          git checkout master
+          # origin/master
           git merge --no-edit upstream/master
-          git push origin master
+          git push 
+          # origin master
 
           # etc
