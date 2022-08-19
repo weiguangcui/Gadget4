@@ -7,6 +7,8 @@ on:
      # actually, ~5 minutes is the highest
      # effective frequency you will get. now it at 10 hours per run
     - cron:  '0 10 * * *'
+  workflow_dispatch:
+  
 jobs:
   merge:
     runs-on: ubuntu-latest
