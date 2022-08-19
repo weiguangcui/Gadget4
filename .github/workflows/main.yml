@@ -1,17 +1,17 @@
 # .github/workflows/example.yml
-runs-on: self-hosted
+# runs-on: self-hosted
 
 name: Merge upstream branches
 on:
   schedule:
      # actually, ~5 minutes is the highest
      # effective frequency you will get. now it at 10 hours per run
-    - cron:  '0 * 10 * *'
+    - cron:  '0 10 * * *'
 jobs:
   merge:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Merge upstream
         run: |
           git config --global user.name "Weiguang.Cui Automerge"
