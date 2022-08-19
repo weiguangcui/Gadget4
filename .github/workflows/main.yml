@@ -6,7 +6,7 @@ on:
      # actually, ~5 minutes is the highest
      # effective frequency you will get
     - cron:  '0 1 * * *'
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   merge:
