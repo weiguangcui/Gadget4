@@ -1,4 +1,5 @@
 # .github/workflows/example.yml
+runs-on: self-hosted
 
 name: Merge upstream branches
 on:
