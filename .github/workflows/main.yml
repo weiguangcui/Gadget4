@@ -4,8 +4,8 @@ name: Merge upstream branches
 on:
   schedule:
      # actually, ~5 minutes is the highest
-     # effective frequency you will get
-    - cron:  '0 * 1 * *'
+     # effective frequency you will get. now it at 10 hours per run
+    - cron:  '0 * 10 * *'
 jobs:
   merge:
     runs-on: ubuntu-latest
