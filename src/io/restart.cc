@@ -9,7 +9,7 @@
  * \brief handles the reading/writing of restart files
  */
 
-#include "gadgetconfig.h"
+#include "../io/restart.h"
 
 #include <gsl/gsl_rng.h>
 #include <math.h>
@@ -24,7 +24,6 @@
 #include "../data/mymalloc.h"
 #include "../domain/domain.h"
 #include "../io/io.h"
-#include "../io/restart.h"
 #include "../lightcone/lightcone.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -33,6 +32,7 @@
 #include "../ngbtree/ngbtree.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
+#include "gadgetconfig.h"
 
 void restart::write(sim *Sim_ptr)
 {
@@ -516,7 +516,7 @@ void restart::contents_restart_file(int modus)
       if(Sim->NgbTree.MaxPart != 0)
         {
           Sim->NgbTree.Points   = (ngbpoint_data *)Mem.mymalloc_movable(&Sim->NgbTree.Points, "Points",
-                                                                      Sim->NgbTree.NumPartImported * sizeof(ngbpoint_data));
+                                                                        Sim->NgbTree.NumPartImported * sizeof(ngbpoint_data));
           Sim->NgbTree.Nextnode = (int *)Mem.mymalloc_movable(
               &Sim->NgbTree.Nextnode, "Nextnode",
               (Sim->NgbTree.MaxPart + Sim->Domain.NTopleaves + Sim->NgbTree.NumPartImported) * sizeof(int));
@@ -587,26 +587,44 @@ void restart::readjust_timebase(double TimeMax_old, double TimeMax_new)
       All.PM_Ti_endstep /= 2;
 #endif
 
+#ifdef FORCE_EQUAL_TIMESTEPS
+      GlobalTimeStep /= 2;
+#endif
+
+      for(int n = 0; n < TIMEBINS; n++)
+        All.Ti_begstep[n] /= 2;
+
+      All.Ti_nextoutput /= 2;
+      All.Ti_lastoutput /= 2;
+
       for(int i = 0; i < Sim->Sp.NumPart; i++)
         {
+          Sim->Sp.P[i].Ti_Current = Sim->Sp.P[i].Ti_Current / 2;
+
           if(Sim->Sp.P[i].TimeBinGrav > 0)
             {
-              Sim->Sp.P[i].Ti_Current = Sim->Sp.P[i].Ti_Current / 2;
+              int oldbin = Sim->Sp.P[i].TimeBinGrav;
+              int newbin = oldbin - 1;
 
-              Sim->Sp.P[i].TimeBinGrav--;
-
-              if(Sim->Sp.P[i].TimeBinGrav <= 0)
+              if(newbin <= 0)
                 Terminate("Error in readjust_timebase(). Minimum Timebin for particle %d reached.\n", i);
+
+              Sim->Sp.TimeBinsGravity.timebin_move_particle(i, oldbin, newbin);
+              Sim->Sp.P[i].TimeBinGrav = newbin;
             }
 
           if(Sim->Sp.P[i].getType() == 0)
             {
               if(Sim->Sp.P[i].getTimeBinHydro() > 0)
                 {
-                  Sim->Sp.P[i].setTimeBinHydro(Sim->Sp.P[i].getTimeBinHydro() - 1);
+                  int oldbin = Sim->Sp.P[i].getTimeBinHydro();
+                  int newbin = oldbin - 1;
 
-                  if(Sim->Sp.P[i].getTimeBinHydro() <= 0)
+                  if(newbin <= 0)
                     Terminate("Error in readjust_timebase(). Minimum Timebin (hydro) for sph particle %d reached.\n", i);
+
+                  Sim->Sp.TimeBinsHydro.timebin_move_particle(i, oldbin, newbin);
+                  Sim->Sp.P[i].setTimeBinHydro(newbin);
                 }
             }
         }

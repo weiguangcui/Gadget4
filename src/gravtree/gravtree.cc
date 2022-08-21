@@ -9,12 +9,13 @@
  *  \brief driver routines for computing the (short-range) gravity
  */
 
-#include "gadgetconfig.h"
+#include "../gravtree/gravtree.h"
 
 #include <math.h>
 #include <mpi.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <atomic>
 
 #include "../data/allvars.h"
@@ -23,7 +24,6 @@
 #include "../data/mymalloc.h"
 #include "../domain/domain.h"
 #include "../gravity/ewald.h"
-#include "../gravtree/gravtree.h"
 #include "../gravtree/gwalk.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -34,6 +34,7 @@
 #include "../sort/cxxsort.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
+#include "gadgetconfig.h"
 
 /*!
  *  This file contains the code for the gravitational force computation by
@@ -162,12 +163,10 @@ void gravtree<partset>::gravity_exchange_forces(void)
   send_offset[0] = 0;
 
   int Nexport = 0;
-  int Nimport = 0;
 
   for(int j = 0; j < D->NTask; j++)
     {
       Nexport += send_count[j];
-      Nimport += recv_count[j];
       if(j > 0)
         {
           send_offset[j] = send_offset[j - 1] + send_count[j - 1];
@@ -188,9 +187,9 @@ void gravtree<partset>::gravity_exchange_forces(void)
           if(send_count[recvTask] > 0 || recv_count[recvTask] > 0)
             {
               myMPI_Sendrecv(&ResultsActiveImported[recv_offset[recvTask]], recv_count[recvTask] * sizeof(resultsactiveimported_data),
-                           MPI_BYTE, recvTask, TAG_FOF_A, &tmp_results[send_offset[recvTask]],
-                           send_count[recvTask] * sizeof(resultsactiveimported_data), MPI_BYTE, recvTask, TAG_FOF_A, D->Communicator,
-                           MPI_STATUS_IGNORE);
+                             MPI_BYTE, recvTask, TAG_FOF_A, &tmp_results[send_offset[recvTask]],
+                             send_count[recvTask] * sizeof(resultsactiveimported_data), MPI_BYTE, recvTask, TAG_FOF_A, D->Communicator,
+                             MPI_STATUS_IGNORE);
             }
         }
     }
