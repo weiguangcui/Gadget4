@@ -90,3 +90,7 @@ tests/MilliMillHyper/output
 tests/MilliMillHyper/output_tree
 tests/EuclidTest/G4_TreePM/output
 site/
+
+
+[core]
+excludesfile = +.github/workflows/main.yml
