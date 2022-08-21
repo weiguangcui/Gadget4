@@ -92,5 +92,8 @@ tests/EuclidTest/G4_TreePM/output
 site/
 
 
-[core]
+[Gadget4-Simba]
+excludesfile = +.github/workflows/main.yml
+
+[master]
 excludesfile = +.github/workflows/main.yml
