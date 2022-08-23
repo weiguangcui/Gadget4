@@ -62,6 +62,10 @@ class lightcone_particle_io : public IO_Def
     int TotNpix;
 
     int num_files;
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+    double Origin[3];
+#endif
   };
   io_header header; /**< holds header for snapshot files */
 

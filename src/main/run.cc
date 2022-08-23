@@ -9,6 +9,10 @@
  *  \brief contains the basic simulation loop that iterates over timesteps
  */
 
+// clang-format off
+#include "gadgetconfig.h"
+// clang-format on
+
 #include <ctype.h>
 #include <math.h>
 #include <mpi.h>
@@ -33,7 +37,6 @@
 #include "../ngbtree/ngbtree.h"
 #include "../sort/parallel_sort.h"
 #include "../system/system.h"
-#include "gadgetconfig.h"
 
 /*!
  * Main driver routine for advancing the simulation forward in time.
@@ -83,8 +86,7 @@ void sim::run(void)
 
 #ifdef LIGHTCONE
 #ifdef LIGHTCONE_PARTICLES
-      mpi_printf("LIGHTCONE_PARTICLES: Lp.NumPart=%d   Checked %d box replicas out of list of length %d\n", Lp.NumPart,
-                 LightCone.NumLastCheck, LightCone.NumBoxes);
+      mpi_printf("LIGHTCONE_PARTICLES: Lp.NumPart=%d\n", Lp.NumPart);
 #endif
 #ifdef LIGHTCONE_MASSMAPS
       mpi_printf("LIGHTCONE_MASSMAPS:  Mp.NumPart=%d \n", Mp.NumPart);

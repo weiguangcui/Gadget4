@@ -98,7 +98,7 @@ int lightcone::lightcone_add_position_massmaps(particle_data *P, double *pos, do
 #endif
 
 #ifdef LIGHTCONE_PARTICLES
-void lightcone::lightcone_add_position_particles(particle_data *P, double *pos, double ascale)
+void lightcone::lightcone_add_position_particles(particle_data *P, double *pos, double ascale, int oindex)
 {
   if(Lp->NumPart >= Lp->MaxPart)
     {
@@ -141,6 +141,10 @@ void lightcone::lightcone_add_position_particles(particle_data *P, double *pos, 
 
 #if defined(LIGHTCONE_PARTICLES_GROUPS) && defined(FOF)
   Lp->P[q].setFlagSaveDistance();
+#endif
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  Lp->P[q].OriginIndex = oindex;
 #endif
 }
 #endif
@@ -191,105 +195,117 @@ int lightcone::lightcone_test_for_particle_addition(particle_data *P, integertim
   bool previously = P->ID.is_previously_most_bound();
 #endif
 
-  NumLastCheck = 0;
+#ifndef LIGHTCONE_MULTIPLE_ORIGINS
+  int oindex = 0;
+#else
+  for(int oindex = 0; oindex < NlightconeOrigins; oindex++)
+#endif
+  {
+    for(int n = 0; n < BoxOrigin[oindex].NumBoxes; n++)
+      {
+        if(R0 < BoxOrigin[oindex].BoxList[n].Rmin)
+          continue;
 
-  for(int n = 0; n < NumBoxes; n++)
-    {
-      if(R0 < BoxList[n].Rmin)
-        continue;
+        if(R1prime > BoxOrigin[oindex].BoxList[n].Rmax)
+          break;
 
-      if(R1prime > BoxList[n].Rmax)
-        break;
+        int i = BoxOrigin[oindex].BoxList[n].i;
+        int j = BoxOrigin[oindex].BoxList[n].j;
+        int k = BoxOrigin[oindex].BoxList[n].k;
 
-      NumLastCheck++;
+        double PosA[3];
 
-      int i = BoxList[n].i;
-      int j = BoxList[n].j;
-      int k = BoxList[n].k;
+        PosA[0] = pos[0] + i * All.BoxSize;
+        PosA[1] = pos[1] + j * All.BoxSize;
+        PosA[2] = pos[2] + k * All.BoxSize;
 
-      double PosA[3];
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+        PosA[0] -= ConeOrigins[oindex].PosOrigin[0];
+        PosA[1] -= ConeOrigins[oindex].PosOrigin[1];
+        PosA[2] -= ConeOrigins[oindex].PosOrigin[2];
+#endif
 
-      PosA[0] = pos[0] + i * All.BoxSize;
-      PosA[1] = pos[1] + j * All.BoxSize;
-      PosA[2] = pos[2] + k * All.BoxSize;
+        double rA2 = PosA[0] * PosA[0] + PosA[1] * PosA[1] + PosA[2] * PosA[2];
 
-      double rA2 = PosA[0] * PosA[0] + PosA[1] * PosA[1] + PosA[2] * PosA[2];
+        if(rA2 < R0_squared)
+          {
+            double PosB[3];
+            double diffBminusA[3];
 
-      if(rA2 < R0_squared)
-        {
-          double PosB[3];
-          double diffBminusA[3];
+            for(int q = 0; q < 3; q++)
+              {
+                diffBminusA[q] = P->Vel[q] * dt_drift * Sp->FacIntToCoord;
+                PosB[q]        = PosA[q] + diffBminusA[q];
+              }
 
-          for(int q = 0; q < 3; q++)
-            {
-              diffBminusA[q] = P->Vel[q] * dt_drift * Sp->FacIntToCoord;
-              PosB[q]        = PosA[q] + diffBminusA[q];
-            }
+            double rB2 = PosB[0] * PosB[0] + PosB[1] * PosB[1] + PosB[2] * PosB[2];
 
-          double rB2 = PosB[0] * PosB[0] + PosB[1] * PosB[1] + PosB[2] * PosB[2];
+            if(rB2 > R1_squared)
+              {
+                /* ok, particle crossed the lightcone. Interpolate the coordinate of the crossing */
 
-          if(rB2 > R1_squared)
-            {
-              /* ok, particle crossed the lightcone. Interpolate the coordinate of the crossing */
+                double dr2 = diffBminusA[0] * diffBminusA[0] + diffBminusA[1] * diffBminusA[1] + diffBminusA[2] * diffBminusA[2];
 
-              double dr2 = diffBminusA[0] * diffBminusA[0] + diffBminusA[1] * diffBminusA[1] + diffBminusA[2] * diffBminusA[2];
+                double a = pow(R1 - R0, 2) - dr2;
+                double b = 2 * R0 * (R1 - R0) - 2 * (PosA[0] * diffBminusA[0] + PosA[1] * diffBminusA[1] + PosA[2] * diffBminusA[2]);
+                double c = R0 * R0 - rA2;
 
-              double a = pow(R1 - R0, 2) - dr2;
-              double b = 2 * R0 * (R1 - R0) - 2 * (PosA[0] * diffBminusA[0] + PosA[1] * diffBminusA[1] + PosA[2] * diffBminusA[2]);
-              double c = R0 * R0 - rA2;
+                double det = b * b - 4 * a * c;
 
-              double det = b * b - 4 * a * c;
-
-              if(det < 0)
-                Terminate(
-                    "det=%g R0=%g  R1=%g  rA=%g rB=%g  dr=%g  dt_drift=%g  dx=(%g|%g|%g) vel=(%g|%g|%g)  "
-                    "posA=(%g|%g|%g)  posB=(%g|%g|%g)\n",
-                    det, R0, R1, sqrt(rA2), sqrt(rB2), sqrt(dr2), dt_drift, P->Vel[0] * dt_drift * Sp->FacIntToCoord,
-                    P->Vel[1] * dt_drift * Sp->FacIntToCoord, P->Vel[2] * dt_drift * Sp->FacIntToCoord, P->Vel[0], P->Vel[1],
-                    P->Vel[2], PosA[0], PosA[1], PosA[2], PosB[0], PosB[1], PosB[2]);
-
-              double fac = (-b - sqrt(det)) / (2 * a);
-
-              vector<double> Pos;
-
-              for(int q = 0; q < 3; q++)
-                Pos[q] = PosA[q] + fac * diffBminusA[q];
-
-              double ascale = All.TimeBegin * exp((time0 + (time1 - time0) * fac) * All.Timebase_interval);
-
-              /* now we can add particle at position Pos[] to the lightcone, provided it fits into the angular mask */
-
-              if(fac < 0 || fac > 1)
-                {
-                  warn(
-                      "ascale=%g  fac=%g  fac-1%g R0=%g  R1=%g  rA=%g rB=%g  dr=%g  dt_drift=%g  dx=(%g|%g|%g) vel=(%g|%g|%g)  "
+                if(det < 0)
+                  Terminate(
+                      "det=%g R0=%g  R1=%g  rA=%g rB=%g  dr=%g  dt_drift=%g  dx=(%g|%g|%g) vel=(%g|%g|%g)  "
                       "posA=(%g|%g|%g)  posB=(%g|%g|%g)\n",
-                      ascale, fac, fac - 1, R0, R1, sqrt(rA2), sqrt(rB2), sqrt(dr2), dt_drift,
-                      P->Vel[0] * dt_drift * Sp->FacIntToCoord, P->Vel[1] * dt_drift * Sp->FacIntToCoord,
-                      P->Vel[2] * dt_drift * Sp->FacIntToCoord, P->Vel[0], P->Vel[1], P->Vel[2], PosA[0], PosA[1], PosA[2], PosB[0],
-                      PosB[1], PosB[2]);
-                }
-              else
-                {
+                      det, R0, R1, sqrt(rA2), sqrt(rB2), sqrt(dr2), dt_drift, P->Vel[0] * dt_drift * Sp->FacIntToCoord,
+                      P->Vel[1] * dt_drift * Sp->FacIntToCoord, P->Vel[2] * dt_drift * Sp->FacIntToCoord, P->Vel[0], P->Vel[1],
+                      P->Vel[2], PosA[0], PosA[1], PosA[2], PosB[0], PosB[1], PosB[2]);
+
+                double fac = (-b - sqrt(det)) / (2 * a);
+
+                vector<double> Pos;
+
+                for(int q = 0; q < 3; q++)
+                  Pos[q] = PosA[q] + fac * diffBminusA[q];
+
+                double ascale = All.TimeBegin * exp((time0 + (time1 - time0) * fac) * All.Timebase_interval);
+
+                /* now we can add particle at position Pos[] to the lightcone, provided it fits into the angular mask */
+
+                if(fac < 0 || fac > 1)
+                  {
+                    warn(
+                        "ascale=%g  fac=%g  fac-1%g R0=%g  R1=%g  rA=%g rB=%g  dr=%g  dt_drift=%g  dx=(%g|%g|%g) vel=(%g|%g|%g)  "
+                        "posA=(%g|%g|%g)  posB=(%g|%g|%g)\n",
+                        ascale, fac, fac - 1, R0, R1, sqrt(rA2), sqrt(rB2), sqrt(dr2), dt_drift,
+                        P->Vel[0] * dt_drift * Sp->FacIntToCoord, P->Vel[1] * dt_drift * Sp->FacIntToCoord,
+                        P->Vel[2] * dt_drift * Sp->FacIntToCoord, P->Vel[0], P->Vel[1], P->Vel[2], PosA[0], PosA[1], PosA[2], PosB[0],
+                        PosB[1], PosB[2]);
+                  }
+                else
+                  {
 #ifdef LIGHTCONE_PARTICLES
-                  if(ascale >= ConeGlobAstart && ascale < ConeGlobAend)
-                    for(int cone = 0; cone < Nlightcones; cone++)
-                      if(lightcone_is_cone_member_basic(ascale, Pos, previously, cone))
-                        {
-                          /* we only add the particle once if it is at least contained in one of the cones */
-                          lightcone_add_position_particles(P, Pos.da, ascale);
-                          break;
-                        }
+                    if(ascale >= ConeGlobAstart && ascale < ConeGlobAend)
+                      for(int cone = 0; cone < Nlightcones; cone++)
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+                        if(oindex == Cones[cone].OriginIndex)
+#endif
+                          if(lightcone_is_cone_member_basic(ascale, Pos, previously, cone))
+                            {
+                              /* we only add the particle once if it is at least contained in one of the cones */
+                              lightcone_add_position_particles(P, Pos.da, ascale, oindex);
+                              break;
+                            }
 #endif
 
 #ifdef LIGHTCONE_MASSMAPS
-                  if(ascale >= MassMapBoundariesAscale[0] && ascale < MassMapBoundariesAscale[NumMassMapBoundaries - 1])
-                    buffer_full_flag |= lightcone_add_position_massmaps(P, Pos.da, ascale);
+                    if(ascale >= MassMapBoundariesAscale[0] && ascale < MassMapBoundariesAscale[NumMassMapBoundaries - 1])
+                      buffer_full_flag |= lightcone_add_position_massmaps(P, Pos.da, ascale);
 #endif
-                }
-            }
-        }
-    }
+                  }
+              }
+          }
+      }
+  }
 
   return buffer_full_flag;
 }
@@ -303,12 +319,24 @@ bool lightcone::lightcone_is_cone_member(int i, int cone)
     return false;
 #endif
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  if(Lp->P[i].OriginIndex != Cones[cone].OriginIndex)
+    return false;
+#endif
+
   vector<double> pos;
 
   if(i >= Lp->NumPart)
     Terminate("i=%d Lp->NumPart=%d\n", i, Lp->NumPart);
 
   Lp->signedintpos_to_pos((MySignedIntPosType *)Lp->P[i].IntPos, pos.da);
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  int oindex = Cones[cone].OriginIndex;
+  pos[0] -= ConeOrigins[oindex].PosOrigin[0];
+  pos[1] -= ConeOrigins[oindex].PosOrigin[1];
+  pos[2] -= ConeOrigins[oindex].PosOrigin[2];
+#endif
 
   return lightcone_is_cone_member_basic(Lp->P[i].Ascale, pos, Lp->P[i].ID.is_previously_most_bound(), cone);
 }
@@ -394,6 +422,67 @@ void lightcone::lightcone_init_geometry(char *fname)
 
   if(ThisTask == 0)
     {
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+
+      for(int iter = 0; iter < 2; iter++)
+        {
+          NlightconeOrigins = 0;
+          FILE *fd;
+
+          if(!(fd = fopen(All.LightConeOriginsFile, "r")))
+            Terminate("LIGHTCONE_MULTIPLE_ORIGINS: cannot read lightcone origins from file `%s'\n", All.LightConeOriginsFile);
+
+          if(iter == 0)
+            {
+              while(1)
+                {
+                  double dummy;
+                  if(fscanf(fd, "%lg %lg %lg", &dummy, &dummy, &dummy) != 3)
+                    break;
+
+                  NlightconeOrigins++;
+                  if(NlightconeOrigins > LIGHTCONE_MAX_NUMBER_ORIGINS)
+                    Terminate("LIGHTCONE_MULTIPLE_ORIGINS: Too many entries in file %s  (maximum number of origins set to %d)",
+                              All.LightConeOriginsFile, LIGHTCONE_MAX_NUMBER_ORIGINS);
+                }
+
+              if(NlightconeOrigins == 0)
+                Terminate("LIGHTCONE_MULTIPLE_ORIGINS: No entry in file %s", All.LightConeOriginsFile);
+
+              ConeOrigins = (cone_origin *)Mem.mymalloc("ConeOrigins", (NlightconeOrigins + 1) * sizeof(cone_origin));
+
+              mpi_printf("LIGHTCONE_MULTIPLE_ORIGINS: read specification for %d origins from file `%s'.\n", NlightconeOrigins,
+                         All.LightConeOriginsFile);
+            }
+          else
+            {
+              while(1)
+                {
+                  if(fscanf(fd, "%lg %lg %lg", &ConeOrigins[NlightconeOrigins].PosOrigin[0],
+                            &ConeOrigins[NlightconeOrigins].PosOrigin[1], &ConeOrigins[NlightconeOrigins].PosOrigin[2]) != 3)
+                    break;
+
+                  NlightconeOrigins++;
+                };
+            }
+
+          fclose(fd);
+        }
+
+      for(int n = 0; n < NlightconeOrigins; n++)
+        {
+          for(int i = 0; i < 0; i++)
+            {
+              while(ConeOrigins[n].PosOrigin[i] < 0)
+                ConeOrigins[n].PosOrigin[i] += All.BoxSize;
+              while(ConeOrigins[n].PosOrigin[i] >= All.BoxSize)
+                ConeOrigins[n].PosOrigin[i] -= All.BoxSize;
+            }
+          mpi_printf("LIGHTCONE_MULTIPLE_ORIGINS:    Origin #%03d:   %10g %10g %10g\n", n, ConeOrigins[n].PosOrigin[0],
+                     ConeOrigins[n].PosOrigin[1], ConeOrigins[n].PosOrigin[2]);
+        }
+#endif
+
       for(int iter = 0; iter < 2; iter++)
         {
           Nlightcones = 0;
@@ -444,6 +533,12 @@ void lightcone::lightcone_init_geometry(char *fname)
                         Terminate("LIGHTCONE_PARTICLES: unknown lightcone type %d in file '%s'", lc_type, fname);
                         break;
                     }
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+                  int lc_origin;
+                  if(fscanf(fd, "%d", &lc_origin) != 1)
+                    Terminate("LIGHTCONE_PARTICLES: can't read origin identifier in file '%s'", fname);
+#endif
 
                   Nlightcones++;
                 }
@@ -543,16 +638,30 @@ void lightcone::lightcone_init_geometry(char *fname)
                         Terminate("odd");
                     }
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+                  fscanf(fd, "%d", &Cones[Nlightcones].OriginIndex);
+
+                  if(Cones[Nlightcones].OriginIndex < 0 || Cones[Nlightcones].OriginIndex >= NlightconeOrigins)
+                    Terminate("lightcone origin '%d' out of range, we have only %d origins", Cones[Nlightcones].OriginIndex,
+                              NlightconeOrigins);
+#endif
                   Nlightcones++;
                 }
             }
           fclose(fd);
         }
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+      for(int i = 0; i < Nlightcones; i++)
+        mpi_printf("LIGHTCONE_PARTICLES: lightcone #%2d:  %18s %20s  Astart=%10g  Aend=%10g  Origin: (%8g|%8g|%8g)\n", i, Cones[i].Tag,
+                   Cones[i].OnlyMostBoundFlag ? "(only most bound)" : "(all particles)", Cones[i].Astart, Cones[i].Aend,
+                   ConeOrigins[Cones[i].OriginIndex].PosOrigin[0], ConeOrigins[Cones[i].OriginIndex].PosOrigin[1],
+                   ConeOrigins[Cones[i].OriginIndex].PosOrigin[2]);
+#else
       for(int i = 0; i < Nlightcones; i++)
         mpi_printf("LIGHTCONE_PARTICLES: lightcone #%2d:  %18s %20s  Astart=%10g  Aend=%10g\n", i, Cones[i].Tag,
                    Cones[i].OnlyMostBoundFlag ? "(only most bound)" : "(all particles)", Cones[i].Astart, Cones[i].Aend);
-
+#endif
       mpi_printf("\n");
     }
 
@@ -564,6 +673,15 @@ void lightcone::lightcone_init_geometry(char *fname)
     Cones = (cone_data *)Mem.mymalloc("Cones", Nlightcones * sizeof(cone_data));
 
   MPI_Bcast(Cones, Nlightcones * sizeof(cone_data), MPI_BYTE, 0, Communicator);
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  MPI_Bcast(&NlightconeOrigins, 1, MPI_INT, 0, Communicator);
+
+  if(ThisTask != 0)
+    ConeOrigins = (cone_origin *)Mem.mymalloc("ConeOrigins", (NlightconeOrigins + 1) * sizeof(cone_origin));
+
+  MPI_Bcast(ConeOrigins, NlightconeOrigins * sizeof(cone_origin), MPI_BYTE, 0, Communicator);
+#endif
 }
 
 int lightcone::lightcone_init_times(void)
@@ -600,47 +718,54 @@ int lightcone::lightcone_init_times(void)
 
   int n = ceil(ConeGlobComDistStart / All.BoxSize + 1);
 
-  for(int rep = 0; rep < 2; rep++)
-    {
-      if(rep == 1)
-        //    BoxList = (boxlist *) Mem.mymalloc_movable(&BoxList, "BoxList", NumBoxes * sizeof(boxlist));
-        BoxList = Mem.alloc_movable<boxlist> MMM(BoxList, NumBoxes);
+#ifndef LIGHTCONE_MULTIPLE_ORIGINS
+  int oindex = 0;
+#else
+  for(int oindex = 0; oindex < NlightconeOrigins; oindex++)
+#endif
+  {
+    for(int rep = 0; rep < 2; rep++)
+      {
+        if(rep == 1)
+          BoxOrigin[oindex].BoxList = (boxlist *)Mem.mymalloc_movable(&BoxOrigin[oindex].BoxList, "BoxOrigin[oindex].BoxList",
+                                                                      BoxOrigin[oindex].NumBoxes * sizeof(boxlist));
 
-      NumBoxes = 0;
+        BoxOrigin[oindex].NumBoxes = 0;
 
-      for(int i = -n; i <= n; i++)
-        for(int j = -n; j <= n; j++)
-          for(int k = -n; k <= n; k++)
-            {
-              double corner[3];
+        for(int i = -n; i <= n; i++)
+          for(int j = -n; j <= n; j++)
+            for(int k = -n; k <= n; k++)
+              {
+                double corner[3];
 
-              corner[0] = i * All.BoxSize;
-              corner[1] = j * All.BoxSize;
-              corner[2] = k * All.BoxSize;
+                corner[0] = i * All.BoxSize;
+                corner[1] = j * All.BoxSize;
+                corner[2] = k * All.BoxSize;
 
-              double Rmin, Rmax;
+                double Rmin, Rmax;
 
-              if(lightcone_box_at_corner_overlaps_at_least_with_one_cone(corner, Rmin, Rmax))
-                {
-                  if(rep == 1)
-                    {
-                      BoxList[NumBoxes].i    = i;
-                      BoxList[NumBoxes].j    = j;
-                      BoxList[NumBoxes].k    = k;
-                      BoxList[NumBoxes].Rmin = Rmin;
-                      BoxList[NumBoxes].Rmax = Rmax;
-                    }
+                if(lightcone_box_at_corner_overlaps_at_least_with_one_cone(corner, Rmin, Rmax, oindex))
+                  {
+                    int num = BoxOrigin[oindex].NumBoxes++;
 
-                  NumBoxes++;
-                }
-            }
-    }
-
-  mycxxsort(BoxList, BoxList + NumBoxes, lightcone_compare_BoxList_Rmax);
+                    if(rep == 1)
+                      {
+                        BoxOrigin[oindex].BoxList[num].i    = i;
+                        BoxOrigin[oindex].BoxList[num].j    = j;
+                        BoxOrigin[oindex].BoxList[num].k    = k;
+                        BoxOrigin[oindex].BoxList[num].Rmin = Rmin;
+                        BoxOrigin[oindex].BoxList[num].Rmax = Rmax;
+                      }
+                  }
+              }
+      }
+    mycxxsort(BoxOrigin[oindex].BoxList, BoxOrigin[oindex].BoxList + BoxOrigin[oindex].NumBoxes, lightcone_compare_BoxList_Rmax);
+  }
 
   lightcone_clear_boxlist(All.Time);
 
-  NumLastCheck = 0;
+  mpi_printf("LIGHTCONE_PARTICLES:  number of box replicas to check for first origin lightcone geometry settings = %d\n",
+             BoxOrigin[0].NumBoxes);
 
   double fac = (4 * M_PI / 3.0) * pow(ConeGlobComDistStart, 3) / pow(All.BoxSize, 3);
 
@@ -649,9 +774,7 @@ int lightcone::lightcone_init_times(void)
       "volume=%g\n",
       ConeGlobAstart, ConeGlobAend, ConeGlobComDistStart, ConeGlobComDistEnd, fac);
 
-  mpi_printf("LIGHTCONE_PARTICLES:  number of box replicas to check for this lightcone geometry settings = %d\n", NumBoxes);
-
-  if(NumBoxes > LIGHTCONE_MAX_BOXREPLICAS)
+  if(BoxOrigin[0].NumBoxes > LIGHTCONE_MAX_BOXREPLICAS)
     {
       mpi_printf(
           "\nLIGHTCONE_PARTICLES: Your lightcone extends to such high redshift that the box needs to be replicated a huge number of "
@@ -671,45 +794,57 @@ void lightcone::lightcone_clear_boxlist(double ascale)
 
   double dist = Driftfac.get_comoving_distance(time_start);
 
-  int count = 0;
+#ifndef LIGHTCONE_MULTIPLE_ORIGINS
+  int oindex = 0;
+#else
+  for(int oindex = 0; oindex < NlightconeOrigins; oindex++)
+#endif
+  {
+    int count = 0;
 
-  for(int i = 0; i < NumBoxes; i++)
-    {
-      if(dist < BoxList[i].Rmin)
-        {
-          BoxList[i] = BoxList[--NumBoxes];
-          i--;
-          count++;
-        }
-    }
+    for(int i = 0; i < BoxOrigin[oindex].NumBoxes; i++)
+      {
+        if(dist < BoxOrigin[oindex].BoxList[i].Rmin)
+          {
+            BoxOrigin[oindex].BoxList[i] = BoxOrigin[oindex].BoxList[--BoxOrigin[oindex].NumBoxes];
+            i--;
+            count++;
+          }
+      }
 
-  if(count)
-    {
-      mpi_printf("LIGHTCONE: Eliminated %d entries from BoxList\n", count);
-      mycxxsort(BoxList, BoxList + NumBoxes, lightcone_compare_BoxList_Rmax);
-    }
+    if(count)
+      {
+        mpi_printf("LIGHTCONE: Eliminated %d entries from BoxList\n", count);
+        mycxxsort(BoxOrigin[oindex].BoxList, BoxOrigin[oindex].BoxList + BoxOrigin[oindex].NumBoxes, lightcone_compare_BoxList_Rmax);
+      }
+  }
 }
 
-bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *corner, double &Rmin, double &Rmax)
+bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *corner, double &Rmin, double &Rmax, int oindex)
 {
-  Rmin = MAX_DOUBLE_NUMBER;
+  Rmin = 0;
   Rmax = 0;
 
-  for(int ii = 0; ii <= 1; ii++)
-    for(int jj = 0; jj <= 1; jj++)
-      for(int kk = 0; kk <= 1; kk++)
-        {
-          double crn[3];
-          crn[0] = corner[0] + ii * All.BoxSize;
-          crn[1] = corner[1] + jj * All.BoxSize;
-          crn[2] = corner[2] + kk * All.BoxSize;
+  for(int i = 0; i < 3; i++)
+    {
+      double left = corner[i];
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+      left -= ConeOrigins[oindex].PosOrigin[i];
+#endif
+      double right = left + All.BoxSize;
 
-          double r = sqrt(crn[0] * crn[0] + crn[1] * crn[1] + crn[2] * crn[2]);
-          if(Rmin > r)
-            Rmin = r;
-          if(Rmax < r)
-            Rmax = r;
-        }
+      double dx_min = std::min<double>(fabs(left), fabs(right));
+      double dx_max = std::max<double>(fabs(left), fabs(right));
+
+      if(left * right <= 0)
+        dx_min = 0;
+
+      Rmin += dx_min * dx_min;
+      Rmax += dx_max * dx_max;
+    }
+
+  Rmin = sqrt(Rmin);
+  Rmax = sqrt(Rmax);
 
   for(int cone = 0; cone < Nlightcones; cone++)
     {
@@ -741,6 +876,11 @@ bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *
                       crn[1] = corner[1] + jj * All.BoxSize;
                       crn[2] = corner[2] + kk * All.BoxSize;
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+                      crn[0] -= ConeOrigins[oindex].PosOrigin[0];
+                      crn[1] -= ConeOrigins[oindex].PosOrigin[1];
+                      crn[2] -= ConeOrigins[oindex].PosOrigin[2];
+#endif
                       double dist =
                           crn[0] * Cones[cone].DiskNormal[0] + crn[1] * Cones[cone].DiskNormal[1] + crn[2] * Cones[cone].DiskNormal[2];
 

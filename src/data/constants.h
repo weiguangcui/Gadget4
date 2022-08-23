@@ -282,6 +282,14 @@
 #error "EXTERNALGRAVITY_STATICHQ only works when EXTERNALGRAVITY is activated"
 #endif
 
+#if defined(LIGHTCONE_MULTIPLE_ORIGINS) && defined(LIGHTCONE_PARTICLES_GROUPS)
+#error "Presently, the option LIGHTCONE_MULTIPLE_ORIGINS cannot be used yet together with LIGHTCONE_PARTICLES_GROUPS"
+#endif
+
+#if defined(LIGHTCONE_MULTIPLE_ORIGINS) && defined(LIGHTCONE_MASSMAPS)
+#error "Presently, the option LIGHTCONE_MULTIPLE_ORIGINS cannot be used yet together with LIGHTCONE_MASSMAPS"
+#endif
+
 #ifndef ASMTH
 /** ASMTH gives the scale of the short-range/long-range force split in units of FFT-mesh cells */
 #define ASMTH 1.25

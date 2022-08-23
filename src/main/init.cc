@@ -9,6 +9,10 @@
  *  \brief code for initialization of a simulation from initial conditions
  */
 
+// clang-format off
+#include "gadgetconfig.h"
+// clang-format on
+
 #include <mpi.h>
 
 #include <algorithm>
@@ -37,7 +41,6 @@
 #include "../subfind/subfind_readid_io.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
-#include "gadgetconfig.h"
 
 using namespace std;
 
