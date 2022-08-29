@@ -30,12 +30,6 @@ jobs:
 
           # Neither forget the -b opt,
           # the feature/x ref is ambiguous at this stage
-          # git checkout -b master origin/master
-          # git merge --no-edit upstream/master
-          # git push origin master
-
-          git checkout master origin/master
+          git checkout -b master origin/master
           git merge --no-edit upstream/master
           git push origin master
-
-          # etc
