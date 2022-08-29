@@ -9,9 +9,12 @@
  *  \brief code for initialization of a simulation from initial conditions
  */
 
+// clang-format off
 #include "gadgetconfig.h"
+// clang-format on
 
 #include <mpi.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -485,7 +488,6 @@ void sim::init(int RestartSnapNum)
 #endif
 #endif
 
-  double mass = 0;
   for(int i = 0; i < Sp.NumGas; i++)
     {
 #ifndef INITIAL_CONDITIONS_CONTAIN_ENTROPY
@@ -502,8 +504,6 @@ void sim::init(int RestartSnapNum)
       /* The predicted entropy values have been already set for all SPH formulation */
       /* so it should be ok computing pressure and csound now */
       Sp.SphP[i].set_thermodynamic_variables();
-
-      mass += Sp.P[i].getMass();
     }
 
   if(All.ComovingIntegrationOn)

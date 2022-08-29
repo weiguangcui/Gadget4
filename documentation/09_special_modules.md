@@ -108,7 +108,8 @@ timestepping procedure.
 
 This option is activated with the `LIGHTCONE` switch, and needs to be
 active while the simulation is run. In this case, additional particle
-outputs are created, which have a structure similar to snapshot files.
+outputs are created, which have a structure similar to snapshot files,
+except that the velocities are stored directly as peculiar velocities.
 
 While it is possible also here to use the file format 1 or 2, it is
 highly recommended to not bother with this but rather use HDF5

@@ -63,6 +63,10 @@ struct lightcone_particle_data
   approxlen PrevSizeOfSubhalo;  // 2-byte
 #endif
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  unsigned char OriginIndex;
+#endif
+
 #ifdef LIGHTCONE_IMAGE_COMP_HSML_VELDISP
   int NumNgb;
   MyFloat Hsml;

@@ -37,6 +37,12 @@
 #define LIGHTCONE_ORDER_NSIDE 256
 #endif
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+#define LIGHTCONE_MAX_NUMBER_ORIGINS 32
+#else
+#define LIGHTCONE_MAX_NUMBER_ORIGINS 1
+#endif
+
 #define LC_TYPE_FULLSKY 0
 #define LC_TYPE_OCTANT 1
 #define LC_TYPE_PENCIL 2
@@ -98,6 +104,16 @@ class lightcone : public parameters
 #ifdef LIGHTCONE_PARTICLES
   int Nlightcones;
 
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  int NlightconeOrigins;
+
+  struct cone_origin
+  {
+    double PosOrigin[3];
+  };
+  cone_origin *ConeOrigins;
+#endif
+
   struct cone_data
   {
     double Astart;
@@ -129,6 +145,10 @@ class lightcone : public parameters
     double SquareMapAngleRad;
 
     char Tag[100];
+
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+    int OriginIndex;
+#endif
   };
   cone_data *Cones;
 
@@ -149,17 +169,22 @@ class lightcone : public parameters
     double Rmin; /* minimum comoving distance of this box */
     double Rmax; /* minimum comoving distance of this box */
   };
-  boxlist *BoxList;
-  int NumBoxes;
-  int NumLastCheck;
+
+  struct boxorigin
+  {
+    boxlist *BoxList;
+    int NumBoxes;
+  };
+
+  boxorigin BoxOrigin[LIGHTCONE_MAX_NUMBER_ORIGINS];
 
   void lightcone_init_geometry(char *fname);
-  void lightcone_add_position_particles(particle_data *P, double *pos, double ascale);
+  void lightcone_add_position_particles(particle_data *P, double *pos, double ascale, int oindex);
   int lightcone_init_times(void);
   bool lightcone_is_cone_member(int i, int cone);
   bool lightcone_is_cone_member_basic(double ascale, vector<double> &pos, bool previously, int cone);
 
-  bool lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *corner, double &rmin, double &rmax);
+  bool lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *corner, double &rmin, double &rmax, int oindex);
   void lightcone_clear_boxlist(double ascale);
 
   static bool lightcone_compare_BoxList_Rmax(const boxlist &a, const boxlist &b)

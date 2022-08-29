@@ -9,7 +9,9 @@
  *  \brief contains the basic simulation loop that iterates over timesteps
  */
 
+// clang-format off
 #include "gadgetconfig.h"
+// clang-format on
 
 #include <ctype.h>
 #include <math.h>
@@ -84,8 +86,7 @@ void sim::run(void)
 
 #ifdef LIGHTCONE
 #ifdef LIGHTCONE_PARTICLES
-      mpi_printf("LIGHTCONE_PARTICLES: Lp.NumPart=%d   Checked %d box replicas out of list of length %d\n", Lp.NumPart,
-                 LightCone.NumLastCheck, LightCone.NumBoxes);
+      mpi_printf("LIGHTCONE_PARTICLES: Lp.NumPart=%d\n", Lp.NumPart);
 #endif
 #ifdef LIGHTCONE_MASSMAPS
       mpi_printf("LIGHTCONE_MASSMAPS:  Mp.NumPart=%d \n", Mp.NumPart);
@@ -168,7 +169,7 @@ void sim::run(void)
       Logs.log_debug_md5("AFTER SNAP");
 #endif
 
-      if(All.Ti_Current >= TIMEBASE) /* did we reached the final time? */
+      if(All.Ti_Current >= TIMEBASE || All.Time > All.TimeMax) /* did we reached the final time? */
         {
           mpi_printf("\nFinal time=%g reached. Simulation ends.\n", All.TimeMax);
 

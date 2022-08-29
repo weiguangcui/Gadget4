@@ -12,6 +12,10 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #define Terminate(...)                                                                                                      \
   {                                                                                                                         \
     {                                                                                                                       \

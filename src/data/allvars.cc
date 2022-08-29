@@ -9,9 +9,12 @@
  *  \brief instance and code for an object dealing with global parameters and variables
  */
 
+// clang-format off
 #include "gadgetconfig.h"
+// clang-format on
 
 #include "../data/allvars.h"
+
 #include "../data/constants.h"
 #include "../data/dtypes.h"
 #include "../data/macros.h"
@@ -152,6 +155,9 @@ void global_data_all_processes::register_parameters(void)
 
 #ifdef LIGHTCONE_PARTICLES
   add_param("LightConeDefinitionFile", LightConeDefinitionFile, PARAM_STRING, PARAM_CHANGEABLE);
+#ifdef LIGHTCONE_MULTIPLE_ORIGINS
+  add_param("LightConeOriginsFile", LightConeOriginsFile, PARAM_STRING, PARAM_CHANGEABLE);
+#endif
 #endif
 
 #ifdef LIGHTCONE_MASSMAPS
