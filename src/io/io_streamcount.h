@@ -13,6 +13,9 @@
 #define IO_STREAMCOUNT_H
 
 #include <errno.h>
+#include <string.h>
+
+#include "../data/macros.h"
 
 class io_streamcount
 {
