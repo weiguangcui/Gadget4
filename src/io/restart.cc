@@ -9,6 +9,10 @@
  * \brief handles the reading/writing of restart files
  */
 
+// clang-format off
+#include "gadgetconfig.h"
+// clang-format on
+
 #include "../io/restart.h"
 
 #include <gsl/gsl_rng.h>
@@ -32,7 +36,6 @@
 #include "../ngbtree/ngbtree.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
-#include "gadgetconfig.h"
 
 void restart::write(sim *Sim_ptr)
 {
@@ -434,8 +437,6 @@ void restart::contents_restart_file(int modus)
 
   in(&Sim->Lp.NumPart, modus);
   byten(&Sim->Lp.P[0], Sim->Lp.NumPart * sizeof(lightcone_particle_data), modus);
-
-  in(&Sim->LightCone.NumLastCheck, modus);
 #endif
 
   /* lightcone massmap data  */

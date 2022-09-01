@@ -163,6 +163,7 @@ INITIAL_CONDITIONS_CONTAIN_ENTROPY
 #LIGHTCONE_PARTICLES_GROUPS                   # computes groups for particles buffered on the lightcone
 #LIGHTCONE_OUTPUT_ACCELERATIONS               # stores accelerations for particles on lightcone
 #LIGHTCONE_IMAGE_COMP_HSML_VELDISP            # option for computing densities and smoothing length for lightcones in postprocessing
+#LIGHTCONE_MULTIPLE_ORIGINS                   # switch this on if you want to be able to define lightcone origins different from (0,0,0)
 #REARRANGE_OPTION                             # special option to reorder lightcone data in mergertree order
 
 

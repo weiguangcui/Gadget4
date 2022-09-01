@@ -1239,6 +1239,16 @@ dispersions.
 
 -------
 
+**LIGHTCONE_MULTIPLE_ORIGINS**
+
+If this is enabled, origins of lightcones different from (0, 0, 0) can 
+be defined. Possible origins need to be listed in a separate file with 
+the name `LightConeOriginsFile`. The light cone definitions file then needs
+be augmented with a further number at the end of each lightcone 
+definition, and this serves as an index into the list of lightcone origins.
+
+-------
+
 **REARRANGE_OPTION**
 
 This option needs to be enabled to allow the rearrange lightcone
