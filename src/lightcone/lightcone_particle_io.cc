@@ -232,25 +232,25 @@ void lightcone_particle_io::lightcone_save(int num, int conenr, bool reordered_f
   else
     sprintf(lname, "lightcone");
 
+  if(ThisTask == 0)
+    {
+      char buf[3 * MAXLEN_PATH];
+      sprintf(buf, "%s/%s_%02d", All.OutputDir, lname, cone);
+      mkdir(buf, 02755);
+    }
+  MPI_Barrier(Communicator);
+
   if(All.NumFilesPerSnapshot > 1)
     {
       if(ThisTask == 0)
         {
           char buf[3 * MAXLEN_PATH];
-          sprintf(buf, "%s/%s_%02d", All.OutputDir, lname, cone);
+          sprintf(buf, "%s/%s_%02d/conedir_%04d", All.OutputDir, lname, cone, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
-
-  if(ThisTask == 0)
-    {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/%s_%02d/conedir_%04d", All.OutputDir, lname, cone, num);
-      mkdir(buf, 02755);
-    }
-  MPI_Barrier(Communicator);
-
+ 
   if(All.NumFilesPerSnapshot > 1)
     sprintf(buf, "%s/%s_%02d/conedir_%04d/%s_%04d", All.OutputDir, lname, cone, num, "conesnap", num);
   else
