@@ -35,6 +35,16 @@
 
 void sim::gravity_external(void)
 {
+#ifdef PERIODIC
+  // pick middle of (stretched) box, but could also choose other point
+  vector<double> pos_center{0.5 * All.BoxSize / LONG_X, 0.5 * All.BoxSize / LONG_Y, 0.5 * All.BoxSize / LONG_Z};
+#else
+  // here pick origin
+  vector<double> pos_center{0, 0, 0};
+#endif
+  MyIntPosType intpos_center[3];
+  Sp.pos_to_intpos(pos_center.da, intpos_center);
+
   for(int i = 0; i < Sp.TimeBinsGravity.NActiveParticles; i++)
     {
       int target = Sp.TimeBinsGravity.ActiveParticleList[i];
@@ -46,7 +56,7 @@ void sim::gravity_external(void)
 #ifdef EXTERNALGRAVITY_STATICHQ
       {
         vector<double> pos;
-        Sp.intpos_to_pos(Sp.P[target].IntPos, pos.da); /* converts the integer coordinate to floating point */
+        Sp.nearest_image_intpos_to_pos(Sp.P[target].IntPos, intpos_center, pos.da);
 
         double r = sqrt(pos.r2());
 
