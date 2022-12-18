@@ -12,12 +12,11 @@
 #ifndef SNAP_READ_WRITE_H
 #define SNAP_READ_WRITE_H
 
-#include "gadgetconfig.h"
-
 #include "../data/intposconvert.h"
 #include "../data/simparticles.h"
 #include "../io/io.h"
 #include "../mergertree/mergertree.h"
+#include "gadgetconfig.h"
 
 class snap_io : public IO_Def
 {
@@ -170,6 +169,18 @@ class snap_io : public IO_Def
 
         for(int k = 0; k < 3; k++)
           thisobj->Ptmp[particle].Pos[k] = in_buffer[k];
+
+#if defined(NGENIC) && !defined(CREATE_GRID)  // This is meant to become active when a glass file is used for IC creation
+        if(All.RestartFlag == RST_BEGIN || All.RestartFlag == RST_CREATEICS)
+          {
+            double fac = All.BoxSize / thisobj->header.BoxSize;
+#ifdef TILING
+            fac /= TILING;
+#endif
+            for(int k = 0; k < 3; k++)
+              thisobj->Ptmp[particle].Pos[k] *= fac;  // scale the glass file to the right size
+          }
+#endif
 
 #ifdef SQUASH_TEST
         thisobj->Ptmp[particle].Pos[1] *= 1.0 / 4;
