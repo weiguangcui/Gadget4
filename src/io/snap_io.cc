@@ -9,7 +9,7 @@
  *  \brief routines for I/O of snapshot files
  */
 
-#include "gadgetconfig.h"
+#include "../io/snap_io.h"
 
 #include <errno.h>
 #include <hdf5.h>
@@ -30,7 +30,6 @@
 #include "../gravtree/gravtree.h"
 #include "../io/hdf5_util.h"
 #include "../io/io.h"
-#include "../io/snap_io.h"
 #include "../lightcone/lightcone.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -40,6 +39,7 @@
 #include "../sort/peano.h"
 #include "../src/pm/pm.h"
 #include "../system/system.h"
+#include "gadgetconfig.h"
 
 /*!
  * \brief Function for field registering.
@@ -438,6 +438,17 @@ void snap_io::snap_init_domain_mapping(void)
   Sp->RegionLen     = All.BoxSize;
   Sp->FacCoordToInt = pow(2.0, BITS_FOR_POSITIONS) / Sp->RegionLen;
   Sp->FacIntToCoord = Sp->RegionLen / pow(2.0, BITS_FOR_POSITIONS);
+
+#if defined(NGENIC) && !defined(CREATE_GRID)
+  if(All.RestartFlag == RST_BEGIN || All.RestartFlag == RST_CREATEICS)
+    {
+      // Make sure that the velocities are zero when a glass file is fed to IC creation
+      mpi_printf("READIC: Setting velocities in glass file to zero.\n");
+      for(int i = 0; i < Sp->NumPart; i++)
+        for(int k = 0; k < 3; k++)
+          Sp->P[i].Vel[k] = 0;
+    }
+#endif
 
 #else
 
