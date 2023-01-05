@@ -295,6 +295,9 @@ void sim::begrun2(void)
   if(LightCone.lightcone_massmap_report_boundaries())
     endrun();
 #endif
+  if(LightCone.lightcone_init_boxlist())
+    endrun();
+
   double linklength = 0;
 
 #ifdef FOF
