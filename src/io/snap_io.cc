@@ -9,7 +9,7 @@
  *  \brief routines for I/O of snapshot files
  */
 
-#include "../io/snap_io.h"
+#include "gadgetconfig.h"
 
 #include <errno.h>
 #include <hdf5.h>
@@ -39,7 +39,7 @@
 #include "../sort/peano.h"
 #include "../src/pm/pm.h"
 #include "../system/system.h"
-#include "gadgetconfig.h"
+#include "../io/snap_io.h"
 
 /*!
  * \brief Function for field registering.
