@@ -14,6 +14,7 @@
 #ifdef FOF
 
 #include <mpi.h>
+
 #include <algorithm>
 #include <climits>
 #include <cmath>
@@ -68,7 +69,7 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
   Tp->DistanceOrigin = (double *)Mem.mymalloc("DistanceOrigin", Tp->NumPart * sizeof(double));
 #endif
 
-  Tp->MinID     = (MyIDStorage *)Mem.mymalloc("MinID", Tp->NumPart * sizeof(MyIDStorage));  // smallest particle ID withing FOF group
+  Tp->MinID     = (MyIDStorage *)Mem.mymalloc("MinID", Tp->NumPart * sizeof(MyIDStorage));  // smallest particle ID within FOF group
   Tp->MinIDTask = (int *)Mem.mymalloc("MinIDTask", Tp->NumPart * sizeof(int));              // processor on which this ID is stored
   Tp->Head = (int *)Mem.mymalloc("Head", Tp->NumPart * sizeof(int));  // first particle in chaining list if local FOF group segment
   Tp->Next = (int *)Mem.mymalloc("Next", Tp->NumPart * sizeof(int));  // next particle in chaining list
@@ -76,14 +77,34 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
   Tp->Len  = (int *)Mem.mymalloc("Len", Tp->NumPart * sizeof(int));  // length of local FOF group segment (note: 32 bit enough even for
                                                                      // huge groups because they are split across processors)
 
+  int *numpart_list = (int *)Mem.mymalloc("numpart_list", NTask * sizeof(int));
+
+  MPI_Allgather(&Tp->NumPart, 1, MPI_INT, numpart_list, 1, MPI_INT, Communicator);
+
+  long long NumPartTot = 0;
+  for(int i = 0; i < NTask; i++)
+    NumPartTot += Tp->NumPart;
+
+  mpi_printf("FOF: NumPartTot=%lld\n", NumPartTot);
+
+  if(NumPartTot > ID_MAX)
+    Terminate("The chosen ID data type is not sufficiently big to store unique IDs for NumPartTot=%lld particles\n", NumPartTot);
+
+  MyIDType id = 0;
+  for(int i = 0; i < ThisTask; i++)
+    id += numpart_list[i];
+
+  Mem.myfree(numpart_list);
+
   /* initialize link-lists, each particle is in a group of its own initially */
   for(int i = 0; i < Tp->NumPart; i++)
     {
       Tp->Head[i] = Tp->Tail[i] = i;
       Tp->Len[i]                = 1;
       Tp->Next[i]               = -1;
-      Tp->MinID[i]              = Tp->P[i].ID;
-      Tp->MinIDTask[i]          = ThisTask;
+      Tp->MinID[i].set(id++);  // we use new IDs here instead of P[].ID to make sure that also for lightcone group finding MinID is
+                               // unique for all box replicas
+      Tp->MinIDTask[i] = ThisTask;
 
 #if defined(LIGHTCONE_PARTICLES_GROUPS)
       Tp->DistanceOrigin[i] = fof_distance_to_origin(i);
@@ -653,8 +674,8 @@ void fof<partset>::fof_compile_catalogue(double inner_distance)
             {
               /* get the group info */
               myMPI_Sendrecv(&FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
-                           TAG_DENS_A, &get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list), MPI_BYTE,
-                           recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
+                             TAG_DENS_A, &get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list),
+                             MPI_BYTE, recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
         }
     }
@@ -729,8 +750,8 @@ void fof<partset>::fof_compile_catalogue(double inner_distance)
             {
               /* get the group info */
               myMPI_Sendrecv(&get_FOF_GList[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(fof_group_list), MPI_BYTE, recvTask,
-                           TAG_DENS_A, &FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE,
-                           recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
+                             TAG_DENS_A, &FOF_GList[Send_offset[recvTask]], Send_count[recvTask] * sizeof(fof_group_list), MPI_BYTE,
+                             recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
         }
     }
@@ -1029,8 +1050,8 @@ void fof<partset>::fof_add_in_properties_of_group_segments(void)
             {
               /* get the group data */
               myMPI_Sendrecv(&Group[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_properties), MPI_BYTE, recvTask,
-                           TAG_DENS_A, &get_Group[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_properties), MPI_BYTE,
-                           recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
+                             TAG_DENS_A, &get_Group[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_properties), MPI_BYTE,
+                             recvTask, TAG_DENS_A, Communicator, MPI_STATUS_IGNORE);
             }
         }
     }
