@@ -136,8 +136,8 @@ void restart::backup_restartfiles(int task)
 
   mpi_printf("RESTART: Backing up restart files...\n");
 
-  sprintf(buf, "%s/restartfiles/%s.%d", All.OutputDir, "restart", task);
-  sprintf(buf_bak, "%s/restartfiles/bak-%s.%d", All.OutputDir, "restart", task);
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s/restartfiles/%s.%d", All.OutputDir, "restart", task);
+  snprintf(buf_bak, MAXLEN_PATH_EXTRA, "%s/restartfiles/bak-%s.%d", All.OutputDir, "restart", task);
 
   if((fcheck = fopen(buf, "r")))
     {
@@ -194,7 +194,7 @@ void restart::do_restart(int modus)
   if(ThisTask == 0 && modus == MODUS_WRITE)
     {
       char buf[MAXLEN_PATH_EXTRA];
-      sprintf(buf, "%s/restartfiles", All.OutputDir);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/restartfiles", All.OutputDir);
       mkdir(buf, 02755);
     }
   MPI_Barrier(Communicator);
@@ -371,7 +371,7 @@ void restart::work_files(int modus)
 void restart::contents_restart_file(int modus)
 {
   char buf[MAXLEN_PATH_EXTRA];
-  sprintf(buf, "%s/restartfiles/%s.%d", All.OutputDir, "restart", ThisTask);
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s/restartfiles/%s.%d", All.OutputDir, "restart", ThisTask);
 
   if(modus == MODUS_READ)
     {

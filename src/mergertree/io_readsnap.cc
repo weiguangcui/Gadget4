@@ -46,7 +46,7 @@ readsnap_io::readsnap_io(mergertree *MergerTree_ptr, MPI_Comm comm, int format) 
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_SNAPSHOT;
-  sprintf(this->info, "MERGERTREE: reading snapshot IDs");
+  snprintf(this->info, MAXLEN_PATH, "MERGERTREE: reading snapshot IDs");
 
   init_field("ID  ", "ParticleIDs", MEM_MY_ID_TYPE, FILE_MY_ID_TYPE, READ_IF_PRESENT, 1, A_MTRP, &MergerTree->MtrP[0].ID, NULL,
              ALL_TYPES, 0, 0, 0, 0, 0, 0, 0);
@@ -82,8 +82,8 @@ void readsnap_io::mergertree_read_snap_ids(int num)
     Terminate("ICFormat=%d not supported.\n", All.ICFormat);
 
   char fname[MAXLEN_PATH_EXTRA], fname_multiple[MAXLEN_PATH_EXTRA];
-  sprintf(fname_multiple, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
-  sprintf(fname, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
+  snprintf(fname_multiple, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+  snprintf(fname, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
 
   TIMER_START(CPU_SNAPSHOT);
 
@@ -227,7 +227,7 @@ void readsnap_io::set_filenr_in_header(int numfiles) { header.num_files = numfil
 
 void readsnap_io::read_increase_numbers(int type, int n_for_this_task) { MergerTree->MtrP_NumPart += n_for_this_task; }
 
-void readsnap_io::get_datagroup_name(int type, char *buf) { sprintf(buf, "/PartType%d", type); }
+void readsnap_io::get_datagroup_name(int type, char *buf) { snprintf(buf, MAXLEN_PATH, "/PartType%d", type); }
 
 int readsnap_io::get_type_of_element(int index) { return MergerTree->MtrP[index].Type; }
 

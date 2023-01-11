@@ -48,7 +48,7 @@ descendant_io::descendant_io(mergertree *MergerTree_ptr, MPI_Comm comm, int form
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_DESCCAT;
-  sprintf(this->info, "MERGERTREE: writing descendant information");
+  snprintf(this->info, MAXLEN_PATH, "MERGERTREE: writing descendant information");
 
   init_field("DSNR", "DescSubhaloNr", MEM_INT64, FILE_INT64, READ_IF_PRESENT, 1, A_DESC, NULL, io_func_descsubhalonr, PREVSUBS, 0, 0,
              0, 0, 0, 0, 0, true);
@@ -76,16 +76,16 @@ void descendant_io::mergertree_save_descendants(int num)
     {
       if(ThisTask == 0)
         {
-          sprintf(buf, "%s/groups_%03d", All.OutputDir, num - 1);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/groups_%03d", All.OutputDir, num - 1);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/groups_%03d/%s_%03d", All.OutputDir, num - 1, "subhalo_desc", num - 1);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/groups_%03d/%s_%03d", All.OutputDir, num - 1, "subhalo_desc", num - 1);
   else
-    sprintf(buf, "%s%s_%03d", All.OutputDir, "subhalo_desc", num - 1);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, "subhalo_desc", num - 1);
 
   write_multiple_files(buf, All.NumFilesPerSnapshot);
 }
@@ -94,8 +94,8 @@ void descendant_io::mergertree_read_descendants(int num)
 {
   char fname[MAXLEN_PATH_EXTRA], fname_multiple[MAXLEN_PATH_EXTRA];
 
-  sprintf(fname_multiple, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "subhalo_desc", num);
-  sprintf(fname, "%s%s_%03d", All.OutputDir, "subhalo_desc", num);
+  snprintf(fname_multiple, MAXLEN_PATH_EXTRA, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "subhalo_desc", num);
+  snprintf(fname, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, "subhalo_desc", num);
 
   TotNsubhalos = 0;
 
@@ -251,7 +251,7 @@ void descendant_io::get_datagroup_name(int type, char *buf)
   switch(type)
     {
       case 0:
-        sprintf(buf, "/Subhalo");
+        snprintf(buf, MAXLEN_PATH, "/Subhalo");
         break;
       default:
         Terminate("wrong group");

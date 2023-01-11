@@ -16,6 +16,7 @@
 #include <hdf5.h>
 #include <mpi.h>
 #include <sys/stat.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -52,7 +53,7 @@ fof_io<partset>::fof_io(fof<partset> *FoF_ptr, MPI_Comm comm, int format) : IO_D
   this->header_size  = sizeof(catalogue_header);
   this->header_buf   = &catalogue_header;
   this->type_of_file = FILE_IS_GROUPCAT;
-  sprintf(this->info, "FOF/SUBFIND: writing group catalogue");
+  snprintf(this->info, MAXLEN_PATH, "FOF/SUBFIND: writing group catalogue");
 
   init_field("FLEN", "GroupLen", mem_len_type, file_len_type, READ_IF_PRESENT, 1, A_G, &FoF->Group[0].Len, NULL, GROUPS, 0, 0, 0, 0, 0,
              0, 0, true);
@@ -228,16 +229,16 @@ void fof_io<partset>::fof_subfind_save_groups(int num, const char *basename, con
     {
       if(ThisTask == 0)
         {
-          sprintf(buf, "%s/%s_%03d", All.OutputDir, grpcat_dirbasename, num);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/%s_%03d", All.OutputDir, grpcat_dirbasename, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/%s_%03d/%s_%03d", All.OutputDir, grpcat_dirbasename, num, basename, num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/%s_%03d/%s_%03d", All.OutputDir, grpcat_dirbasename, num, basename, num);
   else
-    sprintf(buf, "%s%s_%03d", All.OutputDir, basename, num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, basename, num);
 
   write_multiple_files(buf, All.NumFilesPerSnapshot);
 
@@ -257,8 +258,8 @@ void fof_io<partset>::fof_subfind_load_groups(int num)
 
   char fname[MAXLEN_PATH_EXTRA], fname_multiple[MAXLEN_PATH_EXTRA];
 
-  sprintf(fname_multiple, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "fof_subhalo_tab", num);
-  sprintf(fname, "%s%s_%03d", All.OutputDir, "fof_subhalo_tab", num);
+  snprintf(fname_multiple, MAXLEN_PATH_EXTRA, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "fof_subhalo_tab", num);
+  snprintf(fname, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, "fof_subhalo_tab", num);
 
   int num_files = find_files(fname, fname_multiple);
 
@@ -513,13 +514,13 @@ void fof_io<partset>::get_datagroup_name(int type, char *buf)
   switch(type)
     {
       case 0:
-        sprintf(buf, "/Group");
+        snprintf(buf, MAXLEN_PATH, "/Group");
         break;
       case 1:
-        sprintf(buf, "/Subhalo");
+        snprintf(buf, MAXLEN_PATH, "/Subhalo");
         break;
       case 2:
-        sprintf(buf, "/IDs");
+        snprintf(buf, MAXLEN_PATH, "/IDs");
         break;
       default:
         Terminate("wrong group: type=%d", type);

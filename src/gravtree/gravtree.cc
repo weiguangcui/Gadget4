@@ -9,7 +9,7 @@
  *  \brief driver routines for computing the (short-range) gravity
  */
 
-#include "../gravtree/gravtree.h"
+#include "gadgetconfig.h"
 
 #include <math.h>
 #include <mpi.h>
@@ -24,6 +24,7 @@
 #include "../data/mymalloc.h"
 #include "../domain/domain.h"
 #include "../gravity/ewald.h"
+#include "../gravtree/gravtree.h"
 #include "../gravtree/gwalk.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -34,7 +35,6 @@
 #include "../sort/cxxsort.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
-#include "gadgetconfig.h"
 
 /*!
  *  This file contains the code for the gravitational force computation by

@@ -9,5 +9,6 @@ AlignConsecutiveAssignments: true
 ColumnLimit:       135
 ReflowComments:    true
 SortUsingDeclarations: true
+IncludeBlocks:     Preserve
 ...
 
