@@ -275,7 +275,7 @@ int sim::check_for_interruption_of_run(void)
       FILE *fd;
       char stopfname[MAXLEN_PATH_EXTRA];
 
-      sprintf(stopfname, "%sstop", All.OutputDir);
+      snprintf(stopfname, MAXLEN_PATH_EXTRA, "%sstop", All.OutputDir);
       if((fd = fopen(stopfname, "r"))) /* Is the stop-file present? If yes, interrupt the run. */
         {
           fclose(fd);
@@ -284,7 +284,7 @@ int sim::check_for_interruption_of_run(void)
           unlink(stopfname);
         }
 
-      sprintf(stopfname, "%srestart", All.OutputDir);
+      snprintf(stopfname, MAXLEN_PATH_EXTRA, "%srestart", All.OutputDir);
       if((fd = fopen(stopfname, "r"))) /* Is the restart-file present? If yes, write a user-requested restart file. */
         {
           fclose(fd);
@@ -315,7 +315,7 @@ int sim::check_for_interruption_of_run(void)
         {
           FILE *fd;
           char contfname[MAXLEN_PATH_EXTRA];
-          sprintf(contfname, "%scont", All.OutputDir);
+          snprintf(contfname, MAXLEN_PATH_EXTRA, "%scont", All.OutputDir);
           if((fd = fopen(contfname, "w")))
             fclose(fd);
         }

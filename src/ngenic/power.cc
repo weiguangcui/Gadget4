@@ -68,10 +68,10 @@ void ngenic::free_power_table(void) { Mem.myfree(PowerTable); }
 void ngenic::read_power_table(void)
 {
   FILE *fd;
-  char buf[MAXLEN_PATH];
+  char buf[MAXLEN_PATH_EXTRA];
   double k, p;
 
-  sprintf(buf, All.PowerSpectrumFile);
+  snprintf(buf, MAXLEN_PATH_EXTRA, All.PowerSpectrumFile);
 
   if(!(fd = fopen(buf, "r")))
     {
@@ -94,7 +94,7 @@ void ngenic::read_power_table(void)
 
   PowerTable = (pow_table *)Mem.mymalloc("PowerTable", NPowerTable * sizeof(pow_table));
 
-  sprintf(buf, All.PowerSpectrumFile);
+  snprintf(buf, MAXLEN_PATH_EXTRA, All.PowerSpectrumFile);
 
   if(!(fd = fopen(buf, "r")))
     {

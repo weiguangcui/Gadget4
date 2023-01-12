@@ -48,7 +48,7 @@ treelinks_io::treelinks_io(mergertree *MergerTree_ptr, MPI_Comm comm, int format
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_TREELINK;
-  sprintf(this->info, "TREELINK: writing treelink information");
+  snprintf(this->info, MAXLEN_PATH, "TREELINK: writing treelink information");
 
   init_field("TRNR", "TreeID", MEM_INT64, FILE_INT64, READ_IF_PRESENT, 1, A_TL, &MergerTree->TreeLink[0].TreeID, NULL, TREELINK, 0, 0,
              0, 0, 0, 0, 0, true);
@@ -66,16 +66,16 @@ void treelinks_io::treelinks_save(int num)
     {
       if(ThisTask == 0)
         {
-          sprintf(buf, "%s/groups_%03d", All.OutputDir, num);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/groups_%03d", All.OutputDir, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "subhalo_treelink", num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/groups_%03d/%s_%03d", All.OutputDir, num, "subhalo_treelink", num);
   else
-    sprintf(buf, "%s%s_%03d", All.OutputDir, "subhalo_treelink", num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, "subhalo_treelink", num);
 
   write_multiple_files(buf, All.NumFilesPerSnapshot);
 }
@@ -147,7 +147,7 @@ void treelinks_io::get_datagroup_name(int type, char *buf)
   switch(type)
     {
       case 0:
-        sprintf(buf, "/Subhalo");
+        snprintf(buf, MAXLEN_PATH, "/Subhalo");
         break;
       default:
         Terminate("wrong group");

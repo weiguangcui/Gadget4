@@ -2462,11 +2462,11 @@ void pm_periodic::calculate_power_spectra(int num)
   if(ThisTask == 0)
     {
       char buf[MAXLEN_PATH_EXTRA];
-      sprintf(buf, "%s/powerspecs", All.OutputDir);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/powerspecs", All.OutputDir);
       mkdir(buf, 02755);
     }
 
-  sprintf(power_spec_fname, "%s/powerspecs/powerspec_%03d.txt", All.OutputDir, num);
+  snprintf(power_spec_fname, MAXLEN_PATH_EXTRA, "%s/powerspecs/powerspec_%03d.txt", All.OutputDir, num);
 
   pmforce_do_powerspec(typeflag); /* calculate power spectrum for all particle types */
 
@@ -2486,7 +2486,7 @@ void pm_periodic::calculate_power_spectra(int num)
 
             typeflag[i] = 1;
 
-            sprintf(power_spec_fname, "%s/powerspecs/powerspec_type%d_%03d.txt", All.OutputDir, i, num);
+            snprintf(power_spec_fname, MAXLEN_PATH_EXTRA, "%s/powerspecs/powerspec_type%d_%03d.txt", All.OutputDir, i, num);
 
             pmforce_do_powerspec(typeflag); /* calculate power spectrum for type i */
           }

@@ -9,7 +9,7 @@
  *  \brief Code for Ewald correction computations.
  */
 
-#include "gadgetconfig.h"
+#include "../gravity/ewald.h"
 
 #include <math.h>
 #include <mpi.h>
@@ -20,7 +20,6 @@
 #include "../data/allvars.h"
 #include "../data/dtypes.h"
 #include "../data/mymalloc.h"
-#include "../gravity/ewald.h"
 #include "../gravity/ewaldtensors.h"
 #include "../gravtree/gravtree.h"
 #include "../io/io.h"
@@ -28,6 +27,7 @@
 #include "../mpi_utils/shared_mem_handler.h"
 #include "../sort/cxxsort.h"
 #include "../system/system.h"
+#include "gadgetconfig.h"
 
 /*!
  *  This file contains the computation of the Ewald correction table, and the corresponding lookup functions.
@@ -76,9 +76,9 @@ void ewald::ewald_init(void)
 
   Ewd = (ewald_data *)Mem.mymalloc("Ewd", sizeof(ewald_data) * (ENX + 1) * (ENY + 1) * (ENZ + 1));
 
-  char buf[200];
-  sprintf(buf, "ewald_table_%d-%d-%d_%d-%d-%d_precision%d-order%d.dat", LONG_X, LONG_Y, LONG_Z, ENX, ENY, ENZ, (int)sizeof(MyReal),
-          HIGHEST_NEEDEDORDER_EWALD_DPHI + EWALD_TAYLOR_ORDER);
+  char buf[MAXLEN_PATH_EXTRA];
+  snprintf(buf, MAXLEN_PATH_EXTRA, "ewald_table_%d-%d-%d_%d-%d-%d_precision%d-order%d.dat", LONG_X, LONG_Y, LONG_Z, ENX, ENY, ENZ,
+           (int)sizeof(MyReal), HIGHEST_NEEDEDORDER_EWALD_DPHI + EWALD_TAYLOR_ORDER);
 
   int recomputeflag = 0;
 

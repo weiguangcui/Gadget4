@@ -39,7 +39,7 @@ void test_io_bandwidth::measure_io_bandwidth(void)
   if(ThisTask == 0)
     {
       char buf[MAXLEN_PATH_EXTRA];
-      sprintf(buf, "%s/testdata", All.OutputDir);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/testdata", All.OutputDir);
       mkdir(buf, 02755);
     }
   MPI_Barrier(Communicator);
@@ -82,7 +82,7 @@ void test_io_bandwidth::write_test_data(void)
 
   /* now delete test data */
   char buf[MAXLEN_PATH_EXTRA];
-  sprintf(buf, "%s/testdata/%s.%d", All.OutputDir, "testdata", ThisTask);
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s/testdata/%s.%d", All.OutputDir, "testdata", ThisTask);
   unlink(buf);
   MPI_Barrier(Communicator);
 }
@@ -172,7 +172,7 @@ void test_io_bandwidth::work_files(int modus)
 void test_io_bandwidth::contents_restart_file(int modus)
 {
   char buf[MAXLEN_PATH_EXTRA];
-  sprintf(buf, "%s/testdata/%s.%d", All.OutputDir, "testdata", ThisTask);
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s/testdata/%s.%d", All.OutputDir, "testdata", ThisTask);
 
   if(modus == MODUS_READ)
     {

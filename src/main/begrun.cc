@@ -262,7 +262,7 @@ void sim::begrun1(const char *parameterFile)
 void sim::begrun2(void)
 {
   char contfname[MAXLEN_PATH_EXTRA];
-  sprintf(contfname, "%scont", All.OutputDir);
+  snprintf(contfname, MAXLEN_PATH_EXTRA, "%scont", All.OutputDir);
   unlink(contfname);
 
   if(All.RestartFlag != RST_BEGIN && All.RestartFlag != RST_RESUME && All.RestartFlag != RST_STARTFROMSNAP)

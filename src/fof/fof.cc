@@ -297,8 +297,8 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
     {
       TIMER_STOP(CPU_FOF);
 
-      char catname[1000];
-      sprintf(catname, "%s_subhalo_tab", grpcat_basename);
+      char catname[MAXLEN_PATH_EXTRA];
+      snprintf(catname, MAXLEN_PATH_EXTRA, "%s_subhalo_tab", grpcat_basename);
 
       subfind_find_subhalos(num, catname, grpcat_dirbasename);
 
@@ -314,8 +314,8 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
 
       fof_io<partset> FoF_IO{this, this->Communicator, All.SnapFormat};
 
-      char catname[1000];
-      sprintf(catname, "%s_tab", grpcat_basename);
+      char catname[MAXLEN_PATH_EXTRA];
+      snprintf(catname, MAXLEN_PATH_EXTRA, "%s_tab", grpcat_basename);
 
       FoF_IO.fof_subfind_save_groups(num, catname, grpcat_dirbasename);
 

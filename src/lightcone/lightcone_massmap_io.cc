@@ -53,7 +53,7 @@ lightcone_massmap_io::lightcone_massmap_io(mmparticles *Mp_ptr, lightcone *Light
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_MASSMAP;
-  sprintf(this->info, "LIGHTCONE: writing mass map data");
+  snprintf(this->info, MAXLEN_PATH, "LIGHTCONE: writing mass map data");
 
   init_field("MAMP", "Mass", MEM_DOUBLE, FILE_MY_IO_FLOAT, SKIP_ON_READ, 1, A_MM, &LightCone->MassMap[0], NULL, MASSMAPS, 1, 0., -1.,
              0., 1., 0., All.UnitMass_in_g, true);
@@ -61,7 +61,7 @@ lightcone_massmap_io::lightcone_massmap_io(mmparticles *Mp_ptr, lightcone *Light
 
 void lightcone_massmap_io::lightcone_massmap_save(int num)
 {
-  char buf[2 * MAXLEN_PATH];
+  char buf[MAXLEN_PATH_EXTRA];
 
   selected_bnd = num;
 
@@ -74,17 +74,17 @@ void lightcone_massmap_io::lightcone_massmap_save(int num)
     {
       if(ThisTask == 0)
         {
-          char buf[2 * MAXLEN_PATH];
-          sprintf(buf, "%s/mapsdir_%03d", All.OutputDir, num);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/mapsdir_%03d", All.OutputDir, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/mapsdir_%03d/%s_%03d", All.OutputDir, num, "maps", num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/mapsdir_%03d/%s_%03d", All.OutputDir, num, "maps", num);
   else
-    sprintf(buf, "%s/%s_%03d", All.OutputDir, "maps", num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/%s_%03d", All.OutputDir, "maps", num);
 
   write_multiple_files(buf, All.NumFilesPerSnapshot);
 
@@ -157,7 +157,7 @@ void lightcone_massmap_io::set_filenr_in_header(int numfiles) { header.num_files
 void lightcone_massmap_io::get_datagroup_name(int type, char *buf)
 {
   if(type == 0)
-    sprintf(buf, "/Maps");
+    snprintf(buf, MAXLEN_PATH, "/Maps");
   else
     Terminate("should not get here");
 }

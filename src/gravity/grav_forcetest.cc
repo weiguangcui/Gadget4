@@ -532,7 +532,7 @@ void gravtest::gravity_forcetest(int timebin)
           if(nthis == D->ThisTask)
             {
               char buf[MAXLEN_PATH_EXTRA];
-              sprintf(buf, "%s%s", All.OutputDir, "forcetest.txt");
+              snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "forcetest.txt");
 
               if(!(Logs.FdForceTest = fopen(buf, "a")))
                 Terminate("error in opening file '%s'\n", buf);

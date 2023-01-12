@@ -1139,8 +1139,8 @@ void ngenic::print_spec(void)
 {
   if(ThisTask == 0)
     {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/inputspec_%s.txt", All.OutputDir, All.SnapshotFileBase);
+      char buf[MAXLEN_PATH_EXTRA];
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/inputspec_%s.txt", All.OutputDir, All.SnapshotFileBase);
 
       FILE *fd = fopen(buf, "w");
 
@@ -1194,8 +1194,8 @@ void ngenic::print_spec(void)
     {
       if(All.cf_atime < 1.0)
         {
-          char buf[3 * MAXLEN_PATH];
-          sprintf(buf, "%s/growthfac.txt", All.OutputDir);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/growthfac.txt", All.OutputDir);
 
           FILE *fd = fopen(buf, "w");
 
@@ -1219,8 +1219,8 @@ void ngenic::print_spec(void)
 
   if(ThisTask == 0)
     {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/variance.txt", All.OutputDir);
+      char buf[MAXLEN_PATH_EXTRA];
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/variance.txt", All.OutputDir);
 
       FILE *fd = fopen(buf, "w");
 

@@ -67,8 +67,9 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
   ParentFileName               = (char *)malloc(MAXBLOCKS * MAXCHARS * sizeof(char));
   FileName                     = (char *)malloc(MAXBLOCKS * MAXCHARS * sizeof(char));
   LineNumber                   = (int *)malloc(MAXBLOCKS * sizeof(int));
-  HighMarkTabBuf               = (char *)malloc((100 + 4 * MAXCHARS) * (MAXBLOCKS + 10));
-  HighMarkTabBufWithoutGeneric = (char *)malloc((100 + 4 * MAXCHARS) * (MAXBLOCKS + 10));
+  highmark_bufsize             = (100 + 4 * MAXCHARS) * (MAXBLOCKS + 10);
+  HighMarkTabBuf               = (char *)malloc(highmark_bufsize);
+  HighMarkTabBufWithoutGeneric = (char *)malloc(highmark_bufsize);
 
   memset(VarName, 0, MAXBLOCKS * MAXCHARS);
   memset(FunctionName, 0, MAXBLOCKS * MAXCHARS);
@@ -128,9 +129,9 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
   MPI_Bcast(All.OutputDir, sizeof(All.OutputDir), MPI_BYTE, 0, MPI_COMM_WORLD);
 
   if(Shmem.GhostRank == 0)
-    sprintf(buf, "%s%s", All.OutputDir, "memory.txt");
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "memory.txt");
   else
-    sprintf(buf, "%s%s", All.OutputDir, "memory_ghostranks.txt");
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "memory_ghostranks.txt");
 
   if(!(FdMemory = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
@@ -196,7 +197,7 @@ int memory::myMPI_Win_allocate_shared(MPI_Aint size, int disp_unit, MPI_Info inf
 
   if(Shmem.Island_ThisTask == 0)
     {
-      sprintf(shmpath, "/G4-%lld.dat", (long long)getpid());
+      snprintf(shmpath, NAME_MAX, "/G4-%lld.dat", (long long)getpid());
 
       int fd = shm_open(shmpath, O_CREAT | O_EXCL | O_RDWR, S_IRUSR | S_IWUSR);
       if(fd == -1)
@@ -268,12 +269,14 @@ void memory::report_memory_usage(int rank, char *tabbuf)
 
   if(thistask == rank)
     {
-      char *buf = (char *)mymalloc("buf", (100 + 4 * MAXCHARS) * (Nblocks + 10));
-      int cc    = 0;
-      cc += sprintf(buf + cc, "\nMEMORY:  Largest Allocation = %g Mbyte  |  Largest Allocation Without Generic = %g Mbyte\n\n",
-                    OldGlobHighMarkMB, OldGlobHighMarkMBWithoutGeneric);
+      int bufsize = (100 + 4 * MAXCHARS) * (Nblocks + 10);
+      char *buf   = (char *)mymalloc("buf", bufsize);
+      int cc      = 0;
+      cc += snprintf(buf + cc, bufsize - cc,
+                     "\nMEMORY:  Largest Allocation = %g Mbyte  |  Largest Allocation Without Generic = %g Mbyte\n\n",
+                     OldGlobHighMarkMB, OldGlobHighMarkMBWithoutGeneric);
 
-      cc += sprintf(buf + cc, "%s", tabbuf);
+      cc += snprintf(buf + cc, bufsize - cc, "%s", tabbuf);
       if(thistask == 0)
         {
           if(RestartFlag == RST_BEGIN || RestartFlag == RST_RESUME || RestartFlag == RST_STARTFROMSNAP)
@@ -354,8 +357,9 @@ void memory::report_detailed_memory_usage_of_largest_task(void)
  */
 void memory::dump_memory_table(void)
 {
-  char *buf = (char *)malloc(200 * (Nblocks + 10));
-  dump_memory_table_buffer(buf);
+  int bufsize = 200 * (Nblocks + 10);
+  char *buf   = (char *)malloc(bufsize);
+  dump_memory_table_buffer(buf, bufsize);
   printf("%s", buf);
   free(buf);
 }
@@ -365,26 +369,26 @@ void memory::dump_memory_table(void)
  *  \param p output buffer
  *  \return the number of characters written to p
  */
-int memory::dump_memory_table_buffer(char *p)
+int memory::dump_memory_table_buffer(char *p, int bufsize)
 {
   int cc              = 0;
   size_t totBlocksize = 0;
   int thistask;
   MPI_Comm_rank(Communicator, &thistask);
 
-  cc +=
-      sprintf(p + cc, "-------------------------- Allocated Memory Blocks---- ( Step %8d )------------------\n", All.NumCurrentTiStep);
-  cc += sprintf(p + cc, "Task    Nr F                  Variable      MBytes   Cumulative  Function|File|Linenumber\n");
-  cc += sprintf(p + cc, "------------------------------------------------------------------------------------------\n");
+  cc += snprintf(p + cc, bufsize - cc, "-------------------------- Allocated Memory Blocks---- ( Step %8d )------------------\n",
+                 All.NumCurrentTiStep);
+  cc += snprintf(p + cc, bufsize - cc, "Task    Nr F                  Variable      MBytes   Cumulative  Function|File|Linenumber\n");
+  cc += snprintf(p + cc, bufsize - cc, "------------------------------------------------------------------------------------------\n");
   for(int i = 0; i < Nblocks; i++)
     {
       totBlocksize += BlockSize[i];
 
-      cc += sprintf(p + cc, "%4d %5d %d %40s  %10.4f   %10.4f  %s%s()|%s|%d\n", thistask, i, MovableFlag[i], VarName + i * MAXCHARS,
-                    BlockSize[i] * TO_MBYTE_FAC, totBlocksize * TO_MBYTE_FAC, ParentFileName + i * MAXCHARS,
-                    FunctionName + i * MAXCHARS, FileName + i * MAXCHARS, LineNumber[i]);
+      cc += snprintf(p + cc, bufsize - cc, "%4d %5d %d %40s  %10.4f   %10.4f  %s%s()|%s|%d\n", thistask, i, MovableFlag[i],
+                     VarName + i * MAXCHARS, BlockSize[i] * TO_MBYTE_FAC, totBlocksize * TO_MBYTE_FAC, ParentFileName + i * MAXCHARS,
+                     FunctionName + i * MAXCHARS, FileName + i * MAXCHARS, LineNumber[i]);
     }
-  cc += sprintf(p + cc, "------------------------------------------------------------------------------------------\n");
+  cc += snprintf(p + cc, bufsize - cc, "------------------------------------------------------------------------------------------\n");
 
   return cc;
 }
@@ -447,13 +451,13 @@ void *memory::mymalloc_movable_fullinfo(void *ptr, const char *varname, size_t n
   if(AllocatedBytes - AllocatedBytesGeneric > HighMarkBytesWithoutGeneric)
     {
       HighMarkBytesWithoutGeneric = AllocatedBytes - AllocatedBytesGeneric;
-      dump_memory_table_buffer(HighMarkTabBufWithoutGeneric);
+      dump_memory_table_buffer(HighMarkTabBufWithoutGeneric, highmark_bufsize);
     }
 
   if(AllocatedBytes > HighMarkBytes)
     {
       HighMarkBytes = AllocatedBytes;
-      dump_memory_table_buffer(HighMarkTabBuf);
+      dump_memory_table_buffer(HighMarkTabBuf, highmark_bufsize);
     }
 
   if(clear_flag)
@@ -675,7 +679,7 @@ void *memory::myrealloc_movable_fullinfo(void *p, size_t n, const char *func, co
   if(AllocatedBytes > HighMarkBytes)
     {
       HighMarkBytes = AllocatedBytes;
-      dump_memory_table_buffer(HighMarkTabBuf);
+      dump_memory_table_buffer(HighMarkTabBuf, highmark_bufsize);
     }
 
   return Table[nr];

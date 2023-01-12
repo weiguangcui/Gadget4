@@ -562,14 +562,14 @@ void lightcone::lightcone_init_geometry(char *fname)
                       case LC_TYPE_FULLSKY:
                         fscanf(fd, "%d %lg %lg", &Cones[Nlightcones].OnlyMostBoundFlag, &Cones[Nlightcones].Astart,
                                &Cones[Nlightcones].Aend);
-                        sprintf(Cones[Nlightcones].Tag, "Full-sky");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Full-sky");
                         break;
 
                       case LC_TYPE_OCTANT:
                         fscanf(fd, "%d %lg %lg", &Cones[Nlightcones].OnlyMostBoundFlag, &Cones[Nlightcones].Astart,
                                &Cones[Nlightcones].Aend);
                         fscanf(fd, "%d", &Cones[Nlightcones].OctantNr);
-                        sprintf(Cones[Nlightcones].Tag, "Octant");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Octant");
                         break;
 
                       case LC_TYPE_PENCIL:
@@ -585,7 +585,7 @@ void lightcone::lightcone_init_geometry(char *fname)
                         /* convert to rad */
                         Cones[Nlightcones].PencilAngleRad = Cones[Nlightcones].PencilAngle * M_PI / 180.0;
 
-                        sprintf(Cones[Nlightcones].Tag, "Pencil-Beam");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Pencil-Beam");
                         break;
 
                       case LC_TYPE_DISK:
@@ -597,7 +597,7 @@ void lightcone::lightcone_init_geometry(char *fname)
 
                         /* normalize the normal vector in case it is not normalized yet */
                         Cones[Nlightcones].DiskNormal *= 1.0 / Cones[Nlightcones].DiskNormal.norm();
-                        sprintf(Cones[Nlightcones].Tag, "Disk (for image)");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Disk (for image)");
                         break;
 
                       case LC_TYPE_SQUAREMAP:
@@ -632,7 +632,7 @@ void lightcone::lightcone_init_geometry(char *fname)
                         mpi_printf("LIGHTCONE_SQUAREMAP: cone=%2d   z-axis  =   %15g %15g %15g\n", Nlightcones,
                                    Cones[Nlightcones].SquareMapZdir[0], Cones[Nlightcones].SquareMapZdir[1],
                                    Cones[Nlightcones].SquareMapZdir[2]);
-                        sprintf(Cones[Nlightcones].Tag, "Square-map");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Square-map");
                         break;
                       default:
                         Terminate("odd");
@@ -929,7 +929,6 @@ bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *
 
   return false;
 }
-
 
 #ifdef LIGHTCONE_MASSMAPS
 
