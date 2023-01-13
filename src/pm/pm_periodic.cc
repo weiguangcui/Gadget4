@@ -1186,7 +1186,7 @@ void pm_periodic::pmforce_uniform_optimized_readout_forces_or_potential_xz(fft_r
     MyIntPosType IntPos[3];
   };
 
-  partbuf *partin, *partout;
+  partbuf *partin = NULL, *partout = NULL;
   size_t nimport = 0, nexport = 0;
 
   particle_data *P = Sp->P;
@@ -1493,7 +1493,7 @@ void pm_periodic::pmforce_uniform_optimized_readout_forces_or_potential_zy(fft_r
     MyIntPosType IntPos[3];
   };
 
-  partbuf *partin, *partout;
+  partbuf *partin = NULL, *partout = NULL;
   size_t nimport = 0, nexport = 0;
 
   particle_data *P = Sp->P;

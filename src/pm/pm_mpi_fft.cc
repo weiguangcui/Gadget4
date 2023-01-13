@@ -588,7 +588,7 @@ void pm_mpi_fft::my_fft_swap13back(fft_plan *plan, fft_real *data, fft_real *out
 
 void pm_mpi_fft::my_column_based_fft(fft_plan *plan, void *data, void *workspace, int forward)
 {
-  size_t n;
+  long long n;
   fft_real *data_real = (fft_real *)data, *workspace_real = (fft_real *)workspace;
   fft_complex *data_complex = (fft_complex *)data, *workspace_complex = (fft_complex *)workspace;
 

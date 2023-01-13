@@ -63,11 +63,7 @@ class pm_mpi_fft : public virtual setcomm
 
     int transposed_firstcol, transposed_ncol;
     int second_transposed_firstcol, second_transposed_ncol;
-    size_t second_transposed_ncells;
-
-    //  int pivotcol; /* to go from column number to task */
-    //   int avg;
-    //   int tasklastsection;
+    long long second_transposed_ncells;
 
     size_t *offsets_send_A;
     size_t *offsets_recv_A;
