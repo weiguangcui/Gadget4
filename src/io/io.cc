@@ -2415,10 +2415,11 @@ void IO_Def::read_single_file_segment(const char *basename, int filenr, int type
 
 void IO_Def::rename_file_to_bak_if_it_exists(char *fname)
 {
-  char fin[MAXLEN_PATH_EXTRA], buf[MAXLEN_PATH_EXTRA];
-
-  strcpy(fin, fname);
-
+  char fin[MAXLEN_PATH], buf[MAXLEN_PATH_EXTRA];
+  
+  strncpy(fin, fname, MAXLEN_PATH);
+  fin[MAXLEN_PATH - 1] = 0;
+  
   char *p = strrchr(fin, '/');
   if(p)
     {

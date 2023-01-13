@@ -87,7 +87,7 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
 
   mpi_printf("FOF: NumPartTot=%lld\n", NumPartTot);
 
-  if(NumPartTot > ID_MAX)
+  if(NumPartTot > (long long)ID_MAX)
     Terminate("The chosen ID data type is not sufficiently big to store unique IDs for NumPartTot=%lld particles\n", NumPartTot);
 
   MyIDType id = 0;
