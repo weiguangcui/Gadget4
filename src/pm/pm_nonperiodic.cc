@@ -195,7 +195,11 @@ void pm_nonperiodic::pm_init_regionsize(void)
         }
       else
         {
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
           blocksize = Sp->PlacingBlocksize;
+#else
+          Terminate("we should not get here");
+#endif
         }
 
       mpi_printf(
@@ -224,8 +228,12 @@ void pm_nonperiodic::pm_init_regionsize(void)
             }
           else
             {
+#if defined(RANDOMIZE_DOMAINCENTER_TYPES) || defined(PLACEHIGHRESREGION)
               left  = (Sp->ReferenceIntPos[HIGH_MESH][i] + Sp->Xmintot[HIGH_MESH][i]) & Sp->PlacingMask;
               right = left + Sp->PlacingBlocksize;
+#else
+              Terminate("we should not get here");
+#endif
             }
 
           Sp->Xmintot[mesh][i] = left - Sp->ReferenceIntPos[mesh][i];
@@ -311,7 +319,7 @@ void pm_nonperiodic::pm_init_nonperiodic(simparticles *Sp_ptr)
 #ifndef FFT_COLUMN_BASED
   int stride = GRIDz;
 #else
-  int stride    = 1;
+  int stride = 1;
 #endif
 
   myplan.forward_plan_zdir = FFTW(plan_many_dft_r2c)(1, ndim, 1, rhogrid, 0, 1, GRID2, (fft_complex *)forcegrid, 0, 1, GRIDz,
