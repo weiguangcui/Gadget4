@@ -131,10 +131,11 @@ struct global_data_all_processes : public parameters
 
   /* Cosmology */
 
-  double Hubble;      /**< Hubble-constant in internal units */
-  double Omega0;      /**< matter density in units of the critical density (at z=0) */
-  double OmegaLambda; /**< vaccum energy density relative to crictical density (at z=0) */
-  double OmegaBaryon; /**< baryon density in units of the critical density (at z=0) */
+  double Hubble;         /**< Hubble-constant in internal units */
+  double Omega0;         /**< matter density in units of the critical density (at z=0) */
+  double OmegaLambda;    /**< vaccum energy density relative to crictical density (at z=0) */
+  double OmegaBaryon;    /**< baryon density in units of the critical density (at z=0) */
+  double OmegaCurvature; /**< curvature relative to crictical density (at z=0) */
   double HubbleParam; /**< little `h', i.e. can be used to scale unit system to absorb uncertain value of Hubble constant.  Only needed
                        * to get absolute physical values for cooling physics
                        */
