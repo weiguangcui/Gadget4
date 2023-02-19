@@ -1144,9 +1144,9 @@ void ngenic::print_spec(void)
 
       FILE *fd = fopen(buf, "w");
 
-      double gf = ngenic_growth_factor(0.001, 1.0) / (1.0 / 0.001);
+      double gf = Driftfac.linear_growth_factor(0.001, 1.0) / (1.0 / 0.001);
 
-      double DDD = ngenic_growth_factor(All.cf_atime, 1.0);
+      double DDD = Driftfac.linear_growth_factor(All.cf_atime, 1.0);
 
       fprintf(fd, "%12g %12g\n", All.cf_redshift, DDD); /* print actual starting redshift and
                                                            linear growth factor for this cosmology */
@@ -1205,7 +1205,7 @@ void ngenic::print_spec(void)
             {
               double a = exp(log(All.cf_atime) + ((log(1.0) - log(All.cf_atime)) / NSTEPS) * i);
 
-              double d = ngenic_growth_factor(a, 1.0);
+              double d = Driftfac.linear_growth_factor(a, 1.0);
 
               fprintf(fd, "%12g %12g\n", a, 1.0 / d);
             }

@@ -353,6 +353,8 @@ void sim::set_units(void)
 
   if(All.ComovingIntegrationOn)
     {
+      All.OmegaCurvature = 1.0 - (All.Omega0 + All.OmegaLambda);
+
       /* check whether the supplied value of All.Hubble makes sense */
       if(All.HubbleParam != 1.0)
         {
