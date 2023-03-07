@@ -174,7 +174,7 @@ class IO_Def : public io_streamcount, public setcomm
   void *header_buf;
 
   long long *ntype_in_files;
-  char info[100];
+  char info[MAXLEN_PATH];
 
 #if defined(MERGERTREE)
   typedef fof<simparticles>::treehalo_t treehalo_type;
