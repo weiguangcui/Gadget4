@@ -498,6 +498,8 @@ $(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.cc $(MAKEFILES)
 $(BUILD_DIR)/compile_time_info_hdf5.o: $(BUILD_DIR)/compile_time_info_hdf5.cc $(MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/version.o: $(BUILD_DIR)/version.cc $(MAKEFILES)
+	$(CPP) $(CFLAGS) -c $< -o $@
 
 check: $(CONFIG_CHECK)
 
