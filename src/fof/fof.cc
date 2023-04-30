@@ -563,7 +563,12 @@ double fof<partset>::fof_get_comoving_linking_length(void)
       }
   sumup_large_ints(1, &ndm, &ndmtot, Communicator);
   MPI_Allreduce(&mass, &masstot, 1, MPI_DOUBLE, MPI_SUM, Communicator);
-  double rhodm = (All.Omega0 - All.OmegaBaryon) * 3 * All.Hubble * All.Hubble / (8 * M_PI * All.G);
+
+  double rhodm;
+  if(Tp->TotNumGas > 0)
+    rhodm = (All.Omega0 - All.OmegaBaryon) * 3 * All.Hubble * All.Hubble / (8 * M_PI * All.G);
+  else
+    rhodm = All.Omega0 * 3 * All.Hubble * All.Hubble / (8 * M_PI * All.G);
 
   return FOF_LINKLENGTH * pow(masstot / ndmtot / rhodm, 1.0 / 3);
 }
