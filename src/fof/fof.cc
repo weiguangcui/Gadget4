@@ -83,7 +83,7 @@ void fof<partset>::fof_fof(int num, const char *grpcat_basename, const char *grp
 
   long long NumPartTot = 0;
   for(int i = 0; i < NTask; i++)
-    NumPartTot += Tp->NumPart;
+    NumPartTot += numpart_list[i];
 
   mpi_printf("FOF: NumPartTot=%lld\n", NumPartTot);
 
