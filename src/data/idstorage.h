@@ -23,7 +23,7 @@
 #define ID_MSB ((unsigned short)(~((unsigned short)(~((unsigned short)0)) >> ((unsigned short)1))))
 #define ID_MSK ((unsigned short)(((unsigned short)(~((unsigned short)0)) >> ((unsigned short)1))))
 #define HALONR_MAX ((MyIDType)(((MyIDType)(~((MyIDType)0)) >> ((MyIDType)17))))
-#define ID_MAX (ID_MSK + (1LL << 32LL))
+#define ID_MAX (((long long)ID_MSK) << 32LL)
 #endif
 
 /* used to store a subhalo len in an approximate (quite accurate) way in just two bytes */
