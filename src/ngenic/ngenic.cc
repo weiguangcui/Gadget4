@@ -606,7 +606,7 @@ void ngenic::ngenic_get_derivate_from_fourier_field(int axes1, int axes2, fft_co
           double smth = 1;
 
 #ifdef CORRECT_CIC
-          if(axes2 >= 0)
+          if(axes2 < 0)
             {
               /* do deconvolution of CIC interpolation */
               double fx = 1, fy = 1, fz = 1;
