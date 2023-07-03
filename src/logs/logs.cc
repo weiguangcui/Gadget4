@@ -222,10 +222,11 @@ void logs::output_log_messages(void)
       for(int i = 0; i < TIMEBINS; i++)
         {
           double sum = 0;
-          for(int j = 0; j < All.CPU_TimeBinCountMeasurements[i]; j++)
-            sum += All.CPU_TimeBinMeasurements[i][j];
+          if(tot_count_sph[i] > 0 || tot_count_grav[i] > 0)
+            for(int j = 0; j < All.CPU_TimeBinCountMeasurements[i]; j++)
+              sum += All.CPU_TimeBinMeasurements[i][j];
 
-          if(All.CPU_TimeBinCountMeasurements[i])
+          if(All.CPU_TimeBinCountMeasurements[i] && (tot_count_sph[i] > 0 || tot_count_grav[i] > 0))
             avg_CPU_TimeBin[i] = sum / All.CPU_TimeBinCountMeasurements[i];
           else
             avg_CPU_TimeBin[i] = 0;
@@ -235,7 +236,7 @@ void logs::output_log_messages(void)
       double sum = 0;
       double frac_CPU_TimeBin[TIMEBINS];
 
-      for(int i = All.HighestOccupiedTimeBin; i >= 0 && tot_count_grav[i] > 0; i--, weight *= 2)
+      for(int i = All.HighestOccupiedTimeBin; i >= 0; i--, weight *= 2)
         {
           int corr_weight;
 
@@ -248,7 +249,7 @@ void logs::output_log_messages(void)
           sum += frac_CPU_TimeBin[i];
         }
 
-      for(int i = All.HighestOccupiedTimeBin; i >= 0 && tot_count_grav[i] > 0; i--)
+      for(int i = All.HighestOccupiedTimeBin; i >= 0; i--)
         {
           if(sum)
             frac_CPU_TimeBin[i] /= sum;
