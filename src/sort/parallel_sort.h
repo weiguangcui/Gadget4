@@ -12,9 +12,10 @@
 #ifndef PARALLEL_SORT_H
 #define PARALLEL_SORT_H
 
-#include "cxxsort.h"
+#include "gadgetconfig.h"
 
 #include "../data/mymalloc.h"
+#include "../sort/cxxsort.h"
 
 //#define CHECK_LOCAL_RANK
 
@@ -357,10 +358,11 @@ inline double mycxxsort_parallel(T *begin, T *end, Comp comp, MPI_Comm comm)
                 }
             }
 
-          myMPI_Alltoall(source_range_len_list, sizeof(long long), MPI_BYTE, range_len_list, sizeof(long long), MPI_BYTE, MPI_CommLocal);
+          myMPI_Alltoall(source_range_len_list, sizeof(long long), MPI_BYTE, range_len_list, sizeof(long long), MPI_BYTE,
+                         MPI_CommLocal);
           myMPI_Alltoall(source_median_element_list, size, MPI_BYTE, median_element_list, size, MPI_BYTE, MPI_CommLocal);
           myMPI_Alltoall(source_tie_breaking_rank_list, sizeof(size_t), MPI_BYTE, tie_breaking_rank_list, sizeof(size_t), MPI_BYTE,
-                       MPI_CommLocal);
+                         MPI_CommLocal);
 
           if(Local_ThisTask < Local_NTask - 1)
             {

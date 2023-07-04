@@ -14,6 +14,8 @@
 
 #ifdef MERGERTREE
 
+#include "gadgetconfig.h"
+
 #include <hdf5.h>
 
 #include "../data/simparticles.h"

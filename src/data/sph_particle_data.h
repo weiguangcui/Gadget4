@@ -12,6 +12,8 @@
 #ifndef SPHPARTDATA_H
 #define SPHPARTDATA_H
 
+#include "gadgetconfig.h"
+
 #include "../data/constants.h"
 #include "../data/dtypes.h"
 #include "../data/intposconvert.h"

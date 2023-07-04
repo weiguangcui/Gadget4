@@ -12,6 +12,8 @@
 #ifndef DRIFTFAC_H
 #define DRIFTFAC_H
 
+#include "gadgetconfig.h"
+
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_math.h>
 #include <math.h>
@@ -22,7 +24,6 @@
 
 #include "../data/dtypes.h"
 #include "../main/main.h"
-#include "gadgetconfig.h"
 
 class driftfac
 {

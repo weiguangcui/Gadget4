@@ -12,6 +12,8 @@
 #ifndef DTYPES_H
 #define DTYPES_H
 
+#include "gadgetconfig.h"
+
 #include <stdint.h>
 #include <cstddef>
 #ifdef EXPLICIT_VECTORIZATION

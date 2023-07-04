@@ -32,11 +32,12 @@ def out1(options, fname):
 def out2(options, fname):
     f = open(fname, "w")
     
-    str = """#include <mpi.h>
+    str = """
+#include \"gadgetconfig.h\"
+#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include \"gadgetconfig.h\"
 #include \"data/dtypes.h\"
 #include \"data/allvars.h\"
 #include \"main/main.h\"
@@ -61,14 +62,15 @@ printf(
 def out3(options, fname):
     f = open(fname, "w")
     
-    str = """#include <mpi.h>
+    str = """
+#include \"gadgetconfig.h\"
+#include <mpi.h>
 #include <stdio.h>
 #include <hdf5.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <math.h>
-#include \"gadgetconfig.h\"
 #include \"data/constants.h\"
 #include \"data/dtypes.h\"
 #include \"data/macros.h\"

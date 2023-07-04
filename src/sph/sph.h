@@ -12,6 +12,8 @@
 #ifndef SPH_H
 #define SPH_H
 
+#include "gadgetconfig.h"
+
 #include "../mpi_utils/shared_mem_handler.h"
 #include "../ngbtree/ngbtree.h"
 

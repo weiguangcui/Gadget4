@@ -12,6 +12,8 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#include "gadgetconfig.h"
+
 #include <assert.h>
 #include <mpi.h>
 #include <stdio.h>

@@ -12,6 +12,8 @@
 #ifndef FOFTREE_H
 #define FOFTREE_H
 
+#include "gadgetconfig.h"
+
 #include "../data/simparticles.h"
 #include "../tree/tree.h"
 

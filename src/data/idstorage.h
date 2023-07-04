@@ -12,6 +12,8 @@
 #ifndef IDSTORAGE_H
 #define IDSTORAGE_H
 
+#include "gadgetconfig.h"
+
 #include <climits>
 
 #if !defined(IDS_48BIT)

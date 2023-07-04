@@ -12,6 +12,8 @@
 #ifndef TEST_IO_BANDWIDTH_H
 #define TEST_IO_BANDWIDTH_H
 
+#include "gadgetconfig.h"
+
 #include <mpi.h>
 
 #define MODUS_WRITE 0

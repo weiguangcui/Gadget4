@@ -9,7 +9,7 @@
  *  \brief Code for Ewald correction computations.
  */
 
-#include "../gravity/ewald.h"
+#include "gadgetconfig.h"
 
 #include <math.h>
 #include <mpi.h>
@@ -20,6 +20,7 @@
 #include "../data/allvars.h"
 #include "../data/dtypes.h"
 #include "../data/mymalloc.h"
+#include "../gravity/ewald.h"
 #include "../gravity/ewaldtensors.h"
 #include "../gravtree/gravtree.h"
 #include "../io/io.h"
@@ -27,7 +28,6 @@
 #include "../mpi_utils/shared_mem_handler.h"
 #include "../sort/cxxsort.h"
 #include "../system/system.h"
-#include "gadgetconfig.h"
 
 /*!
  *  This file contains the computation of the Ewald correction table, and the corresponding lookup functions.

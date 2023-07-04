@@ -12,6 +12,8 @@
 #ifndef SIMPART_H
 #define SIMPART_H
 
+#include "gadgetconfig.h"
+
 #include <math.h>
 
 #include "../data/allvars.h"

@@ -23,6 +23,8 @@
 
 #define TREE_MAX_ITER 100
 
+#include "gadgetconfig.h"
+
 #include <mpi.h>
 
 #include "../domain/domain.h"

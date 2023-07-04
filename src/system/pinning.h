@@ -12,6 +12,8 @@
 #ifndef PINNING_H
 #define PINNING_H
 
+#include "gadgetconfig.h"
+
 #include <gsl/gsl_rng.h>
 #include <math.h>
 #include <mpi.h>
@@ -24,7 +26,6 @@
 #include "../main/main.h"
 #include "../mpi_utils/setcomm.h"
 #include "../system/system.h"
-#include "gadgetconfig.h"
 
 /*! \file pinning.c
  *  \brief examines cpu topology and binds processes and threads to cores

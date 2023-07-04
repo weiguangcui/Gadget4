@@ -49,10 +49,21 @@ def parseIf(string, defines, fin):
 def filter_code(fin):
     defines = set()
     
+    first_encountered = False
+
     line = fin.readline()
     while line != "":
         s = line.lstrip()
-        #print s
+
+        if s.startswith("#include"):
+            if first_encountered == False:
+                m = re.search("gadgetconfig",s)
+                if m is not None:
+                    first_encountered = True
+                else:
+                    print("First header file included ('%s') is not gadgetconfig.h -- please change this\n"%s.rstrip())
+                    exit(1)
+
         if s.startswith("#if "):
             parseIf(s[4:],defines,fin)
         elif s.startswith("#elseif "):
@@ -288,7 +299,7 @@ def check_parameters(fin, fout, fdoc):
     write(used,fout)
     exit(0)    
 
-    
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         exit(1)
@@ -333,5 +344,4 @@ if __name__ == "__main__":
         doc = open(sys.argv[4],'r')
         
         check_parameters(fin, fout, doc)
-        
-        
+          

@@ -12,6 +12,8 @@
 #ifndef SHAREDMEM_H
 #define SHAREDMEM_H
 
+#include "gadgetconfig.h"
+
 #include <hdf5.h>
 #include <mpi.h>
 #include <stdio.h>

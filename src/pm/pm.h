@@ -14,6 +14,8 @@
 
 #if defined(PMGRID) || defined(NGENIC)
 
+#include "gadgetconfig.h"
+
 #include <fftw3.h>
 
 typedef ptrdiff_t fft_ptrdiff_t;
