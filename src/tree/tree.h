@@ -161,8 +161,8 @@ class tree
   int NextFreeNode;
 
   MPI_Comm TreeSharedMemComm;
-  int TreeSharedMem_ThisTask;
-  int TreeSharedMem_NTask;
+  int TreeSharedMem_ThisTask = 0;
+  int TreeSharedMem_NTask    = 0;
 
   int TreeInfoHandle;
 
