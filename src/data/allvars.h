@@ -14,13 +14,14 @@
 #ifndef ALLVARS_H
 #define ALLVARS_H
 
+#include "gadgetconfig.h"
+
 #include <math.h>
 
 #include "../data/constants.h"
 #include "../data/dtypes.h"
 #include "../data/macros.h"
 #include "../io/parameters.h"
-#include "gadgetconfig.h"
 
 /** Data which is the SAME for all tasks (mostly code parameters read
  * from the parameter file).  Holding this data in a structure is

@@ -12,11 +12,12 @@
 #ifndef SNAP_READ_WRITE_H
 #define SNAP_READ_WRITE_H
 
+#include "gadgetconfig.h"
+
 #include "../data/intposconvert.h"
 #include "../data/simparticles.h"
 #include "../io/io.h"
 #include "../mergertree/mergertree.h"
-#include "gadgetconfig.h"
 
 class snap_io : public IO_Def
 {

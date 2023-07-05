@@ -9,8 +9,8 @@
  *  \brief initial set-up of a simulation run
  */
 
-#include "compiler-command-line-args.h"
 #include "gadgetconfig.h"
+#include "compiler-command-line-args.h"
 
 #include <hdf5.h>
 #include <math.h>

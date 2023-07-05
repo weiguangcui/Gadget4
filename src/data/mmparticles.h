@@ -16,6 +16,8 @@
 
 #if defined(LIGHTCONE) && defined(LIGHTCONE_MASSMAPS)
 
+#include "gadgetconfig.h"
+
 #include <math.h>
 
 #include "../data/constants.h"
@@ -27,7 +29,6 @@
 #include "../mpi_utils/setcomm.h"
 #include "../system/system.h"
 #include "../time_integration/timestep.h"
-#include "gadgetconfig.h"
 
 class mmparticles : public setcomm
 {

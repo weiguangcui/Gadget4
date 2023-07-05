@@ -23,6 +23,8 @@
 
 #define TREE_MAX_ITER 100
 
+#include "gadgetconfig.h"
+
 #include <mpi.h>
 
 #include "../domain/domain.h"
@@ -159,8 +161,8 @@ class tree
   int NextFreeNode;
 
   MPI_Comm TreeSharedMemComm;
-  int TreeSharedMem_ThisTask;
-  int TreeSharedMem_NTask;
+  int TreeSharedMem_ThisTask = 0;
+  int TreeSharedMem_NTask    = 0;
 
   int TreeInfoHandle;
 

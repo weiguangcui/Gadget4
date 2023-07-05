@@ -12,6 +12,8 @@
 #ifndef HDF5_UTIL_H
 #define HDF5_UTIL_H
 
+#include "gadgetconfig.h"
+
 #include <hdf5.h>
 
 #define COMPRESSION_CHUNKSIZE 1000

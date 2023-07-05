@@ -12,6 +12,8 @@
 #ifndef LOGS_H
 #define LOGS_H
 
+#include "gadgetconfig.h"
+
 #include <stdio.h>
 
 #include "../main/simulation.h"

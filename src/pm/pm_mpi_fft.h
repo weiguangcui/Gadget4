@@ -12,6 +12,8 @@
 #ifndef PM_MPI_FFT_H
 #define PM_MPI_FFT_H
 
+#include "gadgetconfig.h"
+
 #include "../mpi_utils/setcomm.h"
 
 #ifndef FFTW

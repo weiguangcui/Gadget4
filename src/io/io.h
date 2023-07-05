@@ -12,8 +12,9 @@
 #ifndef IO_H
 #define IO_H
 
-#include <hdf5.h>
+#include "gadgetconfig.h"
 
+#include <hdf5.h>
 #ifdef LIGHTCONE_PARTICLES
 #include <chealpix.h>
 #endif

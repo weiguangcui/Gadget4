@@ -12,6 +12,8 @@
 #ifndef FOF_IO_H
 #define FOF_IO_H
 
+#include "gadgetconfig.h"
+
 #include "../fof/fof.h"
 #include "../io/io.h"
 

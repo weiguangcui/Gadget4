@@ -12,6 +12,8 @@
 #ifndef GENERIC_COMM_H
 #define GENERIC_COMM_H
 
+#include "gadgetconfig.h"
+
 #include "../domain/domain.h"
 #include "../logs/logs.h"
 #include "../mpi_utils/mpi_utils.h"

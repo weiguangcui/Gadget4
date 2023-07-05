@@ -14,9 +14,9 @@
 
 #if defined(LIGHTCONE) && defined(LIGHTCONE_PARTICLES)
 
-#include <math.h>
-
 #include "gadgetconfig.h"
+
+#include <math.h>
 
 #include "../data/constants.h"
 #include "../data/dtypes.h"

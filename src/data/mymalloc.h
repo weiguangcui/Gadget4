@@ -12,6 +12,8 @@
 #ifndef MYMALLOC_H
 #define MYMALLOC_H
 
+#include "gadgetconfig.h"
+
 #include <stdio.h>
 
 #define CACHELINESIZE 64

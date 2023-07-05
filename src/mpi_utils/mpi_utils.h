@@ -11,6 +11,8 @@
 #ifndef MPI_UTILS_H
 #define MPI_UTILS_H
 
+#include "gadgetconfig.h"
+
 #include <mpi.h>
 #include "../data/dtypes.h"
 #include "../data/mymalloc.h"

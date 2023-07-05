@@ -12,6 +12,8 @@
 #ifndef NGENIC_H
 #define NGENIC_H
 
+#include "gadgetconfig.h"
+
 #ifdef NGENIC
 
 #ifndef PERIODIC

@@ -11,6 +11,8 @@
 #ifndef GADGET4_CXXSORT_H
 #define GADGET4_CXXSORT_H
 
+#include "gadgetconfig.h"
+
 #include <algorithm>
 
 #include "../data/allvars.h"
