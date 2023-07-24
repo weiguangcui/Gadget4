@@ -10,6 +10,8 @@
 * (c) Copyright 2012-2017 GNU General Public License http://www.gnu.org/licenses
 \*****************************************************************************/
 
+#include "gadgetconfig.h"
+
 #include "instrset.h"
 
 #ifdef VCL_NAMESPACE
