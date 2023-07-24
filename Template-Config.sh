@@ -161,6 +161,7 @@ INITIAL_CONDITIONS_CONTAIN_ENTROPY
 #LIGHTCONE_PARTICLES                          # produces particle lightcones
 #LIGHTCONE_MASSMAPS                           # produces mass shells on the lightcone
 #LIGHTCONE_PARTICLES_GROUPS                   # computes groups for particles buffered on the lightcone
+#LIGHTCONE_PARTICLES_SKIP_SAVING              # prevents that particle data is saved along with the found groups on the lightcone
 #LIGHTCONE_OUTPUT_ACCELERATIONS               # stores accelerations for particles on lightcone
 #LIGHTCONE_IMAGE_COMP_HSML_VELDISP            # option for computing densities and smoothing length for lightcones in postprocessing
 #LIGHTCONE_MULTIPLE_ORIGINS                   # switch this on if you want to be able to define lightcone origins different from (0,0,0)
