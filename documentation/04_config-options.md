@@ -1233,6 +1233,14 @@ lightcone particle data before they are written to disk. Requires the
 
 -------
 
+**LIGHTCONE_PARTICLES_SKIP_SAVING**
+
+In case `LIGHTCONE_PARTICLES_GROUPS` is used, this option can be used to
+avoid that actual particle data is saved along with the groups that are
+found. 
+
+-------
+
 **LIGHTCONE_IMAGE_COMP_HSML_VELDISP**
 
 This special option is only relevant for lightcone image creation, and

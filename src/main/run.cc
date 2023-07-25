@@ -704,8 +704,10 @@ void sim::create_snapshot_if_desired(void)
             mycxxsort_parallel(Lp.P, Lp.P + Lp.NumPart, Lp.compare_ipnest, Communicator);
 #endif
 
+#if !defined(LIGHTCONE_PARTICLES_SKIP_SAVING)
             for(int conenr = 0; conenr < LightCone.Nlightcones; conenr++)
               Lcone.lightcone_save(All.LightconeFileCount, conenr, false);
+#endif
 
             mpi_printf("LIGHTCONE: done with writing files.\n");
 

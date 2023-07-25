@@ -12,6 +12,8 @@
 #ifndef COOLING_H
 #define COOLING_H
 
+#include "gadgetconfig.h"
+
 #ifdef COOLING
 
 #include "../data/simparticles.h"
