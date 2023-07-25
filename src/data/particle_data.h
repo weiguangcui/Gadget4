@@ -33,22 +33,11 @@
  */
 struct particle_data
 {
-  // we do this ugly trick of using memcpy for our own copy constructor and assignment operator
-  // because the atomic_flag in particle_data has an implicitly deleted copy operator... so that the implicit functions
-  // for this are unavailable. But we know what we are doing here, and surrounding this with an ugly hack
-  // is the easiest way at the moment to work around this in our case unnecessary protection
+  // Note that because the atomic_flag and atomic data-types in particle_data have an implicitly deleted copy operator,
+  // we are using them encapsulated in a structure defined in dtypes.h that implements these copy and assignment operators explicitly.
+  // This is fine because the code logic guarantees that there is no concurrent access when such copies of particle_data happen.
 
   particle_data() {}
-
-  // declare our own copy constructor
-  particle_data(particle_data& other) { memcpy(static_cast<void*>(this), static_cast<void*>(&other), sizeof(particle_data)); }
-
-  // declare our own assignment operator
-  particle_data& operator=(particle_data& other)
-  {
-    memcpy(static_cast<void*>(this), static_cast<void*>(&other), sizeof(particle_data));
-    return *this;
-  }
 
   MyIntPosType IntPos[3];    /**< particle position at its current time, stored as an integer type */
   MyFloat Vel[3];            /**< particle velocity at its current time */
@@ -57,9 +46,9 @@ struct particle_data
   MyFloat GravPM[3]; /**< particle acceleration due to long-range PM gravity force */
 #endif
 
-  std::atomic<integertime> Ti_Current; /**< current time on integer timeline */
-  float OldAcc;                        /**< magnitude of old gravitational force. Used in relative opening criterion */
-  int GravCost;                        /**< weight factors used for balancing the work-load */
+  copyable_atomic<integertime> Ti_Current; /**< current time on integer timeline */
+  float OldAcc;                            /**< magnitude of old gravitational force. Used in relative opening criterion */
+  int GravCost;                            /**< weight factors used for balancing the work-load */
 
 #ifndef LEAN
  private:
@@ -85,7 +74,7 @@ struct particle_data
 #endif
 
 #ifndef LEAN
-  std::atomic_flag access;
+  copyable_atomic_flag access;
 #endif
 
 #ifdef REARRANGE_OPTION
