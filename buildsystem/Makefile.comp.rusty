@@ -1,0 +1,3 @@
+CC       =   mpic++ -std=c++11
+CPP       =   mpic++ -std=c++11
+OPTIMIZE  = -ggdb -O3 -march=native  -Wall -Wno-format-security
