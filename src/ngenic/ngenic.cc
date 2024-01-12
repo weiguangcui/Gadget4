@@ -606,7 +606,7 @@ void ngenic::ngenic_get_derivate_from_fourier_field(int axes1, int axes2, fft_co
           double smth = 1;
 
 #ifdef CORRECT_CIC
-          if(axes2 >= 0)
+          if(axes2 < 0)
             {
               /* do deconvolution of CIC interpolation */
               double fx = 1, fy = 1, fz = 1;
@@ -1139,14 +1139,14 @@ void ngenic::print_spec(void)
 {
   if(ThisTask == 0)
     {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/inputspec_%s.txt", All.OutputDir, All.SnapshotFileBase);
+      char buf[MAXLEN_PATH_EXTRA];
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/inputspec_%s.txt", All.OutputDir, All.SnapshotFileBase);
 
       FILE *fd = fopen(buf, "w");
 
-      double gf = ngenic_growth_factor(0.001, 1.0) / (1.0 / 0.001);
+      double gf = Driftfac.linear_growth_factor(0.001, 1.0) / (1.0 / 0.001);
 
-      double DDD = ngenic_growth_factor(All.cf_atime, 1.0);
+      double DDD = Driftfac.linear_growth_factor(All.cf_atime, 1.0);
 
       fprintf(fd, "%12g %12g\n", All.cf_redshift, DDD); /* print actual starting redshift and
                                                            linear growth factor for this cosmology */
@@ -1194,8 +1194,8 @@ void ngenic::print_spec(void)
     {
       if(All.cf_atime < 1.0)
         {
-          char buf[3 * MAXLEN_PATH];
-          sprintf(buf, "%s/growthfac.txt", All.OutputDir);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/growthfac.txt", All.OutputDir);
 
           FILE *fd = fopen(buf, "w");
 
@@ -1205,7 +1205,7 @@ void ngenic::print_spec(void)
             {
               double a = exp(log(All.cf_atime) + ((log(1.0) - log(All.cf_atime)) / NSTEPS) * i);
 
-              double d = ngenic_growth_factor(a, 1.0);
+              double d = Driftfac.linear_growth_factor(a, 1.0);
 
               fprintf(fd, "%12g %12g\n", a, 1.0 / d);
             }
@@ -1219,8 +1219,8 @@ void ngenic::print_spec(void)
 
   if(ThisTask == 0)
     {
-      char buf[3 * MAXLEN_PATH];
-      sprintf(buf, "%s/variance.txt", All.OutputDir);
+      char buf[MAXLEN_PATH_EXTRA];
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/variance.txt", All.OutputDir);
 
       FILE *fd = fopen(buf, "w");
 

@@ -12,6 +12,8 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include "gadgetconfig.h"
+
 #include <gsl/gsl_rng.h>
 #include <stdio.h>
 

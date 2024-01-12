@@ -12,8 +12,9 @@
 #ifndef IO_H
 #define IO_H
 
-#include <hdf5.h>
+#include "gadgetconfig.h"
 
+#include <hdf5.h>
 #ifdef LIGHTCONE_PARTICLES
 #include <chealpix.h>
 #endif
@@ -174,7 +175,7 @@ class IO_Def : public io_streamcount, public setcomm
   void *header_buf;
 
   long long *ntype_in_files;
-  char info[100];
+  char info[MAXLEN_PATH];
 
 #if defined(MERGERTREE)
   typedef fof<simparticles>::treehalo_t treehalo_type;

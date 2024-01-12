@@ -12,6 +12,8 @@
 #ifndef MYMALLOC_H
 #define MYMALLOC_H
 
+#include "gadgetconfig.h"
+
 #include <stdio.h>
 
 #define CACHELINESIZE 64
@@ -133,7 +135,9 @@ class memory : public setcomm
                                          has occurred on this task */
   enum restart_options RestartFlag;
 
-  int dump_memory_table_buffer(char *p);
+  int highmark_bufsize;
+
+  int dump_memory_table_buffer(char *p, int bufsize);
 
   void report_memory_usage(int rank, char *tabbuf);
 };

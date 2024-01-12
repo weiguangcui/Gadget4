@@ -76,9 +76,9 @@ void ewald::ewald_init(void)
 
   Ewd = (ewald_data *)Mem.mymalloc("Ewd", sizeof(ewald_data) * (ENX + 1) * (ENY + 1) * (ENZ + 1));
 
-  char buf[200];
-  sprintf(buf, "ewald_table_%d-%d-%d_%d-%d-%d_precision%d-order%d.dat", LONG_X, LONG_Y, LONG_Z, ENX, ENY, ENZ, (int)sizeof(MyReal),
-          HIGHEST_NEEDEDORDER_EWALD_DPHI + EWALD_TAYLOR_ORDER);
+  char buf[MAXLEN_PATH_EXTRA];
+  snprintf(buf, MAXLEN_PATH_EXTRA, "ewald_table_%d-%d-%d_%d-%d-%d_precision%d-order%d.dat", LONG_X, LONG_Y, LONG_Z, ENX, ENY, ENZ,
+           (int)sizeof(MyReal), HIGHEST_NEEDEDORDER_EWALD_DPHI + EWALD_TAYLOR_ORDER);
 
   int recomputeflag = 0;
 

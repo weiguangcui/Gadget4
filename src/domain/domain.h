@@ -8,13 +8,14 @@
  *
  *  \brief declares the class used for the domain decomposition
  */
+#ifndef DOMAIN_H
+#define DOMAIN_H
+
+#include "gadgetconfig.h"
 
 #ifndef ALLVARS_H
 #include "../data/allvars.h"
 #endif
-#ifndef DOMAIN_H
-#define DOMAIN_H
-
 #include "../data/dtypes.h"
 #include "../mpi_utils/setcomm.h"
 

@@ -218,7 +218,7 @@ void sim::mpi_report_comittable_memory(void)
   double avgsize[7];
   int i, imem, mintask[7], maxtask[7];
   long long Mem[7];
-  char label[512];
+  char label[MAXLEN_PATH];
 
   Mem[0] = report_comittable_memory(&Mem[1], &Mem[2], &Mem[3], &Mem[4]);
   Mem[5] = Mem[1] - Mem[0];
@@ -262,25 +262,25 @@ void sim::mpi_report_comittable_memory(void)
           switch(imem)
             {
               case 0:
-                sprintf(label, "AvailMem");
+                snprintf(label, MAXLEN_PATH, "AvailMem");
                 break;
               case 1:
-                sprintf(label, "Total Mem");
+                snprintf(label, MAXLEN_PATH, "Total Mem");
                 break;
               case 2:
-                sprintf(label, "Committed_AS");
+                snprintf(label, MAXLEN_PATH, "Committed_AS");
                 break;
               case 3:
-                sprintf(label, "SwapTotal");
+                snprintf(label, MAXLEN_PATH, "SwapTotal");
                 break;
               case 4:
-                sprintf(label, "SwapFree");
+                snprintf(label, MAXLEN_PATH, "SwapFree");
                 break;
               case 5:
-                sprintf(label, "AllocMem");
+                snprintf(label, MAXLEN_PATH, "AllocMem");
                 break;
               case 6:
-                sprintf(label, "avail /dev/shm");
+                snprintf(label, MAXLEN_PATH, "avail /dev/shm");
                 break;
             }
           printf("%s:\t Largest = %10.2f Mb (on task=%4d), Smallest = %10.2f Mb (on task=%4d), Average = %10.2f Mb\n", label,

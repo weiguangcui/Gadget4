@@ -90,8 +90,8 @@ void domain<partset>::domain_special_check(int mode, int ndomains)
     {
       if(ThisTask == 0)
         {
-          char buf[1000];
-          sprintf(buf, "%s/domain_data_%d_step%d.txt", All.OutputDir, mode, All.NumCurrentTiStep);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/domain_data_%d_step%d.txt", All.OutputDir, mode, All.NumCurrentTiStep);
           FILE *fd = fopen(buf, "w");
           fprintf(fd, "%d %d\n", ndomains, NumTimeBinsToBeBalanced);
           for(int n = 0; n < ndomains; n++)
@@ -175,8 +175,8 @@ void domain<partset>::domain_combine_multipledomains(void)
     {
       if(ThisTask == 0)
         {
-          char buf[1000];
-          sprintf(buf, "%s/domain_data_0_step%d.txt", All.OutputDir, All.NumCurrentTiStep);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/domain_data_0_step%d.txt", All.OutputDir, All.NumCurrentTiStep);
           FILE *fd = fopen(buf, "w");
           fprintf(fd, "%d %d\n", NTopleaves, NumTimeBinsToBeBalanced);
           for(int n = 0; n < NTopleaves; n++)
@@ -510,8 +510,8 @@ void domain<partset>::domain_combine_multipledomains(void)
 #ifdef DOMAIN_SPECIAL_CHECK
               if(All.NumCurrentTiStep == 0 || All.NumCurrentTiStep == 2 || All.NumCurrentTiStep == 4)
                 {
-                  char buf[1000];
-                  sprintf(buf, "%s/domain_data_1_step%d_task%d.txt", All.OutputDir, All.NumCurrentTiStep, ThisTask);
+                  char buf[MAXLEN_PATH_EXTRA];
+                  snprintf(buf, "%s/domain_data_1_step%d_task%d.txt", All.OutputDir, All.NumCurrentTiStep, ThisTask);
                   FILE *fd = fopen(buf, "w");
                   fprintf(fd, "%d %d\n", ndomains, NumTimeBinsToBeBalanced);
                   for(int n = 0; n < ndomains; n++)
@@ -525,8 +525,9 @@ void domain<partset>::domain_combine_multipledomains(void)
                 }
               if(All.NumCurrentTiStep == 0 || All.NumCurrentTiStep == 2 || All.NumCurrentTiStep == 4)
                 {
-                  char buf[1000];
-                  sprintf(buf, "%s/domain_data_2_step%d_task%d.txt", All.OutputDir, All.NumCurrentTiStep, ThisTask);
+                  char buf[MAXLEN_PATH_EXTRA];
+                  snprintf(buf, MAXLEN_PATH_EXTRA, "%s/domain_data_2_step%d_task%d.txt", All.OutputDir, All.NumCurrentTiStep,
+                           ThisTask);
                   FILE *fd = fopen(buf, "w");
                   fprintf(fd, "%d %d\n", NTask, NumTimeBinsToBeBalanced);
                   for(int n = 0; n < NTask; n++)

@@ -562,14 +562,14 @@ void lightcone::lightcone_init_geometry(char *fname)
                       case LC_TYPE_FULLSKY:
                         fscanf(fd, "%d %lg %lg", &Cones[Nlightcones].OnlyMostBoundFlag, &Cones[Nlightcones].Astart,
                                &Cones[Nlightcones].Aend);
-                        sprintf(Cones[Nlightcones].Tag, "Full-sky");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Full-sky");
                         break;
 
                       case LC_TYPE_OCTANT:
                         fscanf(fd, "%d %lg %lg", &Cones[Nlightcones].OnlyMostBoundFlag, &Cones[Nlightcones].Astart,
                                &Cones[Nlightcones].Aend);
                         fscanf(fd, "%d", &Cones[Nlightcones].OctantNr);
-                        sprintf(Cones[Nlightcones].Tag, "Octant");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Octant");
                         break;
 
                       case LC_TYPE_PENCIL:
@@ -585,7 +585,7 @@ void lightcone::lightcone_init_geometry(char *fname)
                         /* convert to rad */
                         Cones[Nlightcones].PencilAngleRad = Cones[Nlightcones].PencilAngle * M_PI / 180.0;
 
-                        sprintf(Cones[Nlightcones].Tag, "Pencil-Beam");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Pencil-Beam");
                         break;
 
                       case LC_TYPE_DISK:
@@ -597,7 +597,7 @@ void lightcone::lightcone_init_geometry(char *fname)
 
                         /* normalize the normal vector in case it is not normalized yet */
                         Cones[Nlightcones].DiskNormal *= 1.0 / Cones[Nlightcones].DiskNormal.norm();
-                        sprintf(Cones[Nlightcones].Tag, "Disk (for image)");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Disk (for image)");
                         break;
 
                       case LC_TYPE_SQUAREMAP:
@@ -632,7 +632,7 @@ void lightcone::lightcone_init_geometry(char *fname)
                         mpi_printf("LIGHTCONE_SQUAREMAP: cone=%2d   z-axis  =   %15g %15g %15g\n", Nlightcones,
                                    Cones[Nlightcones].SquareMapZdir[0], Cones[Nlightcones].SquareMapZdir[1],
                                    Cones[Nlightcones].SquareMapZdir[2]);
-                        sprintf(Cones[Nlightcones].Tag, "Square-map");
+                        snprintf(Cones[Nlightcones].Tag, MAXLEN_PATH, "Square-map");
                         break;
                       default:
                         Terminate("odd");
@@ -716,7 +716,33 @@ int lightcone::lightcone_init_times(void)
   ConeGlobComDistStart = Driftfac.get_comoving_distance(ConeGlobTime_start);
   ConeGlobComDistEnd   = Driftfac.get_comoving_distance(ConeGlobTime_end);
 
-  int n = ceil(ConeGlobComDistStart / All.BoxSize + 1);
+  double fac = (4 * M_PI / 3.0) * pow(ConeGlobComDistStart, 3) / pow(All.BoxSize, 3);
+
+  mpi_printf(
+      "LIGHTCONE_PARTICLES:  scale_factor: %10g to %10g    comoving distance: %10g to %10g   covered volume in units of box "
+      "volume=%g\n",
+      ConeGlobAstart, ConeGlobAend, ConeGlobComDistStart, ConeGlobComDistEnd, fac);
+
+  return 0;
+}
+
+#endif
+
+int lightcone::lightcone_init_boxlist(void)
+{
+  double max_GlobComDistStart = 0;
+
+#ifdef LIGHTCONE_PARTICLES
+  if(ConeGlobComDistStart > max_GlobComDistStart)
+    max_GlobComDistStart = ConeGlobComDistStart;
+#endif
+
+#ifdef LIGHTCONE_MASSMAPS
+  if(MassMapBoundariesComDist[0] > max_GlobComDistStart)
+    max_GlobComDistStart = MassMapBoundariesComDist[0];
+#endif
+
+  int n = ceil(max_GlobComDistStart / All.BoxSize + 1);
 
 #ifndef LIGHTCONE_MULTIPLE_ORIGINS
   int oindex = 0;
@@ -764,20 +790,12 @@ int lightcone::lightcone_init_times(void)
 
   lightcone_clear_boxlist(All.Time);
 
-  mpi_printf("LIGHTCONE_PARTICLES:  number of box replicas to check for first origin lightcone geometry settings = %d\n",
-             BoxOrigin[0].NumBoxes);
-
-  double fac = (4 * M_PI / 3.0) * pow(ConeGlobComDistStart, 3) / pow(All.BoxSize, 3);
-
-  mpi_printf(
-      "LIGHTCONE_PARTICLES:  scale_factor: %10g to %10g    comoving distance: %10g to %10g   covered volume in units of box "
-      "volume=%g\n",
-      ConeGlobAstart, ConeGlobAend, ConeGlobComDistStart, ConeGlobComDistEnd, fac);
+  mpi_printf("LIGHTCONE: Number of box replicas to check for first origin lightcone geometry settings = %d\n", BoxOrigin[0].NumBoxes);
 
   if(BoxOrigin[0].NumBoxes > LIGHTCONE_MAX_BOXREPLICAS)
     {
       mpi_printf(
-          "\nLIGHTCONE_PARTICLES: Your lightcone extends to such high redshift that the box needs to be replicated a huge number of "
+          "\nLIGHTCONE: Your lightcone extends to such high redshift that the box needs to be replicated a huge number of "
           "times to cover it,\n"
           "more than the prescribed limit of LIGHTCONE_MAX_BOXREPLICAS=%d. We better don't do such an inefficient run, unless you "
           "override this constant.\n",
@@ -846,6 +864,7 @@ bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *
   Rmin = sqrt(Rmin);
   Rmax = sqrt(Rmax);
 
+#ifdef LIGHTCONE_PARTICLES
   for(int cone = 0; cone < Nlightcones; cone++)
     {
       if(Rmin < Cones[cone].ComDistStart && Rmax > Cones[cone].ComDistEnd)
@@ -901,11 +920,15 @@ bool lightcone::lightcone_box_at_corner_overlaps_at_least_with_one_cone(double *
             }
         }
     }
+#endif
+
+#ifdef LIGHTCONE_MASSMAPS
+  if(Rmin < MassMapBoundariesComDist[0])
+    return true;
+#endif
 
   return false;
 }
-
-#endif
 
 #ifdef LIGHTCONE_MASSMAPS
 

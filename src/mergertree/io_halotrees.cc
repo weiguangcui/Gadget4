@@ -48,7 +48,7 @@ halotrees_io::halotrees_io(mergertree *MergerTree_ptr, MPI_Comm comm, int format
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_TREECAT;
-  sprintf(this->info, "MERGERTREE: writing mergertrees");
+  snprintf(this->info, MAXLEN_PATH, "MERGERTREE: writing mergertrees");
 
   /* overview table for trees in the file */
 
@@ -139,16 +139,16 @@ void halotrees_io::halotrees_save_trees(void)
     {
       if(ThisTask == 0)
         {
-          sprintf(buf, "%s/treedata", All.OutputDir);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/treedata", All.OutputDir);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
     }
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/treedata/%s", All.OutputDir, "trees");
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/treedata/%s", All.OutputDir, "trees");
   else
-    sprintf(buf, "%s%s", All.OutputDir, "trees");
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "trees");
 
   write_multiple_files(buf, All.NumFilesPerSnapshot);
 }
@@ -313,13 +313,13 @@ void halotrees_io::get_datagroup_name(int type, char *buf)
   switch(type)
     {
       case 0:
-        sprintf(buf, "/TreeTable");
+        snprintf(buf, MAXLEN_PATH, "/TreeTable");
         break;
       case 1:
-        sprintf(buf, "/TreeHalos");
+        snprintf(buf, MAXLEN_PATH, "/TreeHalos");
         break;
       case 2:
-        sprintf(buf, "/TreeTimes");
+        snprintf(buf, MAXLEN_PATH, "/TreeTimes");
         break;
       default:
         Terminate("wrong group");

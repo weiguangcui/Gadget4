@@ -9,7 +9,7 @@
  *  \brief routines for I/O of snapshot files
  */
 
-#include "../io/snap_io.h"
+#include "gadgetconfig.h"
 
 #include <errno.h>
 #include <hdf5.h>
@@ -30,6 +30,7 @@
 #include "../gravtree/gravtree.h"
 #include "../io/hdf5_util.h"
 #include "../io/io.h"
+#include "../io/snap_io.h"
 #include "../lightcone/lightcone.h"
 #include "../logs/logs.h"
 #include "../logs/timer.h"
@@ -39,7 +40,6 @@
 #include "../sort/peano.h"
 #include "../src/pm/pm.h"
 #include "../system/system.h"
-#include "gadgetconfig.h"
 
 /*!
  * \brief Function for field registering.
@@ -56,7 +56,7 @@ void snap_io::init_basic(simparticles *Sp_ptr)
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_SNAPSHOT;
-  sprintf(this->info, "SNAPSHOT: writing snapshot");
+  snprintf(this->info, MAXLEN_PATH, "SNAPSHOT: writing snapshot");
 
 #ifdef OUTPUT_COORDINATES_AS_INTEGERS
   init_field("IPOS", "IntCoordinates", MEM_MY_INTPOS_TYPE, FILE_MY_INTPOS_TYPE, READ_IF_PRESENT, 3, A_P, NULL, io_func_intpos,
@@ -250,16 +250,16 @@ void snap_io::read_snapshot(int num, mysnaptype loc_snap_type)
   if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT)
     {
       if(All.NumFilesPerSnapshot > 1)
-        sprintf(buf, "%s/snapdir_%03d/%s-prevmostboundonly_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s-prevmostboundonly_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
       else
-        sprintf(buf, "%s%s-prevmostboundonly_%03d", All.OutputDir, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s-prevmostboundonly_%03d", All.OutputDir, All.SnapshotFileBase, num);
     }
   else
     {
       if(All.NumFilesPerSnapshot > 1)
-        sprintf(buf, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
       else
-        sprintf(buf, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
     }
 
   read_ic(buf);
@@ -608,7 +608,7 @@ void snap_io::write_snapshot(int num, mysnaptype loc_snap_type)
       if(ThisTask == 0)
         {
           char buf[MAXLEN_PATH_EXTRA];
-          sprintf(buf, "%s/snapdir_%03d", All.OutputDir, num);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d", All.OutputDir, num);
           mkdir(buf, 02755);
         }
       MPI_Barrier(Communicator);
@@ -616,23 +616,24 @@ void snap_io::write_snapshot(int num, mysnaptype loc_snap_type)
 
   char buf[MAXLEN_PATH_EXTRA];
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(buf, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
   else
-    sprintf(buf, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s_%03d", All.OutputDir, All.SnapshotFileBase, num);
 
   if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT)
     {
       if(All.NumFilesPerSnapshot > 1)
-        sprintf(buf, "%s/snapdir_%03d/%s-prevmostboundonly_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s-prevmostboundonly_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
       else
-        sprintf(buf, "%s%s-prevmostboundonly_%03d", All.OutputDir, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s-prevmostboundonly_%03d", All.OutputDir, All.SnapshotFileBase, num);
     }
   else if(snap_type == MOST_BOUND_PARTICLE_SNAPHOT_REORDERED)
     {
       if(All.NumFilesPerSnapshot > 1)
-        sprintf(buf, "%s/snapdir_%03d/%s-prevmostboundonly-treeorder_%03d", All.OutputDir, num, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s/snapdir_%03d/%s-prevmostboundonly-treeorder_%03d", All.OutputDir, num,
+                 All.SnapshotFileBase, num);
       else
-        sprintf(buf, "%s%s-prevmostboundonly-treeorder_%03d", All.OutputDir, All.SnapshotFileBase, num);
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s-prevmostboundonly-treeorder_%03d", All.OutputDir, All.SnapshotFileBase, num);
     }
 
   /* now write the files */
@@ -993,9 +994,9 @@ void snap_io::read_increase_numbers(int type, int n_for_this_task)
 void snap_io::get_datagroup_name(int type, char *buf)
 {
   if(type < NTYPES)
-    sprintf(buf, "/PartType%d", type);
+    snprintf(buf, MAXLEN_PATH, "/PartType%d", type);
   else if(type == NTYPES)
-    sprintf(buf, "/TreeTable");
+    snprintf(buf, MAXLEN_PATH, "/TreeTable");
   else
     Terminate("wrong group");
 }

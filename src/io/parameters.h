@@ -12,6 +12,8 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
+#include "gadgetconfig.h"
+
 #include "../data/dtypes.h"
 #include "../mpi_utils/setcomm.h"
 

@@ -12,7 +12,10 @@
 #ifndef DTYPES_H
 #define DTYPES_H
 
+#include "gadgetconfig.h"
+
 #include <stdint.h>
+#include <atomic>
 #include <cstddef>
 #ifdef EXPLICIT_VECTORIZATION
 #include "../vectorclass/vectorclass.h"
@@ -352,6 +355,35 @@ struct thread_data
   int *Ngblist;
   int *Shmranklist;
   int *Exportflag;
+};
+
+template <typename T>
+struct copyable_atomic : std::atomic<T>
+{
+  using std::atomic<T>::atomic;
+
+  copyable_atomic(const copyable_atomic &ca) noexcept : std::atomic<T>(ca.load()) {}
+
+  using std::atomic<T>::operator=;
+
+  copyable_atomic &operator=(const copyable_atomic &other) noexcept
+  {
+    this->store(other.load());
+    return *this;
+  }
+};
+
+struct copyable_atomic_flag : std::atomic_flag
+{
+  using std::atomic_flag::atomic_flag;
+
+  copyable_atomic_flag(const copyable_atomic_flag &ca) noexcept { this->clear(); }
+
+  copyable_atomic_flag &operator=(const copyable_atomic_flag &other) noexcept
+  {
+    this->clear();
+    return *this;
+  }
 };
 
 #ifdef LONG_X_BITS

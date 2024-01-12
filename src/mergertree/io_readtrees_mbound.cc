@@ -57,7 +57,7 @@ readtrees_mbound_io::readtrees_mbound_io(mergertree *MergerTree_ptr, MPI_Comm co
   this->header_size  = sizeof(header);
   this->header_buf   = &header;
   this->type_of_file = FILE_IS_TREECAT;
-  sprintf(this->info, "MERGERTREE: reading/writing mergertrees");
+  snprintf(this->info, MAXLEN_PATH, "MERGERTREE: reading/writing mergertrees");
 
   init_field("MTRL", "Length", MEM_INT, FILE_INT, READ_IF_PRESENT, 1, A_TT, &MergerTree->TreeTable[0].HaloCount, NULL, TREELENGTH, 0,
              0, 0, 0, 0, 0, 0);
@@ -85,9 +85,9 @@ void readtrees_mbound_io::read_trees_mostbound(void)
   char fname[MAXLEN_PATH_EXTRA];
 
   if(All.NumFilesPerSnapshot > 1)
-    sprintf(fname, "%s/treedata/%s", All.OutputDir, "trees");
+    snprintf(fname, MAXLEN_PATH_EXTRA, "%s/treedata/%s", All.OutputDir, "trees");
   else
-    sprintf(fname, "%s%s", All.OutputDir, "trees");
+    snprintf(fname, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "trees");
 
   int num_files = find_files(fname, fname);
 
@@ -104,7 +104,7 @@ void readtrees_mbound_io::read_trees_mostbound(void)
       if(rep == 0)
         {
           MergerTree->TreeTable  = (halotrees_table *)Mem.mymalloc_movable(&MergerTree->TreeTable, "TreeTable",
-                                                                          (MergerTree->Ntrees + 1) * sizeof(halotrees_table));
+                                                                           (MergerTree->Ntrees + 1) * sizeof(halotrees_table));
           MergerTree->HaloIDdata = (treehalo_ids_type *)Mem.mymalloc_movable(&MergerTree->HaloIDdata, "HaloIDdata",
                                                                              (MergerTree->Nhalos + 1) * sizeof(treehalo_ids_type));
         }
@@ -236,10 +236,10 @@ void readtrees_mbound_io::get_datagroup_name(int type, char *buf)
   switch(type)
     {
       case 0:
-        sprintf(buf, "/TreeTable");
+        snprintf(buf, MAXLEN_PATH, "/TreeTable");
         break;
       case 1:
-        sprintf(buf, "/TreeHalos");
+        snprintf(buf, MAXLEN_PATH, "/TreeHalos");
         break;
       default:
         Terminate("wrong group");

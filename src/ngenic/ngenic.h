@@ -12,6 +12,8 @@
 #ifndef NGENIC_H
 #define NGENIC_H
 
+#include "gadgetconfig.h"
+
 #ifdef NGENIC
 
 #ifndef PERIODIC
@@ -108,13 +110,7 @@ class ngenic : public pm_mpi_fft
   double ngenic_powerspec_eh(double k);
   double ngenic_tophat_sigma2(double R);
   double ngenic_tk_eh(double k);
-  double ngenic_growth(double a);
   void read_power_table(void);
-
-  static double ngenic_growth_int(double a, void *param)
-  {
-    return pow(a / (All.Omega0 + (1 - All.Omega0 - All.OmegaLambda) * a + All.OmegaLambda * a * a * a), 1.5);
-  }
 
   double fnl(double x, double A, double B, double alpha, double beta, double V, double gf) /* Peacock & Dodds formula */
   {

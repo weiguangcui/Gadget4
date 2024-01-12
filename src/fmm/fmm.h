@@ -12,6 +12,8 @@
 #ifndef FMM_H
 #define FMM_H
 
+#include "gadgetconfig.h"
+
 #ifdef FMM
 
 #include "../data/symtensors.h"

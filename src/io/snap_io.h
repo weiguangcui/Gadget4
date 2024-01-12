@@ -12,11 +12,12 @@
 #ifndef SNAP_READ_WRITE_H
 #define SNAP_READ_WRITE_H
 
+#include "gadgetconfig.h"
+
 #include "../data/intposconvert.h"
 #include "../data/simparticles.h"
 #include "../io/io.h"
 #include "../mergertree/mergertree.h"
-#include "gadgetconfig.h"
 
 class snap_io : public IO_Def
 {
@@ -223,7 +224,8 @@ class snap_io : public IO_Def
             out_buffer[k] = thisobj->Sp->P[particle].Vel[k];
 
             /* we are using p = a^2 * xdot internally as velocity unit. Convert to legacy Gadget velocity units */
-            out_buffer[k] *= sqrt(All.cf_a3inv);
+            if(All.RestartFlag != RST_CONVERTSNAP)
+              out_buffer[k] *= sqrt(All.cf_a3inv);
           }
       }
     else

@@ -181,6 +181,7 @@ class lightcone : public parameters
   void lightcone_init_geometry(char *fname);
   void lightcone_add_position_particles(particle_data *P, double *pos, double ascale, int oindex);
   int lightcone_init_times(void);
+  int lightcone_init_boxlist(void);
   bool lightcone_is_cone_member(int i, int cone);
   bool lightcone_is_cone_member_basic(double ascale, vector<double> &pos, bool previously, int cone);
 

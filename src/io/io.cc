@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+
 #include <algorithm>
 
 #include "../cooling_sfr/cooling.h"
@@ -132,18 +133,18 @@ void IO_Def::init_field(const char *label, const char *datasetname, enum types_i
 int IO_Def::find_files(const char *fname, const char *fname_multiple)
 {
   FILE *fd;
-  char buf[200], buf1[200];
+  char buf[MAXLEN_PATH_EXTRA], buf1[MAXLEN_PATH_EXTRA];
   int dummy, files_found = 0;
 
   if(file_format == FILEFORMAT_HDF5)
     {
-      sprintf(buf, "%s.%d.hdf5", fname_multiple, 0);
-      sprintf(buf1, "%s.hdf5", fname);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d.hdf5", fname_multiple, 0);
+      snprintf(buf1, MAXLEN_PATH_EXTRA, "%s.hdf5", fname);
     }
   else
     {
-      sprintf(buf, "%s.%d", fname_multiple, 0);
-      sprintf(buf1, "%s", fname);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d", fname_multiple, 0);
+      snprintf(buf1, MAXLEN_PATH_EXTRA, "%s", fname);
     }
 
   memset(header_buf, 0, header_size);
@@ -239,11 +240,11 @@ void IO_Def::read_files_driver(const char *fname, int rep, int num_files)
 
   while(rest_files > NTask)
     {
-      char buf[MAXLEN_PATH];
+      char buf[MAXLEN_PATH_EXTRA];
 
-      sprintf(buf, "%s.%d", fname, ThisTask + (rest_files - NTask));
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d", fname, ThisTask + (rest_files - NTask));
       if(file_format == FILEFORMAT_HDF5)
-        sprintf(buf, "%s.%d.hdf5", fname, ThisTask + (rest_files - NTask));
+        snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d.hdf5", fname, ThisTask + (rest_files - NTask));
 
       int ngroups = NTask / All.MaxFilesWithConcurrentIO;
       if((NTask % All.MaxFilesWithConcurrentIO))
@@ -271,19 +272,19 @@ void IO_Def::read_files_driver(const char *fname, int rep, int num_files)
 
       distribute_file(rest_files, &filenr, &masterTask, &lastTask);
 
-      char buf[MAXLEN_PATH];
+      char buf[MAXLEN_PATH_EXTRA];
 
       if(num_files > 1)
         {
-          sprintf(buf, "%s.%d", fname, filenr);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d", fname, filenr);
           if(file_format == FILEFORMAT_HDF5)
-            sprintf(buf, "%s.%d.hdf5", fname, filenr);
+            snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d.hdf5", fname, filenr);
         }
       else
         {
-          sprintf(buf, "%s", fname);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s", fname);
           if(file_format == FILEFORMAT_HDF5)
-            sprintf(buf, "%s.hdf5", fname);
+            snprintf(buf, MAXLEN_PATH_EXTRA, "%s.hdf5", fname);
         }
 
       int ngroups = rest_files / All.MaxFilesWithConcurrentIO;
@@ -709,11 +710,11 @@ void IO_Def::write_multiple_files(char *fname, int numfilesperdump, int append_f
   int filenr, masterTask, lastTask;
   distribute_file(numfilesperdump, &filenr, &masterTask, &lastTask);
 
-  char buf[MAXLEN_PATH];
+  char buf[MAXLEN_PATH_EXTRA];
   if(numfilesperdump > 1)
-    sprintf(buf, "%s.%d", fname, filenr);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d", fname, filenr);
   else
-    sprintf(buf, "%s", fname);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "%s", fname);
 
   seq_data seq_loc;
   seq_loc.thistask   = ThisTask;
@@ -840,8 +841,8 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
     {
       if(file_format == FILEFORMAT_HDF5)
         {
-          char buf[MAXLEN_PATH];
-          sprintf(buf, "%s.hdf5", fname);
+          char buf[MAXLEN_PATH_EXTRA];
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s.hdf5", fname);
           mpi_printf("%s file: '%s' (file 1 of %d)\n", info, fname, numfilesperdump);
 
           rename_file_to_bak_if_it_exists(buf);
@@ -1107,7 +1108,7 @@ void IO_Def::write_file(char *fname, int writeTask, int lastTask, void *CommBuff
           my_H5Gclose(hdf5_paramsgrp, "/Parameters");
           my_H5Gclose(hdf5_configgrp, "/Config");
 
-          sprintf(buf, "%s.hdf5", fname);
+          snprintf(buf, MAXLEN_PATH, "%s.hdf5", fname);
           my_H5Fclose(hdf5_file, buf);
         }
       else
@@ -1137,8 +1138,8 @@ void IO_Def::append_file(char *fname, int writeTask, int lastTask, void *CommBuf
   /* open file and write header */
   if(ThisTask == writeTask)
     {
-      char buf[MAXLEN_PATH];
-      sprintf(buf, "%s.hdf5", fname);
+      char buf[MAXLEN_PATH_EXTRA];
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s.hdf5", fname);
 
       hdf5_file = my_H5Fopen(buf, H5F_ACC_RDWR, H5P_DEFAULT);
 
@@ -1307,7 +1308,7 @@ void IO_Def::append_file(char *fname, int writeTask, int lastTask, void *CommBuf
 
       my_H5Gclose(hdf5_headergrp, "/Header");
 
-      sprintf(buf, "%s.hdf5", fname);
+      snprintf(buf, MAXLEN_PATH, "%s.hdf5", fname);
       my_H5Fclose(hdf5_file, buf);
     }
 }
@@ -1658,9 +1659,10 @@ void IO_Def::read_file(const char *fname, int filenr, int readTask, int lastTask
                       ;
                       if(blksize1 != blksize2)
                         {
-                          char buf[MAXLEN_PATH];
-                          sprintf(buf, "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask,
-                                  blocknr, blksize1, blksize2);
+                          char buf[MAXLEN_PATH_EXTRA];
+                          snprintf(buf, MAXLEN_PATH,
+                                   "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask,
+                                   blocknr, blksize1, blksize2);
                           if(blocknr == 2) /* block number 2 is always IDs */
                             strcat(buf, "Possible mismatch of 32bit and 64bit ID's in IC file and GADGET compilation !\n");
                           Terminate(buf);
@@ -2211,21 +2213,21 @@ void IO_Def::read_single_file_segment(const char *basename, int filenr, int type
   hid_t hdf5_file = 0, hdf5_grp = 0, hdf5_dataspace_in_file;
   hid_t hdf5_dataspace_in_memory, hdf5_dataset;
   FILE *fd = 0;
-  char fname[MAXLEN_PATH];
+  char fname[MAXLEN_PATH_EXTRA];
 
   if(num_files > 1)
     {
       if(file_format == FILEFORMAT_HDF5)
-        sprintf(fname, "%s.%d.hdf5", basename, filenr);
+        snprintf(fname, MAXLEN_PATH_EXTRA, "%s.%d.hdf5", basename, filenr);
       else
-        sprintf(fname, "%s.%d", basename, filenr);
+        snprintf(fname, MAXLEN_PATH_EXTRA, "%s.%d", basename, filenr);
     }
   else
     {
       if(file_format == FILEFORMAT_HDF5)
-        sprintf(fname, "%s.hdf5", basename);
+        snprintf(fname, MAXLEN_PATH_EXTRA, "%s.hdf5", basename);
       else
-        sprintf(fname, "%s", basename);
+        snprintf(fname, MAXLEN_PATH_EXTRA, "%s", basename);
     }
 
   /* open file  */
@@ -2313,9 +2315,10 @@ void IO_Def::read_single_file_segment(const char *basename, int filenr, int type
                   my_fread(&blksize2, sizeof(int), 1, fd);
                   if(blksize1 != blksize2)
                     {
-                      char buf[MAXLEN_PATH];
-                      sprintf(buf, "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask,
-                              blocknr, blksize1, blksize2);
+                      char buf[MAXLEN_PATH_EXTRA];
+                      snprintf(buf, MAXLEN_PATH_EXTRA,
+                               "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask, blocknr,
+                               blksize1, blksize2);
                       if(blocknr == 2) /* block number 2 is always IDs */
                         strcat(buf, "Possible mismatch of 32bit and 64bit ID's in IC file and GADGET compilation !\n");
                       Terminate(buf);
@@ -2383,9 +2386,10 @@ void IO_Def::read_single_file_segment(const char *basename, int filenr, int type
                   my_fread(&blksize2, sizeof(int), 1, fd);
                   if(blksize1 != blksize2)
                     {
-                      char buf[MAXLEN_PATH];
-                      sprintf(buf, "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask,
-                              blocknr, blksize1, blksize2);
+                      char buf[MAXLEN_PATH_EXTRA];
+                      snprintf(buf, MAXLEN_PATH_EXTRA,
+                               "incorrect block-sizes detected!\n Task=%d   blocknr=%d  blksize1=%d  blksize2=%d\n", ThisTask, blocknr,
+                               blksize1, blksize2);
                       if(blocknr == 2) /* block number 2 is always IDs */
                         strcat(buf, "Possible mismatch of 32bit and 64bit ID's in IC file and GADGET compilation !\n");
                       Terminate(buf);
@@ -2411,18 +2415,19 @@ void IO_Def::read_single_file_segment(const char *basename, int filenr, int type
 
 void IO_Def::rename_file_to_bak_if_it_exists(char *fname)
 {
-  char fin[MAXLEN_PATH], buf[2 * MAXLEN_PATH];
-
-  strcpy(fin, fname);
-
+  char fin[MAXLEN_PATH], buf[MAXLEN_PATH_EXTRA];
+  
+  strncpy(fin, fname, MAXLEN_PATH);
+  fin[MAXLEN_PATH - 1] = 0;
+  
   char *p = strrchr(fin, '/');
   if(p)
     {
       *p = 0;
-      sprintf(buf, "%s/bak-%s", fin, p + 1);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s/bak-%s", fin, p + 1);
     }
   else
-    sprintf(buf, "bak-%s", fname);
+    snprintf(buf, MAXLEN_PATH_EXTRA, "bak-%s", fname);
 
   if(FILE *fcheck = fopen(fname, "r"))  // check if file already exists, if yes, try to rename the existing file
     {
@@ -2442,19 +2447,19 @@ void IO_Def::alloc_and_read_ntype_in_files(const char *fname, int num_files)
 
   for(int filenr = 0; filenr < num_files; filenr++)
     {
-      char buf[3 * MAXLEN_PATH];
+      char buf[MAXLEN_PATH_EXTRA];
 
       if(num_files > 1)
         {
-          sprintf(buf, "%s.%d", fname, filenr);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d", fname, filenr);
           if(file_format == 3)
-            sprintf(buf, "%s.%d.hdf5", fname, filenr);
+            snprintf(buf, MAXLEN_PATH_EXTRA, "%s.%d.hdf5", fname, filenr);
         }
       else
         {
-          sprintf(buf, "%s", fname);
+          snprintf(buf, MAXLEN_PATH_EXTRA, "%s", fname);
           if(file_format == 3)
-            sprintf(buf, "%s.hdf5", fname);
+            snprintf(buf, MAXLEN_PATH_EXTRA, "%s.hdf5", fname);
         }
 
       if(file_format == 3)

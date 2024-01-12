@@ -278,7 +278,7 @@ void sim::do_gravity_step_second_half(void)
   char fullmark[8];
 
   if(All.HighestActiveTimeBin == All.HighestOccupiedTimeBin)
-    sprintf(fullmark, "(*)");
+    snprintf(fullmark, 8, "(*)");
   else
     fullmark[0] = 0;
 

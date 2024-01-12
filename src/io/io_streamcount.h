@@ -12,6 +12,8 @@
 #ifndef IO_STREAMCOUNT_H
 #define IO_STREAMCOUNT_H
 
+#include "gadgetconfig.h"
+
 #include <errno.h>
 #include <string.h>
 

@@ -44,54 +44,54 @@ void logs::open_logfiles(void)
   if(ThisTask != 0) /* only the root processors writes to the log files */
     return;
 
-  sprintf(buf, "%s%s", All.OutputDir, "cpu.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "cpu.txt");
   if(!(FdCPU = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "cpu.csv");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "cpu.csv");
   if(!(FdCPUCSV = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "info.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "info.txt");
   if(!(FdInfo = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "energy.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "energy.txt");
   if(!(FdEnergy = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "timings.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "timings.txt");
   if(!(FdTimings = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "density.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "density.txt");
   if(!(FdDensity = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "hydro.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "hydro.txt");
   if(!(FdHydro = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "balance.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "balance.txt");
   if(!(FdBalance = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "timebins.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "timebins.txt");
   if(!(FdTimebin = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
-  sprintf(buf, "%s%s", All.OutputDir, "domain.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "domain.txt");
   if(!(FdDomain = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
 #ifdef MEASURE_TOTAL_MOMENTUM
-  sprintf(buf, "%s%s", All.OutputDir, "momentum.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "momentum.txt");
   if(!(FdMomentum = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 #endif
 
 #ifdef FORCETEST
-  sprintf(buf, "%s%s", All.OutputDir, "forcetest.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "forcetest.txt");
   if(!(FdForceTest = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 
@@ -99,7 +99,7 @@ void logs::open_logfiles(void)
 #endif
 
 #ifdef DEBUG_MD5
-  sprintf(buf, "%s%s", All.OutputDir, "debug_md5.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "debug_md5.txt");
   if(!(FdDebug = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 #endif
@@ -120,7 +120,7 @@ void logs::open_logfiles(void)
   fprintf(FdCPUCSV, "\n");
 
 #ifdef STARFORMATION
-  sprintf(buf, "%s%s", All.OutputDir, "sfr.txt");
+  snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", All.OutputDir, "sfr.txt");
   if(!(FdSfr = fopen(buf, mode)))
     Terminate("error in opening file '%s'\n", buf);
 #endif
@@ -222,10 +222,11 @@ void logs::output_log_messages(void)
       for(int i = 0; i < TIMEBINS; i++)
         {
           double sum = 0;
-          for(int j = 0; j < All.CPU_TimeBinCountMeasurements[i]; j++)
-            sum += All.CPU_TimeBinMeasurements[i][j];
+          if(tot_count_sph[i] > 0 || tot_count_grav[i] > 0)
+            for(int j = 0; j < All.CPU_TimeBinCountMeasurements[i]; j++)
+              sum += All.CPU_TimeBinMeasurements[i][j];
 
-          if(All.CPU_TimeBinCountMeasurements[i])
+          if(All.CPU_TimeBinCountMeasurements[i] && (tot_count_sph[i] > 0 || tot_count_grav[i] > 0))
             avg_CPU_TimeBin[i] = sum / All.CPU_TimeBinCountMeasurements[i];
           else
             avg_CPU_TimeBin[i] = 0;
@@ -235,7 +236,7 @@ void logs::output_log_messages(void)
       double sum = 0;
       double frac_CPU_TimeBin[TIMEBINS];
 
-      for(int i = All.HighestOccupiedTimeBin; i >= 0 && tot_count_grav[i] > 0; i--, weight *= 2)
+      for(int i = All.HighestOccupiedTimeBin; i >= 0; i--, weight *= 2)
         {
           int corr_weight;
 
@@ -248,7 +249,7 @@ void logs::output_log_messages(void)
           sum += frac_CPU_TimeBin[i];
         }
 
-      for(int i = All.HighestOccupiedTimeBin; i >= 0 && tot_count_grav[i] > 0; i--)
+      for(int i = All.HighestOccupiedTimeBin; i >= 0; i--)
         {
           if(sum)
             frac_CPU_TimeBin[i] /= sum;

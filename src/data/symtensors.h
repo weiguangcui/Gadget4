@@ -12,6 +12,8 @@
 #ifndef SYMTENSORS_H
 #define SYMTENSORS_H
 
+#include "gadgetconfig.h"
+
 #include "symtensor_indices.h"
 
 void symtensor_test(void);

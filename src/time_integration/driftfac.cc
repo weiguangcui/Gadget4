@@ -13,6 +13,7 @@
 
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_math.h>
+#include <gsl/gsl_odeiv2.h>
 #include <math.h>
 #include <mpi.h>
 #include <stdio.h>
@@ -265,4 +266,64 @@ integertime driftfac::get_gravkick_factor_inverse(double fac)
   integertime time0 = (a1 - logTimeBegin) / All.Timebase_interval;
 
   return time0;
+}
+
+double driftfac::linear_growth_factor(const double astart, const double aend)
+{
+  // if we have a simple cosmology without radiation, with matter, a cosmological constant, and flat space,
+  // we can apply the simple integral solution:
+
+  ///  return linear_growth_simple(aend) / linear_growth_simple(astart);
+
+  // but in the more general case, we need to integrate the ODE directly to find the correct
+  // growth factor.
+
+  return linear_growth_ode(aend) / linear_growth_ode(astart);
+}
+
+double driftfac::linear_growth_ode(const double a)
+{
+  gsl_odeiv2_system sys = {growth_ode_int, NULL, 2, NULL};
+  gsl_odeiv2_driver *d  = gsl_odeiv2_driver_alloc_y_new(&sys, gsl_odeiv2_step_rk8pd, 1e-6, 1e-6, 0.0);
+
+  double amin = 0.00001;  // start time
+
+  double epsilon = 3 + 2 * amin * E_of_a_diff(amin) / E_of_a(amin);
+  double w       = 1 - get_OmegaMatter_a(amin);
+  double n       = 0.25 * (-1 - epsilon + sqrt(pow(1 + epsilon, 2) + 24 * (1 - w)));
+
+  // ICs
+  double D[2]     = {1.0, n / amin};
+  double acurrent = amin;
+
+  int status = gsl_odeiv2_driver_apply(d, &acurrent, a, D);
+
+  if(status != GSL_SUCCESS)
+    Terminate("error, ODE return value=%d\n", status);
+
+  gsl_odeiv2_driver_free(d);
+
+  return D[0];
+}
+
+double driftfac::linear_growth_simple(const double a)
+{
+  /* this simple integral solution is only correct for LCDM variants, i.e.
+   * no radition, flat space, and simple cosmological constant
+   */
+  const int worksize = WORKSIZE;
+
+  double result, abserr;
+  gsl_function F;
+
+  gsl_integration_workspace *workspace = gsl_integration_workspace_alloc(worksize);
+  F.function                           = &growth_simple_int;
+
+  gsl_integration_qag(&F, 0, a, 0, 1.0e-8, worksize, GSL_INTEG_GAUSS41, workspace, &result, &abserr);
+
+  gsl_integration_workspace_free(workspace);
+
+  const double hubble_a = hubble_function(a) / All.Hubble;
+
+  return hubble_a * result;
 }

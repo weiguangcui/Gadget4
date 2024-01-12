@@ -25,6 +25,7 @@
 #include "gadgetconfig.h"
 
 #include <mpi.h>
+
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -237,8 +238,8 @@ void domain<simparticles>::domain_find_total_cost(void)
 
           if(Tp->P[i].getType() == 0)
             {
-	      if(bin >= Tp->P[i].getTimeBinHydro())
-		HydroCostPerListedTimeBin[n] += 1.0;
+              if(bin >= Tp->P[i].getTimeBinHydro())
+                HydroCostPerListedTimeBin[n] += 1.0;
             }
         }
     }
@@ -471,9 +472,9 @@ void domain<simparticles>::domain_report_balance(void)
         }
 
       char buf[MAXLEN_PATH];
-      sprintf(buf, "\nDOMAIN BALANCE, Sync-Point %d, Time: %g\n", All.NumCurrentTiStep, All.Time);
+      snprintf(buf, MAXLEN_PATH, "\nDOMAIN BALANCE, Sync-Point %d, Time: %g\n", All.NumCurrentTiStep, All.Time);
       domain_printf(buf);
-      sprintf(buf, "Timebins:       Gravity       Hydro  cumulative      grav-balance       hydro-balance\n");
+      snprintf(buf, MAXLEN_PATH, "Timebins:       Gravity       Hydro  cumulative      grav-balance       hydro-balance\n");
       domain_printf(buf);
 
       long long tot = 0, tot_sph = 0;
@@ -490,10 +491,10 @@ void domain<simparticles>::domain_report_balance(void)
 #endif
             {
               char buf[MAXLEN_PATH];
-              sprintf(buf, "%c%cbin=%2d     %10llu  %10llu  %10llu    %6.3f |%6.3f  %c   %6.3f |%6.3f\n",
-                      i == All.HighestActiveTimeBin ? '>' : ' ', i >= All.SmallestTimeBinWithDomainDecomposition ? '|' : ' ', i,
-                      tot_count[i], tot_count_sph[i], tot_cumulative[i], bal_grav_bin[i], bal_grav_bin_rel[i],
-                      domain_to_be_balanced[i] > 0 ? '*' : ' ', bal_hydro_bin[i], bal_hydro_bin_rel[i]);
+              snprintf(buf, MAXLEN_PATH, "%c%cbin=%2d     %10llu  %10llu  %10llu    %6.3f |%6.3f  %c   %6.3f |%6.3f\n",
+                       i == All.HighestActiveTimeBin ? '>' : ' ', i >= All.SmallestTimeBinWithDomainDecomposition ? '|' : ' ', i,
+                       tot_count[i], tot_count_sph[i], tot_cumulative[i], bal_grav_bin[i], bal_grav_bin_rel[i],
+                       domain_to_be_balanced[i] > 0 ? '*' : ' ', bal_hydro_bin[i], bal_hydro_bin_rel[i]);
               domain_printf(buf);
 
               tot += tot_count[i];
@@ -501,15 +502,15 @@ void domain<simparticles>::domain_report_balance(void)
             }
         }
 
-      sprintf(buf, "-------------------------------------------------------------------------------------\n");
+      snprintf(buf, MAXLEN_PATH, "-------------------------------------------------------------------------------------\n");
       domain_printf(buf);
-      sprintf(buf, "BALANCE,  LOAD:  %6.3f      %6.3f      %6.3f  WORK:     %6.3f              %6.3f\n",
-              max_dm / (tot - tot_sph + SMALLNUM) * NTask, max_sph / (tot_sph + SMALLNUM) * NTask, max_tot / (tot + SMALLNUM) * NTask,
-              max_gravcost / (tot_gravcost + SMALLNUM), max_hydrocost / (tot_hydrocost + SMALLNUM));
+      snprintf(buf, MAXLEN_PATH, "BALANCE,  LOAD:  %6.3f      %6.3f      %6.3f  WORK:     %6.3f              %6.3f\n",
+               max_dm / (tot - tot_sph + SMALLNUM) * NTask, max_sph / (tot_sph + SMALLNUM) * NTask, max_tot / (tot + SMALLNUM) * NTask,
+               max_gravcost / (tot_gravcost + SMALLNUM), max_hydrocost / (tot_hydrocost + SMALLNUM));
       domain_printf(buf);
-      sprintf(buf, "-------------------------------------------------------------------------------------\n");
+      snprintf(buf, MAXLEN_PATH, "-------------------------------------------------------------------------------------\n");
       domain_printf(buf);
-      sprintf(buf, "\n");
+      snprintf(buf, MAXLEN_PATH, "\n");
       domain_printf(buf);
       myflush(Logs.FdDomain);
     }

@@ -12,6 +12,8 @@
 #ifndef GRAVTREE_WALK_H
 #define GRAVTREE_WALK_H
 
+#include "gadgetconfig.h"
+
 #include "../mpi_utils/shared_mem_handler.h"
 
 class gwalk : public gravtree<simparticles>

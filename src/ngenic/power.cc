@@ -68,10 +68,10 @@ void ngenic::free_power_table(void) { Mem.myfree(PowerTable); }
 void ngenic::read_power_table(void)
 {
   FILE *fd;
-  char buf[MAXLEN_PATH];
+  char buf[MAXLEN_PATH_EXTRA];
   double k, p;
 
-  sprintf(buf, All.PowerSpectrumFile);
+  snprintf(buf, MAXLEN_PATH_EXTRA, All.PowerSpectrumFile);
 
   if(!(fd = fopen(buf, "r")))
     {
@@ -94,7 +94,7 @@ void ngenic::read_power_table(void)
 
   PowerTable = (pow_table *)Mem.mymalloc("PowerTable", NPowerTable * sizeof(pow_table));
 
-  sprintf(buf, All.PowerSpectrumFile);
+  snprintf(buf, MAXLEN_PATH_EXTRA, All.PowerSpectrumFile);
 
   if(!(fd = fopen(buf, "r")))
     {
@@ -124,8 +124,6 @@ void ngenic::read_power_table(void)
 
 void ngenic::ngenic_initialize_powerspectrum(void)
 {
-  double res;
-
   AA = 6.4 / All.ShapeGamma * (3.085678e24 / All.UnitLength_in_cm);
   BB = 3.0 / All.ShapeGamma * (3.085678e24 / All.UnitLength_in_cm);
   CC = 1.7 / All.ShapeGamma * (3.085678e24 / All.UnitLength_in_cm);
@@ -147,8 +145,8 @@ void ngenic::ngenic_initialize_powerspectrum(void)
 #ifdef DIFFERENT_TRANSFER_FUNC
       Type = 1;
 #endif
-      Norm = 1.0;
-      res  = ngenic_tophat_sigma2(R8);
+      Norm       = 1.0;
+      double res = ngenic_tophat_sigma2(R8);
 
       if(ThisTask == 0 && All.PowerSpectrumType == 2)
         printf("\nNormalization of spectrum in file:  Sigma8 = %g\n", sqrt(res));
@@ -158,7 +156,7 @@ void ngenic::ngenic_initialize_powerspectrum(void)
       if(ThisTask == 0 && All.PowerSpectrumType == 2)
         printf("Normalization adjusted to  Sigma8=%g   (Normfac=%g)\n\n", All.Sigma8, Norm);
 
-      Dplus = ngenic_growth_factor(All.cf_atime, 1.0);
+      Dplus = Driftfac.linear_growth_factor(All.cf_atime, 1.0);
     }
   mpi_printf("NGENIC: Dplus=%g\n", Dplus);
 }
@@ -297,45 +295,22 @@ double ngenic::ngenic_tophat_sigma2(double R)
   return result;
 }
 
-double ngenic::ngenic_growth_factor(double astart, double aend) { return ngenic_growth(aend) / ngenic_growth(astart); }
-
-double ngenic::ngenic_growth(double a)
-{
-  double hubble_a;
-
-  hubble_a = sqrt(All.Omega0 / (a * a * a) + (1 - All.Omega0 - All.OmegaLambda) / (a * a) + All.OmegaLambda);
-
-  const int worksize = 100000;
-
-  double result, abserr;
-  gsl_function F;
-
-  gsl_integration_workspace *workspace = gsl_integration_workspace_alloc(worksize);
-  F.function                           = &ngenic_growth_int;
-
-  gsl_integration_qag(&F, 0, a, 0, 1.0e-8, worksize, GSL_INTEG_GAUSS41, workspace, &result, &abserr);
-
-  gsl_integration_workspace_free(workspace);
-
-  return hubble_a * result;
-}
-
 double ngenic::ngenic_f1_omega(double a)
 {
   double omega_a;
 
-  omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
+  omega_a = Driftfac.get_OmegaMatter_a(a);
 
-  return pow(omega_a, 0.6);
+  return pow(omega_a, 5.0 / 9);
 }
 
 double ngenic::ngenic_f2_omega(double a)
 {
   double omega_a;
 
-  omega_a = All.Omega0 / (All.Omega0 + a * (1 - All.Omega0 - All.OmegaLambda) + a * a * a * All.OmegaLambda);
+  omega_a = Driftfac.get_OmegaMatter_a(a);
 
-  return 2 * pow(omega_a, 4.0 / 7);
+  return 2 * pow(omega_a, 6.0 / 11);
 }
 
 #endif

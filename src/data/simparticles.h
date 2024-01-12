@@ -12,6 +12,8 @@
 #ifndef SIMPART_H
 #define SIMPART_H
 
+#include "gadgetconfig.h"
+
 #include <math.h>
 
 #include "../data/allvars.h"
@@ -321,8 +323,8 @@ class simparticles : public intposconvert, public setcomm
   void dump_particles(void)
   {
     FILE *fd;
-    char buffer[200];
-    sprintf(buffer, "particles_%d.dat", ThisTask);
+    char buffer[MAXLEN_PATH];
+    snprintf(buffer, MAXLEN_PATH, "particles_%d.dat", ThisTask);
     if((fd = fopen(buffer, "w")))
       {
         fwrite(&NumPart, 1, sizeof(int), fd);

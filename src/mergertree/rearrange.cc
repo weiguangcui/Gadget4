@@ -98,6 +98,10 @@ void sim::rearrange_lightcone(int argc, char **argv)
     endrun();
 #endif
 
+  if(LightCone.lightcone_init_boxlist())
+    endrun();
+
+
   double linklength = 0;
   LightCone.lightcone_init_intposconverter(linklength);
 

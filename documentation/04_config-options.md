@@ -404,9 +404,11 @@ expensive.
 
 This can be used to override the maximum radius out to which the
 short-range tree-force is evaluated in case the TreePM/FMM-PM
-algorithm is used. The default value is 4.5, given in
-mesh-cells. Going much beyond 6 should not yield further improvements
-in the way the force matching region is treated.
+algorithm is used. The conservative default value is 7.0 for this
+parameter, given in mesh-cells. Going much beyond 6.0 does however
+not yield much further improvement in the way the force matching region
+is treated, and reducing this value to 4.5 will give higher performance
+while being typically sufficiently accurate for most applications.
 
 -------
 
@@ -1228,6 +1230,14 @@ option.
 This option runs the FOF (and SUBFIND if enabled) group finders on the
 lightcone particle data before they are written to disk. Requires the
 `LIGHTCONE` and `LIGHTCONE_PARTICLES` options.
+
+-------
+
+**LIGHTCONE_PARTICLES_SKIP_SAVING**
+
+In case `LIGHTCONE_PARTICLES_GROUPS` is used, this option can be used to
+avoid that actual particle data is saved along with the groups that are
+found. 
 
 -------
 

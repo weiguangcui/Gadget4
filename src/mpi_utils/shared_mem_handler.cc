@@ -9,6 +9,8 @@
  *  \brief implements code for the shared-memory fetching of remote date through  designated MPI handler ranks
  */
 
+#include "gadgetconfig.h"
+
 #include <hdf5.h>
 #include <mpi.h>
 #include <stdio.h>

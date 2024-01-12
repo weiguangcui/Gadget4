@@ -57,7 +57,8 @@ void parameters::add_param(const char *name, void *buf, int type, int flag)
 int parameters::read_parameter_file(const char *fname)
 {
   FILE *fd, *fdout;
-  char buf[MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 200];
+  int bufsize = MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 200;
+  char buf[bufsize];
   int param_handled[MAX_PARAMETERS];
   int errorFlag = 0;
 
@@ -83,7 +84,7 @@ int parameters::read_parameter_file(const char *fname)
     {
       if((fd = fopen(fname, "r")))
         {
-          sprintf(buf, "%s%s", fname, "-usedvalues");
+          snprintf(buf, bufsize, "%s%s", fname, "-usedvalues");
           if(!(fdout = fopen(buf, "w")))
             {
               printf("error opening file '%s' \n", buf);
@@ -95,7 +96,10 @@ int parameters::read_parameter_file(const char *fname)
               int cnt = 0;
               while(!feof(fd))
                 {
-                  char buf1[MAXLEN_PARAM_TAG + 200], buf2[MAXLEN_PARAM_VALUE + 200], buf3[MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 400];
+                  int bufsize1 = MAXLEN_PARAM_TAG + 200;
+                  int bufsize2 = MAXLEN_PARAM_VALUE + 200;
+                  int bufsize3 = MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 400;
+                  char buf1[bufsize1], buf2[bufsize2], buf3[bufsize3];
 
                   *buf = 0;
                   fgets(buf, MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 200, fd);
@@ -129,7 +133,7 @@ int parameters::read_parameter_file(const char *fname)
                         {
                           case PARAM_DOUBLE:
                             *((double *)ParametersValue[j]) = atof(buf2);
-                            sprintf(buf3, "%%-%ds%%g\n", MAXLEN_PARAM_TAG);
+                            snprintf(buf3, bufsize3, "%%-%ds%%g\n", MAXLEN_PARAM_TAG);
                             fprintf(fdout, buf3, buf1, *((double *)ParametersValue[j]));
                             fprintf(stdout, "        ");
                             fprintf(stdout, buf3, buf1, *((double *)ParametersValue[j]));
@@ -143,14 +147,14 @@ int parameters::read_parameter_file(const char *fname)
                                   Terminate("no environment variable OUTPUT_DIR found");
                               }
                             strcpy((char *)ParametersValue[j], buf2);
-                            sprintf(buf3, "%%-%ds%%s\n", MAXLEN_PARAM_TAG);
+                            snprintf(buf3, bufsize3, "%%-%ds%%s\n", MAXLEN_PARAM_TAG);
                             fprintf(fdout, buf3, buf1, buf2);
                             fprintf(stdout, "        ");
                             fprintf(stdout, buf3, buf1, buf2);
                             break;
                           case PARAM_INT:
                             *((int *)ParametersValue[j]) = atoi(buf2);
-                            sprintf(buf3, "%%-%ds%%d\n", MAXLEN_PARAM_TAG);
+                            snprintf(buf3, bufsize3, "%%-%ds%%d\n", MAXLEN_PARAM_TAG);
                             fprintf(fdout, buf3, buf1, *((int *)ParametersValue[j]));
                             fprintf(stdout, "        ");
                             fprintf(stdout, buf3, buf1, *((int *)ParametersValue[j]));
@@ -198,7 +202,7 @@ void parameters::write_used_parameters(const char *dirname, const char *fname)
     {
       mkdir(dirname, 02755);
       char buf[MAXLEN_PATH_EXTRA];
-      sprintf(buf, "%s%s", dirname, fname);
+      snprintf(buf, MAXLEN_PATH_EXTRA, "%s%s", dirname, fname);
       FILE *fdout = fopen(buf, "w");
       if(!fdout)
         Terminate("Can't open file '%s'", buf);
@@ -209,20 +213,21 @@ void parameters::write_used_parameters(const char *dirname, const char *fname)
 
           if(j >= 0)
             {
-              char buf3[MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 400];
+              int bufsize3 = MAXLEN_PARAM_TAG + MAXLEN_PARAM_VALUE + 400;
+              char buf3[bufsize3];
 
               switch(ParametersType[j])
                 {
                   case PARAM_DOUBLE:
-                    sprintf(buf3, "%%-%ds%%g\n", MAXLEN_PARAM_TAG);
+                    snprintf(buf3, bufsize3, "%%-%ds%%g\n", MAXLEN_PARAM_TAG);
                     fprintf(fdout, buf3, ParametersTag[j], *((double *)ParametersValue[j]));
                     break;
                   case PARAM_STRING:
-                    sprintf(buf3, "%%-%ds%%s\n", MAXLEN_PARAM_TAG);
+                    snprintf(buf3, bufsize3, "%%-%ds%%s\n", MAXLEN_PARAM_TAG);
                     fprintf(fdout, buf3, ParametersTag[j], (char *)ParametersValue[j]);
                     break;
                   case PARAM_INT:
-                    sprintf(buf3, "%%-%ds%%d\n", MAXLEN_PARAM_TAG);
+                    snprintf(buf3, bufsize3, "%%-%ds%%d\n", MAXLEN_PARAM_TAG);
                     fprintf(fdout, buf3, ParametersTag[j], *((int *)ParametersValue[j]));
                     break;
                 }
