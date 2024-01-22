@@ -200,6 +200,7 @@ INITIAL_CONDITIONS_CONTAIN_ENTROPY
 #MPI_HYPERCUBE_ALLTOALL                       # use a robust hyercube for MPI_Alltoall instead the native algorithm if the MPI library
 #ISEND_IRECV_IN_DOMAIN                        # uses asynchronous communication instead of synchronous communication in hypercube pattern (can be less stable)
 #ALLOCATE_SHARED_MEMORY_VIA_POSIX             # if this is set, do use POSIX directly to allocated shared memory instead of MPI-3 calls
+#OLDSTYLE_SHARED_MEMORY_ALLOCATION            # disables new memory allocation mechanism via memfd_create()
 
 
 #---------------------------------------- Testing and Debugging options

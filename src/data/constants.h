@@ -180,6 +180,10 @@
 #undef DEBUG_ENABLE_FPU_EXCEPTIONS
 #endif
 
+#if !defined(__linux__) && !defined(OLDSTYLE_SHARED_MEMORY_ALLOCATION)
+#define OLDSTYLE_SHARED_MEMORY_ALLOCATION
+#endif
+
 #if defined(HOST_MEMORY_REPORTING) && !defined(__linux__)
 #warning "HOST_MEMORY_REPORTING only works under Linux."
 #undef HOST_MEMORY_REPORTING

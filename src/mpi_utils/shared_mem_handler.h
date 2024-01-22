@@ -66,7 +66,7 @@ class shmem
 
   void **SharedMemBaseAddr;
 
-#ifdef ALLOCATE_SHARED_MEMORY_VIA_POSIX
+#if defined(ALLOCATE_SHARED_MEMORY_VIA_POSIX) || !defined(OLDSTYLE_SHARED_MEMORY_ALLOCATION)
   char **SharedMemBaseAddrRaw;
 #endif
 
