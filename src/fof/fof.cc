@@ -916,7 +916,7 @@ void fof<partset>::fof_assign_group_offset(void)
 {
   /* Tell everybody, how many particles the groups stored by each processor contain */
 
-  int gtype_loc[NTYPES]; /* particles of each type associated with locally stored groups */
+  long long gtype_loc[NTYPES]; /* particles of each type associated with locally stored groups */
   long long gtype_previous[NTYPES];
 
   for(int i = 0; i < NTYPES; i++)
@@ -926,8 +926,8 @@ void fof<partset>::fof_assign_group_offset(void)
     for(int j = 0; j < NTYPES; j++)
       gtype_loc[j] += Group[i].LenType[j];
 
-  int *gtype_all = (int *)Mem.mymalloc("gtype_all", NTYPES * NTask * sizeof(int));
-  MPI_Allgather(gtype_loc, NTYPES, MPI_INT, gtype_all, NTYPES, MPI_INT, Communicator);
+  long long *gtype_all = (long long *)Mem.mymalloc("gtype_all", NTYPES * NTask * sizeof(long long));
+  MPI_Allgather(gtype_loc, NTYPES, MPI_LONG_LONG_INT, gtype_all, NTYPES, MPI_LONG_LONG_INT, Communicator);
 
   for(int i = 0; i < NTYPES; i++)
     gtype_previous[i] = 0;

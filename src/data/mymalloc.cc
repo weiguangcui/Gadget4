@@ -15,6 +15,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#if defined(__linux__) && !defined(OLDSTYLE_SHARED_MEMORY_ALLOCATION)
+#include <sys/mman.h>
+#endif
 
 #include "../data/allvars.h"
 #include "../data/dtypes.h"
@@ -177,6 +180,8 @@ void memory::mymalloc_init(int maxmemsize, enum restart_options restartflag)
 
 int memory::myMPI_Win_allocate_shared(MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, void *baseptr, MPI_Win *win)
 {
+#ifdef OLDSTYLE_SHARED_MEMORY_ALLOCATION
+
 #ifndef ALLOCATE_SHARED_MEMORY_VIA_POSIX
   return MPI_Win_allocate_shared(size, disp_unit, info, comm, baseptr, win);
 #else
@@ -246,11 +251,79 @@ int memory::myMPI_Win_allocate_shared(MPI_Aint size, int disp_unit, MPI_Info inf
 
   return MPI_SUCCESS;
 #endif
+
+#else
+
+  char shmpath[NAME_MAX];
+
+  /* Base offsets of the other MPI ranks in our shared memory mapping */
+  Shmem.SharedMemBaseAddrRaw = (char **)malloc(Shmem.Island_NTask * sizeof(char *));
+
+  long long *size_list = (long long *)malloc(Shmem.Island_NTask * sizeof(long long));
+
+  long long loc_bytes = size;
+  MPI_Allgather(&loc_bytes, 1, MPI_LONG_LONG, size_list, 1, MPI_LONG_LONG, comm);
+
+  long long tot_bytes = 0;
+  for(int i = 0; i < Shmem.Island_NTask; i++)
+    tot_bytes += size_list[i];
+
+  if(Shmem.Island_ThisTask == 0)
+    {
+      snprintf(shmpath, NAME_MAX, "Gadget4-%lld.dat", (long long)getpid());
+      int fd = memfd_create(shmpath, MFD_CLOEXEC);
+      snprintf(shmpath, NAME_MAX, "/proc/%lld/fd/%d", (long long)getpid(), fd);
+
+      if(fd == -1)
+        Terminate("memfd_create failed");
+
+      if(ftruncate(fd, tot_bytes) == -1)
+        Terminate("ftruncate of shared memory allocation failed");
+
+      /* Map the object into the caller's address space. */
+
+      void *buf = mmap(NULL, tot_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+      if(buf == MAP_FAILED)
+        Terminate("mmap failed");
+
+      Shmem.SharedMemBaseAddrRaw[0] = (char *)buf;
+    }
+
+  MPI_Bcast(shmpath, NAME_MAX, MPI_BYTE, 0, comm);
+
+  if(Shmem.Island_ThisTask != 0)
+    {
+      int fd = open(shmpath, O_RDWR);
+      if(fd == -1)
+        Terminate("open failed in access");
+
+      void *buf = mmap(NULL, tot_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+      if(buf == MAP_FAILED)
+        Terminate("mmap failed");
+
+      Shmem.SharedMemBaseAddrRaw[0] = (char *)buf;
+    }
+
+  for(int i = 1; i < Shmem.Island_NTask; i++)
+    Shmem.SharedMemBaseAddrRaw[i] = (char *)Shmem.SharedMemBaseAddrRaw[i - 1] + size_list[i - 1];
+
+  char **p = (char **)baseptr;
+
+  *p = Shmem.SharedMemBaseAddrRaw[Shmem.Island_ThisTask];
+
+  free(size_list);
+
+  MPI_Barrier(comm);
+
+  return MPI_SUCCESS;
+#endif
 }
 
 int memory::myMPI_Win_shared_query(MPI_Win win, int rank, MPI_Aint *size, int *disp_unit, void *baseptr)
 {
-#ifndef ALLOCATE_SHARED_MEMORY_VIA_POSIX
+#if defined(OLDSTYLE_SHARED_MEMORY_ALLOCATION) && !defined(ALLOCATE_SHARED_MEMORY_VIA_POSIX)
   return MPI_Win_shared_query(win, rank, size, disp_unit, baseptr);
 #else
 
@@ -685,6 +758,7 @@ void *memory::myrealloc_movable_fullinfo(void *p, size_t n, const char *func, co
   return Table[nr];
 }
 
+
 void memory::check_maxmemsize_setting(int maxmemsize)
 {
   int errflag = 0, errflag_tot;
@@ -701,6 +775,7 @@ void memory::check_maxmemsize_setting(int maxmemsize)
       fflush(stdout);
     }
 
+#ifdef OLDSTYLE_SHARED_MEMORY_ALLOCATION
   if(maxmemsize > (SharedMemoryOnNode / 1024.0 / TasksInThisNode) && RankInThisNode == 0)
     {
       char name[MPI_MAX_PROCESSOR_NAME];
@@ -714,9 +789,11 @@ void memory::check_maxmemsize_setting(int maxmemsize)
       errflag = 1;
       fflush(stdout);
     }
-
+#endif
+  
   MPI_Allreduce(&errflag, &errflag_tot, 1, MPI_INT, MPI_MAX, Communicator);
 
   if(errflag_tot)
     Terminate("At least one node has insufficient memory");
 }
+
