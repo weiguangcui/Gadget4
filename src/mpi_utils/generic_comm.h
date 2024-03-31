@@ -106,7 +106,7 @@ class generic_comm
   node_info *NodeInfoIn;
   node_info *NodeInfoGet;
 
-  char callorigin[1000];
+  char callorigin[MAXLEN_PATH_EXTRA];
 
   void primary_loop(int mode)
   {
