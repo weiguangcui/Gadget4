@@ -233,6 +233,10 @@
 #error "If PMGRID is used together with HIERARCHICAL_GRAVITY, you also need to use TREEPM_NOTIMESPLIT"
 #endif
 
+#if defined(OUTPUT_NON_SYNCHRONIZED_ALLOWED) && defined(FOF)
+#error "if OUTPUT_NON_SYNCHRONIZED_ALLOWED is activated, FOF is currently not supported"
+#endif
+
 #if defined(PLACEHIGHRESREGION) && !defined(RANDOMIZE_DOMAINCENTER)
 #error "PLACEHIGHRESREGION requires RANDOMIZE_DOMAINCENTER."
 #endif

@@ -252,6 +252,32 @@ void global_data_all_processes::read_outputlist(char *fname)
       fclose(fd);
 
       mpi_printf("\nfound %d times in output-list.\n", OutputListLength);
+
+#ifndef OUTPUT_NON_SYNCHRONIZED_ALLOWED
+      // now test that the output spacing is not smaller than the maximum timestep
+      if(OutputListLength > 1)
+        {
+          double dtmin = 0;
+          for(int i = 0; i < OutputListLength - 1; i++)
+            {
+              double dt;
+              if(All.ComovingIntegrationOn)
+                dt = log(OutputListTimes[i + 1]) - log(OutputListTimes[i]);
+              else
+                dt = OutputListTimes[i + 1] - OutputListTimes[i];
+
+              if(i == 0)
+                dtmin = dt;
+              else
+                dtmin = std::min<double>(dt, dtmin);
+            }
+          if(dtmin < All.MaxSizeTimestep)
+            Terminate(
+                "\nMinimal spacing in desired output list is dlna/dt = %g, which is smaller than MaxSizeTimestep=%g - this could lead "
+                "to missing outputs, which you probably don't want. Better to correct this.\n",
+                dtmin, All.MaxSizeTimestep);
+        }
+#endif
     }
 
   /* tell all other processes */
