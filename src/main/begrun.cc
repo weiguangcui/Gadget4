@@ -192,7 +192,7 @@ void sim::begrun1(const char *parameterFile)
                 Terminate(
                     "\nYou have set TimeBetSnapshot=%g < MaxSizeTimestep=%g, which may lead to missed outputs. You may want to change "
                     "this.\n",
-                    log(All.TimeBetSnapshot), All.MaxSizeTimestep);
+                    All.TimeBetSnapshot, All.MaxSizeTimestep);
             }
         }
 #endif
