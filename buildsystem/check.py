@@ -13,15 +13,15 @@ def parseIf(string, defines, fin):
         if s.startswith("//"):
             return
             
-        m = re.search("[a-zA-Z_][a-zA-Z_0-9]*",s)
+        m = re.search(r"[a-zA-Z_][a-zA-Z_0-9]*",s)
         if m is not None and m.start() == 0:
             defines.update([m.group()])
             #print "%s : %s"%(string,m.group())
             s = s[m.span()[1]:]
             continue
         
-        if s.startswith("/*"):
-            m = re.search("\*/",s)
+        if s.startswith(r"/*"):
+            m = re.search(r"\*/",s)
             if m is not None:
                 s = s[m.span()[1]:]
                 continue
@@ -55,7 +55,7 @@ def filter_code(fin):
     while line != "":
         s = line.lstrip()
 
-        if s.startswith("#include"):
+        if s.startswith(r"#include"):
             if first_encountered == False:
                 m = re.search("gadgetconfig",s)
                 if m is not None:
@@ -78,7 +78,7 @@ def filter_code(fin):
                 s = s[8:]
                 
             s = s.lstrip()
-            m = re.search("[a-zA-Z_][a-zA-Z_0-9]*",s)
+            m = re.search(r"[a-zA-Z_][a-zA-Z_0-9]*",s)
             if m is not None and m.start() == 0:
                 defines.update([m.group()])
             else:
@@ -94,7 +94,7 @@ def filter_template_config(fin):
     for line in fin:
         s = line.split()
         if(len(s)>0):
-            d = re.findall("^#*([a-zA-Z_][a-zA-Z_0-9]*)",s[0])
+            d = re.findall(r"^#*([a-zA-Z_][a-zA-Z_0-9]*)",s[0])
             for dd in d:
                 defines.update([dd])
                 #print dd
@@ -105,7 +105,7 @@ def filter_template_config(fin):
 def filter_template_ioparam(fin):
     defines = set()
     s = fin.read()
-    d = re.findall("add_param\(\"([a-zA-Z_][a-zA-Z_0-9]*)\"",s)
+    d = re.findall(r"add_param\(\"([a-zA-Z_][a-zA-Z_0-9]*)\"",s)
     for dd in d:
         defines.update([dd])
 
@@ -134,11 +134,11 @@ def filter_makefile(fin):
     for line in fin:
         s = line.strip()
         if s.startswith("ifeq"):
-            d = re.findall("ifeq\s*\(([a-zA-Z_][a-zA-Z_0-9]*)\s*,\s*\$\(findstring",s)
+            d = re.findall(r"ifeq\s*\(([a-zA-Z_][a-zA-Z_0-9]*)\s*,\s*\$\(findstring",s)
             for dd in d:
                 defines.update([dd])
         if s.startswith("ifneq"):
-            d = re.findall("ifneq\s*\(([a-zA-Z_][a-zA-Z_0-9]*)\s*,\s*\$\(findstring",s)
+            d = re.findall(r"ifneq\s*\(([a-zA-Z_][a-zA-Z_0-9]*)\s*,\s*\$\(findstring",s)
             for dd in d:
                 defines.update([dd])
     

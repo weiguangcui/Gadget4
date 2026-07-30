@@ -589,7 +589,7 @@ void restart::readjust_timebase(double TimeMax_old, double TimeMax_new)
 #endif
 
 #ifdef FORCE_EQUAL_TIMESTEPS
-      GlobalTimeStep /= 2;
+      All.GlobalTimeStep /= 2;
 #endif
 
       for(int n = 0; n < TIMEBINS; n++)

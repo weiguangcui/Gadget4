@@ -1511,8 +1511,8 @@ void IO_Def::read_file(const char *fname, int filenr, int readTask, int lastTask
                   if(type_of_file != FILE_IS_SNAPSHOT)
                     offset = 0;
 
-                  int n_in_file = npart[type];
-                  int pcsum     = 0;
+                  long long n_in_file = npart[type];
+                  long long pcsum     = 0;
 
                   long long nprevious = 0;
                   for(int t = 0; t < type; t++)

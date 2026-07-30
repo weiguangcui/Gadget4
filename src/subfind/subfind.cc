@@ -95,7 +95,12 @@ void fof<partset>::subfind_find_subhalos(int num, const char *basename, const ch
 #ifndef LEAN
   for(int i = 0; i < Tp->NumPart; i++)
     if(Tp->P[i].getType() == 0)
-      Tp->PS[i].Utherm = Tp->get_utherm_from_entropy(i);
+      {
+        Tp->PS[i].Utherm = Tp->get_utherm_from_entropy(i);
+#ifdef STARFORMATION
+        Tp->PS[i].Sfr = Tp->SphP[i].Sfr;
+#endif
+      }
     else
       Tp->PS[i].Utherm = 0;
 #endif
@@ -712,8 +717,8 @@ void fof<partset>::subfind_assign_subhalo_offsettype(void)
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
           myMPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
-                       TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
-                       recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
+                         TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
+                         recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
 
   /* now let's go through the imported groups and assign the offsets */
@@ -728,8 +733,8 @@ void fof<partset>::subfind_assign_subhalo_offsettype(void)
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
           myMPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
-                       TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
-                       recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
+                         TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
+                         recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
 
   /* add it in to subhalo offsets */
@@ -842,8 +847,8 @@ void fof<partset>::subfind_redetermine_groupnr(void)
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
           myMPI_Sendrecv(&export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
-                       TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
-                       recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
+                         TAG_DENS_B, &import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE,
+                         recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
 
   /* now let's go through the imported subhalos and assign the group numbers */
@@ -878,8 +883,8 @@ void fof<partset>::subfind_redetermine_groupnr(void)
       if(recvTask < NTask)
         if(Send_count[recvTask] > 0 || Recv_count[recvTask] > 0)
           myMPI_Sendrecv(&import_group_data[Recv_offset[recvTask]], Recv_count[recvTask] * sizeof(group_info), MPI_BYTE, recvTask,
-                       TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
-                       recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
+                         TAG_DENS_B, &export_group_data[Send_offset[recvTask]], Send_count[recvTask] * sizeof(group_info), MPI_BYTE,
+                         recvTask, TAG_DENS_B, Communicator, MPI_STATUS_IGNORE);
     }
 
   /* assign the groupnr */

@@ -271,7 +271,7 @@ void domain<simparticles>::domain_find_total_cost(void)
 
   MPI_Allreduce(MPI_IN_PLACE, MaxGravCostPerListedTimeBin, NumTimeBinsToBeBalanced, MPI_DOUBLE, MPI_MAX, Communicator);
 
-  double limit = 1.0 / (All.TopNodeFactor * MultipleDomains * NTask);
+  double limit = 1.0 / (All.TopNodeFactor * NTask);
 
   for(int n = 0; n < NumTimeBinsToBeBalanced; n++)
     {

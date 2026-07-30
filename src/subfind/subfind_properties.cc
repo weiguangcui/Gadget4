@@ -104,7 +104,7 @@ int fof<partset>::subfind_determine_sub_halo_properties(int *d, int num, subhalo
 
 #ifdef STARFORMATION
       if(P[p].getType() == 0)
-        sfr += Tp->SphP[p].Sfr;
+        sfr += PS[p].Sfr;
 #endif
     }
 
@@ -525,7 +525,7 @@ int fof<partset>::subfind_determine_sub_halo_properties(int *d, int num, subhalo
       int p = d[i];
 
       if(P[p].getType() == 0)
-        if(Tp->SphP[p].Sfr > 0)
+        if(PS[p].Sfr > 0)
           gasMassSfr += P[p].getMass();
     }
 #endif

@@ -40,6 +40,12 @@ struct approxlen
  public:
   inline void set(long long size)
   {
+    if(size == 0)
+      {
+        alen = 0;
+        return;
+      }
+
     double l = log(size / ALEN_MIN) / log(ALEN_MAX / ALEN_MIN) * (USHRT_MAX - 1) + 1;
 
     if(l < 1)

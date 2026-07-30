@@ -636,8 +636,6 @@ int foftree<partset>::treefind_fof_return_a_particle_in_cell_recursive(int no)
           if(p < MaxPart) /* a particle */
             {
               return p;
-
-              p = Nextnode[p];
             }
           else if(p < MaxPart + MaxNodes) /* an internal node  */
             {

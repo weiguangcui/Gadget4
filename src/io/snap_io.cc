@@ -146,7 +146,7 @@ void snap_io::init_basic(simparticles *Sp_ptr)
 #endif
 
 #ifdef OUTPUT_ENTROPY
-  init_field("ENTR", "Entropy", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, READ_IF_PRESENT, 1, A_SPHP, &Sp->SphP[0].Entropy, 0,
+  init_field("ENTR", "Entropy", MEM_MY_FLOAT, FILE_MY_IO_FLOAT, SKIP_ON_READ, 1, A_SPHP, &Sp->SphP[0].Entropy, 0,
              GAS_ONLY, /* particle entropy */
              0, 0, 0, 0, 0, 0, 0);
 #endif
@@ -455,8 +455,13 @@ void snap_io::snap_init_domain_mapping(void)
   double posmin[3], posmax[3];
   for(int k = 0; k < 3; k++)
     {
+#ifdef EXTERNALGRAVITY
+      posmin[k] = 0;  // make sure that origin is included in this case
+      posmax[k] = 0;
+#else
       posmin[k] = MAX_REAL_NUMBER;
       posmax[k] = -MAX_REAL_NUMBER;
+#endif
     }
 
   for(int i = 0; i < Sp->NumPart; i++)

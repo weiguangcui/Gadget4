@@ -567,13 +567,6 @@ void sph::density(int *list, int ntarget)
               SphP[target].NumNgb = NORM_COEFF * hfac * SphP[target].Density / Tp->P[target].getMass();
               if(SphP[target].NumNgb < (desnumngb - desnumngbdev) || (SphP[target].NumNgb > (desnumngb + desnumngbdev)))
                 {
-                  if(Left[target] > 0 && Right[target] > 0)
-                    if((Right[target] - Left[target]) < 1.0e-3 * Left[target])
-                      {
-                        /* this one should be ok */
-                        continue;
-                      }
-
                   /* need to redo this particle */
                   targetList[npleft++] = target;
 
@@ -602,7 +595,7 @@ void sph::density(int *list, int ntarget)
                     }
 
                   if(Right[target] > 0 && Left[target] > 0)
-                    SphP[target].Hsml = pow(0.5 * (pow(Left[target], 3) + pow(Right[target], 3)), 1.0 / 3);
+                    SphP[target].Hsml = pow(0.5 * (pow(Left[target], NUMDIMS) + pow(Right[target], NUMDIMS)), 1.0 / NUMDIMS);
                   else
                     {
                       if(Right[target] == 0 && Left[target] == 0)
@@ -728,8 +721,8 @@ void sph::density(int *list, int ntarget)
       fprintf(Logs.FdDensity, "Nf=%9lld  highest active timebin=%d  total-Nf=%lld\n", Tp->TimeBinsHydro.GlobalNActiveParticles,
               All.HighestActiveTimeBin, All.TotNumDensity);
       fprintf(Logs.FdDensity, "   work-load balance: %g   part/sec: raw=%g, effective=%g\n",
-              timax.tree / ((tisum.tree + 1e-20) / D->NTask), Tp->TimeBinsGravity.GlobalNActiveParticles / (tisum.tree + 1.0e-20),
-              Tp->TimeBinsGravity.GlobalNActiveParticles / ((timax.tree + 1.0e-20) * D->NTask));
+              timax.tree / ((tisum.tree + 1e-20) / D->NTask), Tp->TimeBinsHydro.GlobalNActiveParticles / (tisum.tree + 1.0e-20),
+              Tp->TimeBinsHydro.GlobalNActiveParticles / ((timax.tree + 1.0e-20) * D->NTask));
       fprintf(Logs.FdDensity,
               "   maximum number of nodes: %g, filled: %g  NumForeignNodes: max=%g avg=%g fill=%g NumForeignPoints: max=%g avg=%g "
               "fill=%g  cycles=%d\n",

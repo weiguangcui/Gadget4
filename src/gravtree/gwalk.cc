@@ -637,7 +637,6 @@ void gwalk::gravity_tree(int timebin)
           unsigned char shiftx   = (BITS_FOR_POSITIONS - 3);
           unsigned char shifty   = (BITS_FOR_POSITIONS - 2);
           unsigned char shiftz   = (BITS_FOR_POSITIONS - 1);
-          unsigned char level    = 0;
           unsigned char rotation = 0;
 
           int no = 0;
@@ -647,7 +646,6 @@ void gwalk::gravity_tree(int timebin)
                                    ((unsigned char)((zzb & mask) >> (shiftz--))));
               unsigned char subnode = peano_incremental_key(pix, &rotation);
               mask >>= 1;
-              level++;
               no = D->TopNodes[no].Daughter + subnode;
             }
 

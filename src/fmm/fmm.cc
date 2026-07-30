@@ -1660,8 +1660,7 @@ void fmm::gravity_fmm(int timebin)
   TIMER_STORE;
   TIMER_START(CPU_TREE);
 
-  D->mpi_printf("FMM: Begin tree force. timebin=%d  (presently allocated=%g MB)\n", timebin, All.ErrTolTheta,
-                Mem.getAllocatedBytesInMB());
+  D->mpi_printf("FMM: Begin tree force. timebin=%d  (presently allocated=%g MB)\n", timebin, Mem.getAllocatedBytesInMB());
 
 #ifdef PMGRID
   set_mesh_factors();

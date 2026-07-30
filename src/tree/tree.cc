@@ -822,16 +822,22 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
   MPI_Comm_rank(TreeSharedMemComm, &TreeSharedMem_ThisTask);
   MPI_Comm_size(TreeSharedMemComm, &TreeSharedMem_NTask);
 
-  TreeNodes_offsets          = (ptrdiff_t *)Mem.mymalloc("TreeNodes_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreePoints_offsets         = (ptrdiff_t *)Mem.mymalloc("TreePoints_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreeNextnode_offsets       = (ptrdiff_t *)Mem.mymalloc("TreeNextnode_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreeForeign_Nodes_offsets  = (ptrdiff_t *)Mem.mymalloc("TreeForeign_Nodes_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreeForeign_Points_offsets = (ptrdiff_t *)Mem.mymalloc("TreeForeign_Points_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreeP_offsets              = (ptrdiff_t *)Mem.mymalloc("TreeP_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreeSphP_offsets           = (ptrdiff_t *)Mem.mymalloc("TreeSphP_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
-  TreePS_offsets             = (ptrdiff_t *)Mem.mymalloc("TreePS_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeNodes_offsets =
+      (ptrdiff_t *)Mem.mymalloc_movable(&TreeNodes_offsets, "TreeNodes_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreePoints_offsets =
+      (ptrdiff_t *)Mem.mymalloc_movable(&TreePoints_offsets, "TreePoints_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeNextnode_offsets =
+      (ptrdiff_t *)Mem.mymalloc_movable(&TreeNextnode_offsets, "TreeNextnode_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeForeign_Nodes_offsets  = (ptrdiff_t *)Mem.mymalloc_movable(&TreeForeign_Nodes_offsets, "TreeForeign_Nodes_offsets",
+                                                                 TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeForeign_Points_offsets = (ptrdiff_t *)Mem.mymalloc_movable(&TreeForeign_Points_offsets, "TreeForeign_Points_offsets",
+                                                                 TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeP_offsets    = (ptrdiff_t *)Mem.mymalloc_movable(&TreeP_offsets, "TreeP_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreeSphP_offsets = (ptrdiff_t *)Mem.mymalloc_movable(&TreeSphP_offsets, "TreeSphP_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
+  TreePS_offsets   = (ptrdiff_t *)Mem.mymalloc_movable(&TreePS_offsets, "TreePS_offsets", TreeSharedMem_NTask * sizeof(ptrdiff_t));
 
-  TreeSharedMemBaseAddr = (void **)Mem.mymalloc("TreeSharedMemBaseAddr", TreeSharedMem_NTask * sizeof(void *));
+  TreeSharedMemBaseAddr =
+      (void **)Mem.mymalloc_movable(&TreeSharedMemBaseAddr, "TreeSharedMemBaseAddr", TreeSharedMem_NTask * sizeof(void *));
 
   for(int i = 0; i < TreeSharedMem_NTask; i++)
     {
@@ -864,7 +870,7 @@ void tree<node, partset, point_data, foreign_point_data>::treeallocate(int max_p
           size_t tab_len[4] = {D->NTopleaves * sizeof(unsigned char), D->NTopleaves * sizeof(int), D->NTopleaves * sizeof(int),
                                D->NTopnodes * sizeof(node)};
 
-          MPI_Send(tab_len, 4 * sizeof(tab_len), MPI_BYTE, ghost_rank, TAG_TOPNODE_ALLOC, MPI_COMM_WORLD);
+          MPI_Send(tab_len, 4 * sizeof(size_t), MPI_BYTE, ghost_rank, TAG_TOPNODE_ALLOC, MPI_COMM_WORLD);
 
           ptrdiff_t off[4];
           MPI_Recv(off, 4 * sizeof(ptrdiff_t), MPI_BYTE, ghost_rank, TAG_TOPNODE_OFFSET, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -1269,16 +1275,16 @@ void tree<node, partset, point_data, foreign_point_data>::treefree(void)
             }
         }
 
-      Mem.myfree(TreeSharedMemBaseAddr);
+      Mem.myfree_movable(TreeSharedMemBaseAddr);
 
-      Mem.myfree(TreePS_offsets);
-      Mem.myfree(TreeSphP_offsets);
-      Mem.myfree(TreeP_offsets);
-      Mem.myfree(TreeForeign_Points_offsets);
-      Mem.myfree(TreeForeign_Nodes_offsets);
-      Mem.myfree(TreeNextnode_offsets);
-      Mem.myfree(TreePoints_offsets);
-      Mem.myfree(TreeNodes_offsets);
+      Mem.myfree_movable(TreePS_offsets);
+      Mem.myfree_movable(TreeSphP_offsets);
+      Mem.myfree_movable(TreeP_offsets);
+      Mem.myfree_movable(TreeForeign_Points_offsets);
+      Mem.myfree_movable(TreeForeign_Nodes_offsets);
+      Mem.myfree_movable(TreeNextnode_offsets);
+      Mem.myfree_movable(TreePoints_offsets);
+      Mem.myfree_movable(TreeNodes_offsets);
 
       Mem.myfree_movable(Recv_offset);
       Mem.myfree_movable(Recv_count);

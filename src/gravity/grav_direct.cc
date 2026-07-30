@@ -180,7 +180,7 @@ void gravtree<simparticles>::gravity_direct(simparticles *Sp, domain<simparticle
           if((DoPM & (TREE_ACTIVE_CUTTOFF_BASE_PM + TREE_ACTIVE_CUTTOFF_HIGHRES_PM)))
             {
               if(modify_gfactors_pm_monopole(gfac, r, rinv, mfp))
-                return;  // if we are outside the cut-off radius, we have no interaction
+                continue;  // if we are outside the cut-off radius, we have no interaction
             }
 #endif
           get_gfactors_monopole(gfac, r, hmax, rinv);

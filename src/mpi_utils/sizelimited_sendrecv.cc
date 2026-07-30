@@ -25,7 +25,7 @@
 int myMPI_Sendrecv(void *sendb, size_t sendcount, MPI_Datatype sendtype, int dest, int sendtag, void *recvb, size_t recvcount,
                    MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Status *status)
 {
-  int iter      = 0, size_sendtype, size_recvtype, send_now, recv_now;
+  int size_sendtype, size_recvtype, send_now, recv_now;
   char *sendbuf = (char *)sendb;
   char *recvbuf = (char *)recvb;
 
@@ -49,11 +49,7 @@ int myMPI_Sendrecv(void *sendb, size_t sendcount, MPI_Datatype sendtype, int des
   while(sendcount > 0 || recvcount > 0)
     {
       if(sendcount > count_limit)
-        {
-          send_now = count_limit;
-
-          iter++;
-        }
+        send_now = count_limit;
       else
         send_now = sendcount;
 

@@ -240,6 +240,9 @@ struct subfind_data
 #ifndef LEAN
   int Type;
   MyFloat Utherm;
+#ifdef STARFORMATION
+  MyFloat Sfr;
+#endif
 #endif
 
 #ifdef SUBFIND_STORE_LOCAL_DENSITY
