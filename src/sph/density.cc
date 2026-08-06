@@ -119,6 +119,9 @@ inline void sph::sph_density_check_particle_particle_interaction(pinfo &pdat, in
     {
       foreign_sphpoint_data *foreignpoint = get_foreignpointsp(p - EndOfForeignNodes, shmrank);
 
+      if(foreignpoint->Type > 0)
+	return;
+
       /* converts the integer distance to floating point */
       double posdiff[3];
       Tp->nearest_image_intpos_to_pos(foreignpoint->IntPos, pdat.searchcenter, posdiff);

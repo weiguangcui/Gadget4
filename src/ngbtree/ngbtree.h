@@ -113,6 +113,8 @@ struct foreign_sphpoint_data
   unsigned char Nextnode_shmrank;
 
   signed char TimeBinHydro;
+
+  unsigned char Type;
 };
 
 class ngbtree : public tree<ngbnode, simparticles, ngbpoint_data, foreign_sphpoint_data>

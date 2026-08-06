@@ -347,6 +347,7 @@ void shmem::deal_with_sph_node_request(char *message, int length, int source, in
               expoints->IntPos[2]    = ptr->IntPos[2];
               expoints->Mass         = ptr->getMass();
               expoints->TimeBinHydro = ptr->TimeBinHydro;
+              expoints->Type         = ptr->getType();
               expoints->SphCore      = *sph_ptr;
 
               expoints->Nextnode = -1;
