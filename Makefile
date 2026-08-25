@@ -437,7 +437,7 @@ SHMEM_LIBS  = -lrt
 endif
 endif
 
-MAKEFILES = $(MAKEFILE_LIST) buildsystem/Makefile.config
+GADGET_MAKEFILES = $(MAKEFILE_LIST) buildsystem/Makefile.config
 
 ##########################
 #combine compiler options#
@@ -486,19 +486,19 @@ clean:
 	rm -f $(TO_CHECK) $(CONFIG_CHECK)
 	rm -f $(BUILD_DIR)/version.cc
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCL) $(MAKEFILES)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(INCL) $(GADGET_MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc $(INCL) $(MAKEFILES)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc $(INCL) $(GADGET_MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.cc $(MAKEFILES)
+$(BUILD_DIR)/compile_time_info.o: $(BUILD_DIR)/compile_time_info.cc $(GADGET_MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/compile_time_info_hdf5.o: $(BUILD_DIR)/compile_time_info_hdf5.cc $(MAKEFILES)
+$(BUILD_DIR)/compile_time_info_hdf5.o: $(BUILD_DIR)/compile_time_info_hdf5.cc $(GADGET_MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/version.o: $(BUILD_DIR)/version.cc $(MAKEFILES)
+$(BUILD_DIR)/version.o: $(BUILD_DIR)/version.cc $(GADGET_MAKEFILES)
 	$(CPP) $(CFLAGS) -c $< -o $@
 
 check: $(CONFIG_CHECK)
