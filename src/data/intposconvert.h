@@ -46,12 +46,12 @@ class intposconvert
 #endif
 
 #ifdef RANDOMIZE_DOMAINCENTER
-  MyIntPosType CurrentShiftVector[3];
+  MyIntPosType CurrentShiftVector[3] = {0, 0, 0};
 #endif
 
 #ifdef EXPLICIT_VECTORIZATION
-  inline Vec4d nearest_image_intpos_to_doublepos_vectorial(MyIntPosType const &a, MyIntPosType const &b0, MyIntPosType const &b1,
-                                                           MyIntPosType const &b2, MyIntPosType const &b3)
+  inline Vec4d nearest_image_intpos_to_doublepos_vectorial(MyIntPosType const& a, MyIntPosType const& b0, MyIntPosType const& b1,
+                                                           MyIntPosType const& b2, MyIntPosType const& b3)
   {
 #if defined(GRAVITY_TALLBOX) || defined(LONG_X_BITS) || defined(LONG_Y_BITS) || defined(LONG_Z_BITS)
     Terminate("not working in this combination");
@@ -67,7 +67,7 @@ class intposconvert
   }
 #endif
 
-  inline void constrain_intpos(MyIntPosType *pos)
+  inline void constrain_intpos(MyIntPosType* pos)
   {
 #ifdef PERIODIC /* restrict the position to the primary range */
 
@@ -88,7 +88,7 @@ class intposconvert
 
   /* function to determine the nearest periodic image distance vector in MyReal, exploiting integer wrap around */
   template <typename T>
-  inline void diff_intpos_to_pos(MyIntPosType *a, MyIntPosType *b, T *posdiff, offset_tuple off = 0)
+  inline void diff_intpos_to_pos(MyIntPosType* a, MyIntPosType* b, T* posdiff, offset_tuple off = 0)
   {
     if(a[0] > b[0])
       posdiff[0] = (a[0] - b[0]) * FacIntToCoord + All.BoxSize * off.n[0];
@@ -165,10 +165,10 @@ class intposconvert
 
   /* function to determine the nearest periodic image distance vector in T, exploiting integer wrap around */
   template <typename T>
-  inline void nearest_image_intpos_to_pos(const MyIntPosType *const a, const MyIntPosType *const b, T *posdiff)
+  inline void nearest_image_intpos_to_pos(const MyIntPosType* const a, const MyIntPosType* const b, T* posdiff)
   {
     MyIntPosType delta[3];
-    MySignedIntPosType *intpos = (MySignedIntPosType *)delta;
+    MySignedIntPosType* intpos = (MySignedIntPosType*)delta;
 
     /* we use all these casts here to prevent that implicit type promotions can mess this up for types shorter than int, such as
      * unsigned char */
@@ -219,7 +219,7 @@ class intposconvert
 #else
 
 #if defined(LONG_Y_BITS)
-    delta[1]   = (a[1] << LONG_Y_BITS) - (b[1] << LONG_Y_BITS);
+    delta[1] = (a[1] << LONG_Y_BITS) - (b[1] << LONG_Y_BITS);
 
     if(delta[1] & MSB) /* tests MSB */
       {
@@ -251,7 +251,7 @@ class intposconvert
 #else
 
 #if defined(LONG_Z_BITS)
-    delta[2]   = (a[2] << LONG_Z_BITS) - (b[2] << LONG_Z_BITS);
+    delta[2] = (a[2] << LONG_Z_BITS) - (b[2] << LONG_Z_BITS);
 
     if(delta[2] & MSB) /* tests MSB */
       {
@@ -268,7 +268,7 @@ class intposconvert
 #endif
   }
 
-  inline void nearest_image_intpos_to_absolute_intdist(const MyIntPosType *a, const MyIntPosType *b, MyIntPosType *delta)
+  inline void nearest_image_intpos_to_absolute_intdist(const MyIntPosType* a, const MyIntPosType* b, MyIntPosType* delta)
   {
 #if defined(LONG_X_BITS)
     delta[0] = (a[0] << LONG_X_BITS) - (b[0] << LONG_X_BITS);
@@ -281,7 +281,7 @@ class intposconvert
     else
       delta[0] >>= LONG_X_BITS;
 #else
-    delta[0]   = a[0] - b[0];
+    delta[0] = a[0] - b[0];
 #endif
 
 #if defined(LONG_Y_BITS)
@@ -295,7 +295,7 @@ class intposconvert
     else
       delta[1] >>= LONG_Y_BITS;
 #else
-    delta[1]   = a[1] - b[1];
+    delta[1] = a[1] - b[1];
 #endif
 
 #if defined(LONG_Z_BITS)
@@ -309,7 +309,7 @@ class intposconvert
     else
       delta[2] >>= LONG_Z_BITS;
 #else
-    delta[2]   = a[2] - b[2];
+    delta[2] = a[2] - b[2];
 #endif
 
     if(delta[0] & (~((~((MyIntPosType)0)) >> 1))) /* tests MSB, i.e. negative if interpreted as signed int */
@@ -330,7 +330,7 @@ class intposconvert
   }
 
   template <typename T>
-  inline void pos_to_signedintpos(T *posdiff, MySignedIntPosType *intpos)
+  inline void pos_to_signedintpos(T* posdiff, MySignedIntPosType* intpos)
   {
     for(int j = 0; j < 3; j++)
       intpos[j] = std::lrint(posdiff[j] * FacCoordToInt);
@@ -343,7 +343,7 @@ class intposconvert
   }
 
   template <typename T>
-  inline void pos_to_signedintpos(T *posdiff, MySignedIntPosType *intpos)
+  inline void pos_to_signedintpos(T* posdiff, MySignedIntPosType* intpos)
   {
     for(int j = 0; j < 3; j++)
       intpos[j] = std::llrint(posdiff[j] * FacCoordToInt);
@@ -356,7 +356,7 @@ class intposconvert
   }
 
   template <typename T>
-  inline void pos_to_signedintpos(T *posdiff, MySignedIntPosType *intpos)
+  inline void pos_to_signedintpos(T* posdiff, MySignedIntPosType* intpos)
   {
     for(int j = 0; j < 3; j++)
       intpos[j] = static_cast<MySignedIntPosType>(posdiff[j] * FacCoordToInt);
@@ -364,13 +364,13 @@ class intposconvert
 #endif
 
   template <typename T>
-  inline void signedintpos_to_pos(MySignedIntPosType *intpos, T *pos)
+  inline void signedintpos_to_pos(MySignedIntPosType* intpos, T* pos)
   {
     for(int j = 0; j < 3; j++)
       pos[j] = intpos[j] * FacIntToCoord;
   }
 
-  inline double signedintpos_to_distanceorigin(MySignedIntPosType *intpos)
+  inline double signedintpos_to_distanceorigin(MySignedIntPosType* intpos)
   {
     double pos[3];
     for(int j = 0; j < 3; j++)
@@ -379,7 +379,7 @@ class intposconvert
   }
 
   template <typename T>
-  inline void intpos_to_pos(MyIntPosType *intpos, T *posdiff)
+  inline void intpos_to_pos(MyIntPosType* intpos, T* posdiff)
   {
 #ifdef RANDOMIZE_DOMAINCENTER
 #ifdef PERIODIC
@@ -404,7 +404,7 @@ class intposconvert
 #endif
   }
 
-  inline void intpos_to_intpos(MyIntPosType *intpos, MyIntPosType *xyz)
+  inline void intpos_to_intpos(MyIntPosType* intpos, MyIntPosType* xyz)
   {
 #ifdef RANDOMIZE_DOMAINCENTER
     for(int j = 0; j < 3; j++)
@@ -448,7 +448,7 @@ class intposconvert
   }
 
   template <typename T>
-  inline void pos_to_intpos(T *posdiff, MyIntPosType *intpos)
+  inline void pos_to_intpos(T* posdiff, MyIntPosType* intpos)
   {
 #ifdef RANDOMIZE_DOMAINCENTER
 #ifdef PERIODIC
